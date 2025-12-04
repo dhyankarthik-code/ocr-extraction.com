@@ -6,9 +6,8 @@ import "./globals.css"
 const geist = Geist({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "FreeOCR - Free Online OCR Tool",
-  description:
-    "Convert non-selectable PDF files into selectable and searchable PDF with high accuracy using AI-powered OCR.",
+  title: "Infygalaxy-OCR - AI-Powered OCR Platform",
+  description: "Extract text from images with advanced AI-powered OCR technology by Infygalaxy",
   generator: "v0.app",
   icons: {
     icon: [

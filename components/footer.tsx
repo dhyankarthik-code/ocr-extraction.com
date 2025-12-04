@@ -11,8 +11,8 @@ export default function Footer() {
                     {/* Brand */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
-                            <img src="/logo.png" alt="FreeOCR Logo" className="h-8 w-8" />
-                            <span className="text-xl font-bold text-white">FreeOCR</span>
+                            <img src="/logo.png" alt="Infygalaxy-OCR Logo" className="h-8 w-8" />
+                            <span className="text-xl font-bold text-white">Infygalaxy-OCR</span>
                         </div>
                         <p className="text-sm text-gray-400">
                             Convert images into readable and editable documents with AI precision.
@@ -53,7 +53,7 @@ export default function Footer() {
                         <ul className="space-y-2 text-sm">
                             <li>
                                 <Link href="/" className="hover:text-red-500 transition-colors">
-                                    Free OCR
+                                    Infygalaxy-OCR
                                 </Link>
                             </li>
                             <li>
@@ -108,7 +108,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-sm text-gray-400">
-                        © {new Date().getFullYear()} FreeOCR. All rights reserved.
+                        © {new Date().getFullYear()} Infygalaxy-OCR. All rights reserved.
                     </p>
                     <div className="flex gap-6 text-sm">
                         <Link href="/privacy" className="hover:text-red-500 transition-colors">

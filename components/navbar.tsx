@@ -46,8 +46,8 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
 
   const logoContent = (
     <Link href="/" className="flex items-center gap-2">
-      <img src="/logo.png" alt="FreeOCR Logo" className="h-6 w-6" />
-      <span className="text-lg font-bold text-red-500">FreeOCR</span>
+      <img src="/logo.png" alt="Infygalaxy-OCR Logo" className="h-6 w-6" />
+      <span className="text-lg font-bold text-red-500">Infygalaxy-OCR</span>
     </Link>
   )
 

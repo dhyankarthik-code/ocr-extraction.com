@@ -154,7 +154,7 @@ export default function ResultPage() {
 
       {/* Footer */}
       <footer className="border-t border-gray-200 bg-white p-4 text-center text-sm text-gray-500 mt-8">
-        © FreeOCR 2025 · Your OCR Editor
+        © Infygalaxy-OCR 2025 · Your AI-Powered OCR Editor
       </footer>
 
       {/* Summary Modal */}

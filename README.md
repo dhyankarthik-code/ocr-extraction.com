@@ -1,4 +1,4 @@
-# FreeOCR frontend clone
+# Infygalaxy-OCR - AI-Powered OCR Platform
 
 *Automatically synced with your [v0.app](https://v0.app) deployments*
 
