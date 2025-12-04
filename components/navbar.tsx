@@ -96,14 +96,15 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
 
   return (
     <>
-      <BubbleMenu
+      {/* Menu temporarily hidden */}
+      {/* <BubbleMenu
         logo={logoContent}
         items={menuItems}
         menuBg="#ffffff"
         menuContentColor="#111111"
         useFixedPosition={true}
         userSection={userSection}
-      />
+      /> */}
 
       {/* User Profile Section - Outside Menu */}
       <div className="fixed top-8 right-24 z-[1002] pointer-events-auto">

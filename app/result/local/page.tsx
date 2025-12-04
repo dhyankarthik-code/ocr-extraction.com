@@ -194,13 +194,6 @@ export default function LocalResultPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col pt-16">
-            {/* Top Left Branding */}
-            <div className="fixed top-4 left-4 z-50">
-                <Link href="/" className="text-lg font-bold text-red-500 hover:text-red-600 transition-colors">
-                    Infy Galaxy
-                </Link>
-            </div>
-
             <Navbar
                 session={session}
                 onLogout={logout}
