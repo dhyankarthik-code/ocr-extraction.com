@@ -5,7 +5,12 @@ export async function POST(request: NextRequest) {
         const body = await request.json()
         const { name, email, country, mobile, message } = body
 
-        // Google Sheets Web App URL (You'll need to replace this with your deployed Google Apps Script URL)
+        // Get user's IP address
+        const forwarded = request.headers.get("x-forwarded-for")
+        const realIp = request.headers.get("x-real-ip")
+        const ipAddress = forwarded ? forwarded.split(",")[0] : realIp || "Unknown"
+
+        // Google Sheets Web App URL
         const GOOGLE_SHEET_URL = process.env.GOOGLE_SHEET_WEBHOOK_URL || ""
 
         if (!GOOGLE_SHEET_URL) {
@@ -13,7 +18,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Configuration error" }, { status: 500 })
         }
 
-        // Send data to Google Sheets
+        // Send data to Google Sheets including IP address
         const response = await fetch(GOOGLE_SHEET_URL, {
             method: "POST",
             headers: {
@@ -25,11 +30,13 @@ export async function POST(request: NextRequest) {
                 country,
                 mobile,
                 message,
+                ipAddress,
                 timestamp: new Date().toISOString(),
             }),
         })
 
         if (!response.ok) {
+            console.error("Google Sheets response error:", await response.text())
             throw new Error("Failed to submit to Google Sheets")
         }
 
