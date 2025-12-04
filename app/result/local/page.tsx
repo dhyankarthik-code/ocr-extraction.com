@@ -201,20 +201,6 @@ export default function LocalResultPage() {
                 </Link>
             </div>
 
-            {/* Floating Logout Button - Only show when logged in */}
-            {session && (
-                <button
-                    onClick={logout}
-                    className="fixed bottom-6 right-6 z-50 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2 group"
-                    title="Logout"
-                >
-                    <span className="font-medium">Logout</span>
-                    <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                </button>
-            )}
-
             <Navbar
                 session={session}
                 onLogout={logout}
@@ -267,79 +253,85 @@ export default function LocalResultPage() {
                         <div className="h-[600px]">
                             <DocumentChat documentText={text} />
                         </div>
-
-                        <Card className="border-purple-100">
-                            <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-                                        <span className="text-white text-lg">✨</span>
-                                    </div>
-                                    <CardTitle className="text-purple-900">AI Summary</CardTitle>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="pt-6">
-                                {!summary ? (
-                                    <div className="text-center py-8">
-                                        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <span className="text-3xl">🤖</span>
-                                        </div>
-                                        <p className="text-gray-600 mb-4 font-medium">Get an AI-powered summary</p>
-                                        <p className="text-sm text-gray-500 mb-6">Instantly understand the key points of your document</p>
-                                        <InteractiveHoverButton
-                                            onClick={handleGenerateSummary}
-                                            disabled={generatingSummary}
-                                            text={generatingSummary ? "Generating..." : "Generate Summary"}
-                                            className="w-full"
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4">
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-6 h-6 bg-purple-600 rounded-md flex items-center justify-center flex-shrink-0 mt-1">
-                                                <span className="text-white text-sm">📝</span>
-                                            </div>
-                                            <div className="flex-1">
-                                                <div className="text-gray-700 leading-relaxed text-sm space-y-3">
-                                                    {summary.split('\n').map((line, index) => {
-                                                        // Check if line starts with **text:**
-                                                        const boldMatch = line.match(/^\*\*(.+?)\*\*:?\s*(.*)$/);
-                                                        if (boldMatch) {
-                                                            return (
-                                                                <div key={index} className="mb-2">
-                                                                    <h4 className="font-bold text-gray-900 mb-1">{boldMatch[1]}</h4>
-                                                                    {boldMatch[2] && <p className="text-gray-700">{boldMatch[2]}</p>}
-                                                                </div>
-                                                            );
-                                                        }
-                                                        // Check if line starts with - (bullet point)
-                                                        if (line.trim().startsWith('-')) {
-                                                            return (
-                                                                <p key={index} className="pl-4 text-gray-700">
-                                                                    • {line.trim().substring(1).trim()}
-                                                                </p>
-                                                            );
-                                                        }
-                                                        // Regular paragraph
-                                                        if (line.trim()) {
-                                                            return <p key={index} className="text-gray-700">{line}</p>;
-                                                        }
-                                                        return null;
-                                                    })}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <InteractiveHoverButton
-                                            onClick={handleGenerateSummary}
-                                            text={generatingSummary ? "Regenerating..." : "Regenerate Summary"}
-                                            className="w-full mt-4"
-                                            disabled={generatingSummary}
-                                        />
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
                     </div>
                 </div>
+
+                {/* Floating AI Summary Button */}
+                {!summary && (
+                    <button
+                        onClick={handleGenerateSummary}
+                        disabled={generatingSummary}
+                        className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Generate AI Summary"
+                    >
+                        <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                            <span className="text-xl">✨</span>
+                        </div>
+                        <div className="flex flex-col items-start">
+                            <span className="font-semibold text-sm">AI Summary</span>
+                            <span className="text-xs opacity-90">{generatingSummary ? "Generating..." : "Click to generate"}</span>
+                        </div>
+                    </button>
+                )}
+
+                {/* AI Summary Modal - Shows when summary exists */}
+                {summary && (
+                    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => setSummary("")}>
+                        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
+                            <div className="sticky top-0 bg-gradient-to-r from-purple-50 to-blue-50 p-6 border-b border-purple-100">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                                            <span className="text-white text-xl">✨</span>
+                                        </div>
+                                        <h2 className="text-2xl font-bold text-purple-900">AI Summary</h2>
+                                    </div>
+                                    <button
+                                        onClick={() => setSummary("")}
+                                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                                    >
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="p-6">
+                                <div className="text-gray-700 leading-relaxed space-y-3">
+                                    {summary.split('\n').map((line, index) => {
+                                        const boldMatch = line.match(/^\*\*(.+?)\*\*:?\s*(.*)$/);
+                                        if (boldMatch) {
+                                            return (
+                                                <div key={index} className="mb-2">
+                                                    <h4 className="font-bold text-gray-900 mb-1">{boldMatch[1]}</h4>
+                                                    {boldMatch[2] && <p className="text-gray-700">{boldMatch[2]}</p>}
+                                                </div>
+                                            );
+                                        }
+                                        if (line.trim().startsWith('-')) {
+                                            return (
+                                                <p key={index} className="pl-4 text-gray-700">
+                                                    • {line.trim().substring(1).trim()}
+                                                </p>
+                                            );
+                                        }
+                                        if (line.trim()) {
+                                            return <p key={index} className="text-gray-700">{line}</p>;
+                                        }
+                                        return null;
+                                    })}
+                                </div>
+                                <button
+                                    onClick={handleGenerateSummary}
+                                    disabled={generatingSummary}
+                                    className="w-full mt-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-lg font-semibold transition-all disabled:opacity-50"
+                                >
+                                    {generatingSummary ? "Regenerating..." : "Regenerate Summary"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </main>
 
             <Footer />

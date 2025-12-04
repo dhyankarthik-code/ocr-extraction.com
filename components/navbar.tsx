@@ -96,15 +96,14 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
 
   return (
     <>
-      {/* Menu temporarily hidden */}
-      {/* <BubbleMenu
+      <BubbleMenu
         logo={logoContent}
         items={menuItems}
         menuBg="#ffffff"
         menuContentColor="#111111"
         useFixedPosition={true}
         userSection={userSection}
-      /> */}
+      />
 
       {/* User Profile Section - Outside Menu */}
       <div className="fixed top-8 right-24 z-[1002] pointer-events-auto">
@@ -127,6 +126,12 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
               <span className="text-sm text-red-600 font-semibold">{session.name?.[0] || session.email[0].toUpperCase()}</span>
             </div>
             <span className="text-sm text-gray-700 font-medium hidden md:inline">{session.name || session.email}</span>
+            <button
+              onClick={onLogout}
+              className="ml-2 bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-medium transition-colors"
+            >
+              Logout
+            </button>
           </div>
         ) : (
           <div className="flex items-center gap-2">
