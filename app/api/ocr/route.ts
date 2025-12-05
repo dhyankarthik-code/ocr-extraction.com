@@ -3,125 +3,243 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Helper function to log detailed error information
 function logError(error: any, context: string = '') {
-  console.error(`[${new Date().toISOString()}] Error${context ? ' in ' + context : ''}:`, {
-    name: error.name,
-    message: error.message,
-    stack: error.stack,
-    response: error.response?.data || 'No response data',
-    status: error.response?.status,
-    statusText: error.response?.statusText,
-    headers: error.response?.headers,
-    config: {
-      url: error.config?.url,
-      method: error.config?.method,
-      headers: error.config?.headers ? Object.keys(error.config.headers) : 'No headers',
-      data: error.config?.data ? 'Data exists' : 'No data'
-    }
-  });
+    console.error(`[${new Date().toISOString()}] Error${context ? ' in ' + context : ''}:`, {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+    });
+}
+
+/**
+ * Clean garbage patterns from OCR output
+ */
+function cleanOCROutput(text: string): string {
+    if (!text) return '';
+
+    let cleaned = text;
+
+    // Remove markdown image patterns like ![img-0.jpeg](img-0.jpeg)
+    cleaned = cleaned.replace(/!\[.*?\]\(.*?\)/g, '');
+    cleaned = cleaned.replace(/\(img-\d+\.[a-z]+\)/gi, '');
+    cleaned = cleaned.replace(/<img[^>]*>/gi, '');
+    cleaned = cleaned.replace(/data:image\/[^;]+;base64,[^\s]+/g, '');
+
+    // Clean up excessive whitespace but preserve line structure
+    cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
+    cleaned = cleaned.replace(/[ \t]+/g, ' ');
+
+    // Trim each line but preserve structure
+    cleaned = cleaned.split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .join('\n');
+
+    return cleaned.trim();
+}
+
+/**
+ * Check if the extracted text is valid (not garbage)
+ */
+function isValidOCROutput(text: string): boolean {
+    if (!text || text.trim().length === 0) return false;
+
+    // Count actual text characters vs special characters
+    const alphanumeric = (text.match(/[a-zA-Z0-9]/g) || []).length;
+    const special = (text.match(/[^\w\s]/g) || []).length;
+
+    // If mostly special characters, it's likely garbage
+    if (alphanumeric < special) return false;
+
+    // If contains mostly markdown image patterns, it's garbage
+    const imagePatterns = (text.match(/!\[.*?\]\(.*?\)/g) || []).length;
+    const lines = text.split('\n').filter(l => l.trim().length > 0).length;
+    if (imagePatterns > lines * 0.5) return false;
+
+    return true;
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    console.log('Received OCR request');
-
-    const apiKey = process.env.MISTRAL_API_KEY;
-
-    if (!apiKey) {
-      const error = new Error('Mistral API key not configured');
-      logError(error, 'API key check');
-      return NextResponse.json(
-        { error: 'Mistral API key not configured. Please check your environment variables.' },
-        { status: 500 }
-      );
-    }
-
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
-
-    if (!file) {
-      const error = new Error('No file provided in the request');
-      logError(error, 'File validation');
-      return NextResponse.json(
-        { error: 'No file provided. Please upload an image file.' },
-        { status: 400 }
-      );
-    }
-
-    console.log(`Processing file: ${file.name}, type: ${file.type}, size: ${file.size} bytes`);
-
     try {
-      // Convert file to base64
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const base64 = buffer.toString('base64');
-      const imageUrl = `data:${file.type};base64,${base64}`;
+        console.log('Received OCR request');
 
-      console.log('Initializing Mistral client...');
-      const client = new Mistral({ apiKey });
+        const apiKey = process.env.MISTRAL_API_KEY;
 
-      console.log('Sending request to Mistral OCR API...');
-      const ocrResponse = await client.ocr.process({
-        model: "mistral-ocr-latest",
-        document: {
-          type: "image_url",
-          imageUrl: imageUrl,
-        },
-        includeImageBase64: false,
-      });
-
-      console.log('Received response from Mistral API:', JSON.stringify(ocrResponse, null, 2));
-
-      // Extract text from the OCR response (pages[].markdown or documentAnnotation)
-      let rawText = '';
-      if ((ocrResponse as any)?.pages?.length) {
-        try {
-          rawText = (ocrResponse as any).pages
-            .map((p: any) => p?.markdown || '')
-            .filter((s: string) => s && s.trim().length > 0)
-            .join('\n\n');
-        } catch (e) {
-          console.warn('Failed to concatenate OCR pages markdown:', e);
+        if (!apiKey) {
+            const error = new Error('Mistral API key not configured');
+            logError(error, 'API key check');
+            return NextResponse.json(
+                { error: 'Mistral API key not configured. Please check your environment variables.' },
+                { status: 500 }
+            );
         }
-      }
-      if (!rawText && (ocrResponse as any)?.documentAnnotation) {
-        rawText = String((ocrResponse as any).documentAnnotation);
-      }
 
-      console.log('Extracted raw text length:', rawText?.length || 0);
+        const formData = await request.formData();
+        const file = formData.get('file') as File;
 
-      if (!rawText || rawText.trim().length === 0) {
-        throw new Error('Mistral API returned an empty response. The image might not contain recognizable text.');
-      }
+        if (!file) {
+            const error = new Error('No file provided in the request');
+            logError(error, 'File validation');
+            return NextResponse.json(
+                { error: 'No file provided. Please upload an image file.' },
+                { status: 400 }
+            );
+        }
 
-      // Apply rule-based OCR error correction and validation
-      const { validateAndCorrectOCR } = await import('@/lib/ocr-validator');
-      const { correctedText, warnings } = validateAndCorrectOCR(rawText);
+        console.log(`Processing file: ${file.name}, type: ${file.type}, size: ${file.size} bytes`);
 
-      console.log('Validation warnings:', warnings.length);
-      console.log('Corrected text length:', correctedText.length);
+        try {
+            // Convert file to buffer
+            const bytes = await file.arrayBuffer();
+            const buffer = Buffer.from(bytes);
+            const base64 = buffer.toString('base64');
+            const imageUrl = `data:${file.type};base64,${base64}`;
 
-      return NextResponse.json({
-        success: true,
-        text: correctedText,
-        rawText: rawText,
-        characters: correctedText.length,
-        warnings: warnings.map(w => w.message),
-      });
+            console.log('Initializing Mistral client...');
+            const client = new Mistral({ apiKey });
 
-    } catch (apiError: any) {
-      logError(apiError, 'Mistral API call');
-      throw new Error(`Mistral API Error: ${apiError.message}`);
+            // Try Vision OCR first (Pixtral is better at rotated images and complex layouts)
+            console.log('Attempting high-accuracy Vision OCR with Pixtral...');
+            const visionResult = await tryEnhancedVisionOCR(client, imageUrl);
+
+            if (visionResult && visionResult.length > 20) {
+                console.log(`Vision OCR succeeded with ${visionResult.length} characters`);
+
+                // Apply rule-based OCR error correction and validation
+                const { validateAndCorrectOCR } = await import('@/lib/ocr-validator');
+                const { correctedText, warnings } = validateAndCorrectOCR(visionResult);
+
+                console.log('Final corrected text length:', correctedText.length);
+
+                return NextResponse.json({
+                    success: true,
+                    text: correctedText,
+                    rawText: visionResult,
+                    characters: correctedText.length,
+                    warnings: warnings.map(w => w.message),
+                    method: 'vision_ocr'
+                });
+            }
+
+            // Fallback to standard OCR if Vision fails
+            console.log('Vision OCR failed, falling back to standard OCR...');
+            const ocrResponse = await client.ocr.process({
+                model: "mistral-ocr-latest",
+                document: {
+                    type: "image_url",
+                    imageUrl: imageUrl,
+                },
+                includeImageBase64: false,
+            });
+
+            let rawText = '';
+            if ((ocrResponse as any)?.pages?.length) {
+                rawText = (ocrResponse as any).pages
+                    .map((p: any) => p?.markdown || '')
+                    .filter((s: string) => s && s.trim().length > 0)
+                    .join('\n\n');
+            }
+            if (!rawText && (ocrResponse as any)?.documentAnnotation) {
+                rawText = String((ocrResponse as any).documentAnnotation);
+            }
+
+            const cleanedText = cleanOCROutput(rawText);
+
+            if (!isValidOCROutput(cleanedText) || cleanedText.length < 5) {
+                return NextResponse.json({
+                    success: false,
+                    error: 'Could not extract text from this image. Please ensure the image is clear, well-lit, and the text is readable.',
+                }, { status: 400 });
+            }
+
+            // Apply validation
+            const { validateAndCorrectOCR } = await import('@/lib/ocr-validator');
+            const { correctedText, warnings } = validateAndCorrectOCR(cleanedText);
+
+            return NextResponse.json({
+                success: true,
+                text: correctedText,
+                rawText: rawText,
+                characters: correctedText.length,
+                warnings: warnings.map(w => w.message),
+                method: 'standard_ocr'
+            });
+
+        } catch (apiError: any) {
+            logError(apiError, 'Mistral API call');
+            throw new Error(`Mistral API Error: ${apiError.message}`);
+        }
+
+    } catch (error: any) {
+        logError(error, 'OCR processing');
+        return NextResponse.json(
+            {
+                error: 'Failed to process image',
+                details: error.message,
+                code: error.code || 'UNKNOWN_ERROR'
+            },
+            { status: 500 }
+        );
     }
+}
 
-  } catch (error: any) {
-    logError(error, 'OCR processing');
-    return NextResponse.json(
-      {
-        error: 'Failed to process image',
-        details: error.message,
-        code: error.code || 'UNKNOWN_ERROR'
-      },
-      { status: 500 }
-    );
-  }
+/**
+ * Enhanced Vision OCR with detailed instructions for layout preservation
+ */
+async function tryEnhancedVisionOCR(client: Mistral, imageUrl: string): Promise<string> {
+    try {
+        console.log('Starting enhanced Pixtral Vision OCR...');
+
+        const response = await client.chat.complete({
+            model: "pixtral-12b-2409",
+            messages: [
+                {
+                    role: "user",
+                    content: [
+                        {
+                            type: "text",
+                            text: `You are a professional OCR system. Extract ALL text from this image with MAXIMUM ACCURACY.
+
+CRITICAL INSTRUCTIONS:
+1. Read the image REGARDLESS of rotation or orientation
+2. Extract EVERY piece of text EXACTLY as written - preserve all:
+   - Numbers, letters, punctuation exactly as shown
+   - Spellings (including business names, personal names)
+   - Formatting and layout structure
+   - Line breaks and spacing
+3. For document cards/business cards:
+   - Preserve the visual top-to-bottom, left-to-right order
+   - Separate sections with blank lines
+4. Pay EXTRA attention to:
+   - Phone numbers (all digits exactly)
+   - Registration numbers
+   - Addresses (including abbreviations like "No." vs "No")
+   - Names (spell exactly as shown)
+   - Dates and times
+5. Do NOT:
+   - Add commentary or descriptions
+   - Correct assumed errors
+   - Translate or interpret
+   - Skip any visible text
+
+OUTPUT ONLY THE EXTRACTED TEXT, NOTHING ELSE.`
+                        },
+                        {
+                            type: "image_url",
+                            imageUrl: imageUrl
+                        }
+                    ]
+                }
+            ],
+            temperature: 0.1, // Low temperature for deterministic output
+            maxTokens: 4000,
+        });
+
+        const content = (response.choices?.[0]?.message?.content || '') as string;
+        console.log('Pixtral extracted:', content.length, 'chars');
+
+        return cleanOCROutput(content);
+    } catch (e) {
+        console.error('Vision OCR failed:', e);
+        return '';
+    }
 }

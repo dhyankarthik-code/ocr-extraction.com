@@ -96,7 +96,11 @@ export default function Home() {
       const file = acceptedFiles[0]
       if (!file) return
 
-      if (!session) {
+      // Skip login requirement for local development
+      const isLocalhost = typeof window !== 'undefined' &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+
+      if (!session && !isLocalhost) {
         setPendingFile(file)
         setShowAuthModal(true)
         return
