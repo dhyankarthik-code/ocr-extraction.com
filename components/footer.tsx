@@ -11,7 +11,7 @@ export default function Footer() {
                     {/* Brand */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
-                            <span className="text-xl font-bold text-white">Infy Galaxy – OCR</span>
+                            <span className="text-xl font-bold text-white">Infy Galaxy</span>
                         </div>
                         <p className="text-sm text-gray-400 font-medium">
                             Free OCR Extraction and Report Generation Tool
@@ -29,23 +29,18 @@ export default function Footer() {
                         </h3>
                         <ul className="space-y-2 text-sm">
                             <li>
-                                <Link href="/tools" className="hover:text-red-500 transition-colors">
-                                    Image Tools
-                                </Link>
-                            </li>
-                            <li>
                                 <Link href="/converter" className="hover:text-red-500 transition-colors">
                                     Format Converter
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/resources" className="hover:text-red-500 transition-colors">
-                                    Resources
+                                <Link href="/tools" className="hover:text-red-500 transition-colors">
+                                    Image Tools
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/contact" className="hover:text-red-500 transition-colors">
-                                    Contact Us
+                                <Link href="/about-ocr" className="hover:text-red-500 transition-colors">
+                                    About OCR
                                 </Link>
                             </li>
                         </ul>
@@ -71,6 +66,26 @@ export default function Footer() {
                             <li>
                                 <Link href="/about" className="hover:text-red-500 transition-colors">
                                     About Us
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/faqs" className="hover:text-red-500 transition-colors">
+                                    FAQs
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Support / Contact */}
+                    <div>
+                        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                            <Info className="w-4 h-4" />
+                            Support
+                        </h3>
+                        <ul className="space-y-2 text-sm">
+                            <li>
+                                <Link href="/contact" className="hover:text-red-500 transition-colors">
+                                    Contact Us
                                 </Link>
                             </li>
                         </ul>

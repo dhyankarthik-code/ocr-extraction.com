@@ -122,7 +122,9 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center p-6 md:p-8">
         <div className="w-full max-w-2xl">
-          <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 text-center text-balance">Infy Galaxy – OCR</h1>
+          <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 text-center text-balance">
+            Free OCR Extraction tool and Report Generation Tool
+          </h1>
 
           <p className="text-base md:text-lg text-gray-600 text-center mb-2 text-balance font-semibold">
             Free OCR Extraction and Report Generation Tool

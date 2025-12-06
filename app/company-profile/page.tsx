@@ -46,7 +46,7 @@ export default function CompanyProfilePage() {
 
                         <div className="grid gap-6 md:grid-cols-2">
                             <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                                <h3 className="text-xl font-bold text-gray-900 mb-3">1. AI-Powered OCR Solutions</h3>
+                                <h3 className="text-xl font-bold text-gray-900 mb-3">1. AI-Powered OCR (Optical Character Recognition) Solutions</h3>
                                 <p className="text-gray-700 text-sm">
                                     Our flagship OCR systems, including FreeOCR.AI and Infy Galaxy OCR, use advanced Vision LLM technology to extract text from images, PDFs, scanned documents, and handwritten notes with exceptional precision. These tools support multilingual text recognition, layout preservation, and lightning-fast processing.
                                 </p>

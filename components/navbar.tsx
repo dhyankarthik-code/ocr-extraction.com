@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import type { Session } from "@/types/auth"
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
-import BubbleMenu from "@/components/bubble-menu"
+import { Menu, X } from "lucide-react"
 
 interface NavbarProps {
   session?: Session | null
@@ -13,149 +13,125 @@ interface NavbarProps {
 }
 
 export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps) {
-  const menuItems = [
-    {
-      label: 'About Us',
-      href: '/about',
-      ariaLabel: 'About Us',
-      rotation: -5,
-      hoverStyles: { bgColor: '#ef4444', textColor: '#ffffff' }
-    },
-    {
-      label: 'OCR',
-      href: '/',
-      ariaLabel: 'OCR Tool',
-      rotation: 5,
-      hoverStyles: { bgColor: '#ef4444', textColor: '#ffffff' }
-    },
-    {
-      label: 'Tools/Resources',
-      href: '/tools',
-      ariaLabel: 'Tools and Resources',
-      rotation: -5,
-      hoverStyles: { bgColor: '#ef4444', textColor: '#ffffff' }
-    },
-    {
-      label: 'Blog',
-      href: '/blog',
-      ariaLabel: 'Blog',
-      rotation: 0,
-      hoverStyles: { bgColor: '#ef4444', textColor: '#ffffff' }
-    }
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const navLinks = [
+    { label: 'About Us', href: '/about' },
+    { label: 'OCR', href: '/' },
+    { label: 'Tools', href: '/tools' },
+    { label: 'Blog', href: '/blog' },
   ]
 
-  const logoContent = (
-    <Link href="/" className="flex items-center gap-2">
-      <span className="text-lg font-bold text-red-500">Infy Galaxy</span>
-    </Link>
-  )
-
-  const userSection = session ? (
-    <div className="bg-white rounded-2xl p-6 shadow-lg">
-      <div className="flex items-center gap-4 mb-4">
-        {session.picture ? (
-          <img
-            src={session.picture}
-            alt="Profile"
-            className="w-16 h-16 rounded-full border-2 border-red-500"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none'
-            }}
-          />
-        ) : (
-          <div className="w-16 h-16 rounded-full border-2 border-red-500 bg-red-100 flex items-center justify-center">
-            <span className="text-2xl text-red-600">{session.name?.[0] || session.email[0].toUpperCase()}</span>
-          </div>
-        )}
-        <div className="flex-1">
-          <p className="text-lg font-semibold text-gray-900">{session.name || 'User'}</p>
-          <p className="text-sm text-gray-500">{session.email}</p>
-        </div>
-      </div>
-      <InteractiveHoverButton
-        onClick={onLogout}
-        text="Logout"
-        className="w-full"
-      />
-    </div>
-  ) : (
-    <div className="bg-white rounded-2xl p-6 shadow-lg space-y-3">
-      <InteractiveHoverButton
-        onClick={onLoginClick}
-        text="Login"
-        className="w-full"
-      />
-      <InteractiveHoverButton
-        onClick={onLoginClick}
-        text="Sign up"
-        className="w-full"
-      />
-    </div>
-  )
-
   return (
-    <>
-      {/* Fixed Branding - Always Visible */}
-      <div className="fixed top-4 left-4 md:top-8 md:left-8 z-[1002] pointer-events-auto">
-        <Link href="/" className="text-lg font-bold text-red-500 hover:text-red-600 transition-colors">
+    <nav className="fixed top-0 left-0 right-0 z-[1002] bg-white border-b border-gray-100 shadow-sm h-16">
+      <div className="container mx-auto px-4 h-full flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="text-[20px] font-bold text-red-500 hover:text-red-600 transition-colors">
           Infy Galaxy
         </Link>
-      </div>
 
-      {/* Menu temporarily hidden */}
-      {/* <BubbleMenu
-        logo={logoContent}
-        items={menuItems}
-        menuBg="#ffffff"
-        menuContentColor="#111111"
-        useFixedPosition={true}
-        userSection={userSection}
-      /> */}
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-8">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm font-medium text-gray-700 hover:text-red-500 transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
 
-      {/* User Profile Section - Outside Menu */}
-      <div className="fixed top-4 right-4 md:top-8 md:right-24 z-[1002] pointer-events-auto">
-        {session ? (
-          <div className="flex items-center gap-3 bg-white rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.12)] px-4 py-2">
-            {session.picture ? (
-              <img
-                src={session.picture}
-                alt="Profile"
-                className="w-8 h-8 rounded-full border-2 border-red-500"
-                onError={(e) => {
-                  const target = e.currentTarget as HTMLImageElement
-                  target.style.display = 'none'
-                  const fallback = target.nextElementSibling as HTMLElement
-                  if (fallback) fallback.style.display = 'flex'
-                }}
+        {/* Auth Section (Desktop) */}
+        <div className="hidden md:flex items-center gap-4">
+          {session ? (
+            <div className="flex items-center gap-3">
+              {session.picture && (
+                <img
+                  src={session.picture}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full border-2 border-red-500"
+                />
+              )}
+              <span className="text-sm font-medium text-gray-700">
+                {session.name?.split(' ')[0] || 'User'}
+              </span>
+              <InteractiveHoverButton
+                onClick={onLogout}
+                text="Logout"
+                className="px-4 py-1.5 text-sm h-8"
               />
-            ) : null}
-            <div className="w-8 h-8 rounded-full border-2 border-red-500 bg-red-100 items-center justify-center" style={{ display: session.picture ? 'none' : 'flex' }}>
-              <span className="text-sm text-red-600 font-semibold">{session.name?.[0] || session.email[0].toUpperCase()}</span>
             </div>
-            <span className="text-sm text-gray-700 font-medium hidden md:inline">{session.name || session.email}</span>
-            <InteractiveHoverButton
-              onClick={onLogout}
-              text="Logout"
-              className="ml-2 px-4 py-1.5 text-sm h-8"
-            />
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <InteractiveHoverButton
-              onClick={onLoginClick}
-              text="Login"
-              className="text-sm px-4 py-2 bg-white shadow-[0_4px_16px_rgba(0,0,0,0.12)] hidden md:block"
-            />
-            <div className="bg-white rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.12)]">
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link href="#" onClick={(e) => { e.preventDefault(); onLoginClick?.(); }} className="text-sm font-medium text-gray-700 hover:text-red-500 transition-colors">
+                Login
+              </Link>
               <InteractiveHoverButton
                 onClick={onLoginClick}
-                text="Sign up"
-                className="h-10 px-6"
+                text="Sign in"
+                className="px-5 py-2 text-sm h-9"
               />
             </div>
-          </div>
-        )}
+          )}
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden p-2 text-gray-600"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
-    </>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute top-16 left-0 right-0 bg-white border-b border-gray-100 shadow-lg p-4 flex flex-col gap-4">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-base font-medium text-gray-700 hover:text-red-500 py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <div className="border-t border-gray-100 pt-4 flex flex-col gap-3">
+            {session ? (
+              <>
+                <div className="flex items-center gap-3 mb-2">
+                  {session.picture && (
+                    <img src={session.picture} alt="Profile" className="w-8 h-8 rounded-full" />
+                  )}
+                  <span className="font-medium text-gray-700">{session.name || 'User'}</span>
+                </div>
+                <InteractiveHoverButton
+                  onClick={() => { onLogout(); setMobileMenuOpen(false); }}
+                  text="Logout"
+                  className="w-full text-center"
+                />
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => { onLoginClick?.(); setMobileMenuOpen(false); }}
+                  className="text-center py-2 text-gray-700 font-medium"
+                >
+                  Login
+                </button>
+                <InteractiveHoverButton
+                  onClick={() => { onLoginClick?.(); setMobileMenuOpen(false); }}
+                  text="Sign in"
+                  className="w-full text-center"
+                />
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </nav>
   )
 }
