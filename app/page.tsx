@@ -126,9 +126,7 @@ export default function Home() {
             Free OCR Extraction tool and Report Generation Tool
           </h1>
 
-          <p className="text-base md:text-lg text-gray-600 text-center mb-2 text-balance font-semibold">
-            Free OCR Extraction and Report Generation Tool
-          </p>
+
           <p className="text-sm md:text-base text-gray-500 text-center mb-8 text-balance">
             The Necessary Tool For OCR Data Extraction – Go Beyond Extraction and Generate Reports, AI Summary, and Download in Various Formats
           </p>

@@ -23,7 +23,7 @@ export default function AboutOCRPage() {
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">About OCR</h1>
 
                     <div className="space-y-6">
-                        <h2 className="text-2xl font-bold text-gray-900 uppercase">WHAT IS INFY GALAXY OCR - Absolutely Free</h2>
+                        <h2 className="text-2xl font-bold text-gray-900">What is Infy Galaxy OCR - Absolutely Free</h2>
                         <h3 className="text-xl font-semibold text-gray-800">Infy Galaxy OCR – Free Version: Smart, Fast & Accurate AI-Powered Text Extraction</h3>
                         <p className="text-gray-700">
                             Infy Galaxy OCR – Free Version is a very powerful, free online OCR (Optical Character Recognition) solution / tool designed to extract text from images with exceptional accuracy. This tool's speciality is that it has the ability to extract data even from blurred or difficult images. Built on advanced AI and Vision Large Language Model (VLM) technology, it effortlessly converts scanned documents, photos, screenshots, PDFs, and handwritten notes into editable, reportable, and searchable text with the feature where the extracted content can be downloaded in the format required by the user such as Word or PDF or Text. Artificial Intelligence based summary is also available and other value addition where reports can be generated from the extracted data or text.
