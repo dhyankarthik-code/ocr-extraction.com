@@ -50,6 +50,31 @@ export default function Footer() {
                             </li>
                         </ul>
                     </div>
+
+                    {/* Company */}
+                    <div>
+                        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                            <BookOpen className="w-4 h-4" />
+                            Company
+                        </h3>
+                        <ul className="space-y-2 text-sm">
+                            <li>
+                                <Link href="/mission" className="hover:text-red-500 transition-colors">
+                                    Our Mission
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/company-profile" className="hover:text-red-500 transition-colors">
+                                    Company Profile
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/about" className="hover:text-red-500 transition-colors">
+                                    About Us
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
                 {/* Bottom Bar */}

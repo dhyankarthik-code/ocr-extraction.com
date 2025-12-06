@@ -97,33 +97,10 @@ export async function POST(request: NextRequest) {
             console.log('Initializing Mistral client...');
             const client = new Mistral({ apiKey });
 
-            // Try Vision OCR first (Pixtral is better at rotated images and complex layouts)
-            console.log('Attempting high-accuracy Vision OCR with Pixtral...');
-            const visionResult = await tryEnhancedVisionOCR(client, imageUrl);
-
-            if (visionResult && visionResult.length > 20) {
-                console.log(`Vision OCR succeeded with ${visionResult.length} characters`);
-
-                // Apply rule-based OCR error correction and validation
-                const { validateAndCorrectOCR } = await import('@/lib/ocr-validator');
-                const { correctedText, warnings } = validateAndCorrectOCR(visionResult);
-
-                console.log('Final corrected text length:', correctedText.length);
-
-                return NextResponse.json({
-                    success: true,
-                    text: correctedText,
-                    rawText: visionResult,
-                    characters: correctedText.length,
-                    warnings: warnings.map(w => w.message),
-                    method: 'vision_ocr'
-                });
-            }
-
-            // Fallback to standard OCR if Vision fails
-            console.log('Vision OCR failed, falling back to standard OCR...');
+            // User requested specific model: Mistral OCR 25.05
+            console.log('Using requested model: mistral-ocr-25.05...');
             const ocrResponse = await client.ocr.process({
-                model: "mistral-ocr-latest",
+                model: "mistral-ocr-25.05",
                 document: {
                     type: "image_url",
                     imageUrl: imageUrl,
