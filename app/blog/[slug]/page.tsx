@@ -1,90 +1,74 @@
-"use client"
-
-import Navbar from "@/components/navbar"
+import BlogNavbar from "@/components/blog-navbar"
 import Footer from "@/components/footer"
-import { useSession } from "@/hooks/use-session"
-import { useState, useEffect } from "react"
-import AuthModal from "@/components/auth-modal"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { Metadata } from "next"
+import { notFound } from "next/navigation"
+
+// Revalidate every hour
+export const revalidate = 3600
 
 interface BlogPost {
     ID: number
     title: string
     content: string
+    excerpt: string
     date: string
     author: {
         name: string
     }
+    slug: string
 }
 
-export default function BlogPostPage() {
-    const { session, logout } = useSession()
-    const [showAuthModal, setShowAuthModal] = useState(false)
-    const [post, setPost] = useState<BlogPost | null>(null)
-    const [loading, setLoading] = useState(true)
-    const params = useParams()
-    const slug = params.slug
-
-    useEffect(() => {
-        if (!slug) return
-
-        const fetchPost = async () => {
-            try {
-                // Fetch single post by slug
-                const res = await fetch(`https://public-api.wordpress.com/rest/v1.1/sites/ocr-extraction.com/posts/slug:${slug}`)
-                const data = await res.json()
-                setPost(data)
-            } catch (error) {
-                console.error("Failed to fetch post:", error)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchPost()
-    }, [slug])
-
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex flex-col pt-16">
-                <Navbar
-                    session={session}
-                    onLogout={logout}
-                    onLoginClick={() => setShowAuthModal(true)}
-                />
-                <div className="flex-1 flex justify-center items-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
-                </div>
-                <Footer />
-            </div>
-        )
+// Fetch single post
+async function getPost(slug: string): Promise<BlogPost | null> {
+    try {
+        const res = await fetch(`https://public-api.wordpress.com/rest/v1.1/sites/ocr-extraction.com/posts/slug:${slug}`, {
+            next: { revalidate: 3600 }
+        })
+        const data = await res.json()
+        if (data.error) return null
+        return data
+    } catch (error) {
+        return null
     }
+}
+
+// Generate Dynamic Metadata
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+    const post = await getPost(params.slug)
 
     if (!post) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex flex-col pt-16">
-                <Navbar
-                    session={session}
-                    onLogout={logout}
-                    onLoginClick={() => setShowAuthModal(true)}
-                />
-                <main className="flex-1 container mx-auto px-4 py-12 max-w-4xl text-center">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-4">Post Not Found</h1>
-                    <Link href="/blog" className="text-red-500 hover:text-red-600 font-medium">← Back to Blog</Link>
-                </main>
-                <Footer />
-            </div>
-        )
+        return {
+            title: "Post Not Found - Infy Galaxy"
+        }
+    }
+
+    // Strip HTML from excerpt for description
+    const description = post.excerpt.replace(/<[^>]*>?/gm, '').slice(0, 160)
+
+    return {
+        title: `${post.title} - Infy Galaxy`,
+        description: description,
+        openGraph: {
+            title: post.title,
+            description: description,
+            type: 'article',
+            publishedTime: post.date,
+            authors: [post.author.name]
+        }
+    }
+}
+
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+    const post = await getPost(params.slug)
+
+    if (!post) {
+        notFound()
     }
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col pt-16">
-            <Navbar
-                session={session}
-                onLogout={logout}
-                onLoginClick={() => setShowAuthModal(true)}
-            />
+            <BlogNavbar />
 
             <main className="flex-1 container mx-auto px-4 py-12 max-w-4xl">
                 <Link href="/blog" className="text-gray-500 hover:text-red-500 text-sm mb-8 inline-block">
@@ -107,13 +91,6 @@ export default function BlogPostPage() {
             </main>
 
             <Footer />
-
-            {showAuthModal && (
-                <AuthModal
-                    onClose={() => setShowAuthModal(false)}
-                    onSuccess={() => window.location.reload()}
-                />
-            )}
         </div>
     )
 }

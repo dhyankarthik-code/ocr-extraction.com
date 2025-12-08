@@ -1,11 +1,15 @@
-"use client"
-
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
-import { useSession } from "@/hooks/use-session"
-import { useState, useEffect } from "react"
-import AuthModal from "@/components/auth-modal"
 import Link from "next/link"
+import { Metadata } from "next"
+
+// Revalidate every hour (3600 seconds)
+export const revalidate = 3600
+
+export const metadata: Metadata = {
+    title: "Blog - Infy Galaxy",
+    description: "Latest updates, guides, and news from the Infy Galaxy team.",
+}
 
 interface BlogPost {
     ID: number
@@ -18,35 +22,26 @@ interface BlogPost {
     }
 }
 
-export default function BlogPage() {
-    const { session, logout } = useSession()
-    const [showAuthModal, setShowAuthModal] = useState(false)
-    const [posts, setPosts] = useState<BlogPost[]>([])
-    const [loading, setLoading] = useState(true)
+async function getPosts(): Promise<BlogPost[]> {
+    try {
+        const res = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/ocr-extraction.com/posts')
+        const data = await res.json()
+        return data.posts || []
+    } catch (error) {
+        console.error("Failed to fetch posts:", error)
+        return []
+    }
+}
 
-    useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const res = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/ocr-extraction.com/posts')
-                const data = await res.json()
-                setPosts(data.posts || [])
-            } catch (error) {
-                console.error("Failed to fetch posts:", error)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchPosts()
-    }, [])
+export default async function BlogPage() {
+    const posts = await getPosts()
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col pt-16">
-            <Navbar
-                session={session}
-                onLogout={logout}
-                onLoginClick={() => setShowAuthModal(true)}
-            />
+            {/* Note: Navbar will need session passed from layout or handled internally if client side parts needed */}
+            <div className="bg-white border-b border-gray-100">
+                <Navbar />
+            </div>
 
             <main className="flex-1 container mx-auto px-4 py-12 max-w-4xl">
                 <div className="text-center mb-16">
@@ -54,11 +49,7 @@ export default function BlogPage() {
                     <p className="text-lg text-gray-600">Latest updates, guides, and news from the Infy Galaxy team.</p>
                 </div>
 
-                {loading ? (
-                    <div className="flex justify-center items-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
-                    </div>
-                ) : posts.length > 0 ? (
+                {posts.length > 0 ? (
                     <div className="grid gap-8 md:grid-cols-2">
                         {posts.map((post) => (
                             <article key={post.ID} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
@@ -84,13 +75,6 @@ export default function BlogPage() {
             </main>
 
             <Footer />
-
-            {showAuthModal && (
-                <AuthModal
-                    onClose={() => setShowAuthModal(false)}
-                    onSuccess={() => window.location.reload()}
-                />
-            )}
         </div>
     )
 }
