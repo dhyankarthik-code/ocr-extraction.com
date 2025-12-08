@@ -7,6 +7,7 @@ import AuthModal from "@/components/auth-modal"
 import Footer from "@/components/footer"
 import { useSession } from "@/hooks/use-session"
 import TextType from "@/components/text-type"
+import ChatWidget from "@/components/chat-widget"
 
 export default function Home() {
   const [uploading, setUploading] = useState(false)
@@ -59,7 +60,9 @@ export default function Home() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
         console.error('API Error:', errorData)
-        throw new Error(errorData.error || `OCR API failed: ${response.statusText}`)
+        // Prefer 'details' to show the specific underlying error (e.g. from Mistral), fall back to 'error'
+        const specificError = errorData.details || errorData.error || `OCR API failed: ${response.statusText}`
+        throw new Error(specificError)
       }
 
       setProcessingSteps(prev => [...prev, "Extracting text from response..."])
@@ -153,6 +156,8 @@ export default function Home() {
 
       {/* Footer */}
       <Footer />
+
+      <ChatWidget />
 
       {/* Auth Modal */}
       {showAuthModal && (

@@ -39,7 +39,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
     { label: 'About Us', href: '/about' },
     { label: 'OCR', href: '/' },
     { label: 'Tools', href: '/tools' },
-    // Blog removed as requested
+    // { label: 'Blog', href: '/blog' }, // Hidden as per request
   ]
 
   return (
