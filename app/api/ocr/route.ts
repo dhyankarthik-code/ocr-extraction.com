@@ -146,15 +146,26 @@ export async function POST(request: NextRequest) {
 
             try {
                 const client = new Mistral({ apiKey: mistralApiKey });
-                const base64 = buffer.toString('base64');
-                const dataUrl = `data:application/pdf;base64,${base64}`;
 
-                console.log('Sending PDF to Mistral OCR...');
+                // Step 1: Upload PDF file to Mistral
+                console.log('Uploading PDF to Mistral...');
+                const uploadedFile = await client.files.upload({
+                    file: {
+                        fileName: file.name || 'document.pdf',
+                        content: buffer,
+                    },
+                    purpose: 'ocr'
+                });
+
+                console.log(`Uploaded PDF with file ID: ${uploadedFile.id}`);
+
+                // Step 2: Process OCR with uploaded file
+                console.log('Processing OCR on uploaded PDF...');
                 const response = await client.ocr.process({
                     model: "mistral-ocr-latest",
                     document: {
-                        type: "image_url",
-                        imageUrl: dataUrl
+                        type: "file",
+                        fileId: uploadedFile.id
                     }
                 });
 
