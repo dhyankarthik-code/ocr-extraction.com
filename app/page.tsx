@@ -29,20 +29,26 @@ export default function Home() {
     setProcessingSteps(["Starting upload..."])
 
     try {
-      // 1. Preprocess image (Client-side)
-      setProcessingSteps(prev => [...prev, "Optimizing image quality (Grayscale, Contrast)..."])
-      setStatus("Optimizing image for better accuracy...")
-
-      // Small delay to let user see the step
-      await new Promise(r => setTimeout(r, 800))
-
-      const { quickPreprocess } = await import('@/lib/image-preprocessing')
-      const preprocessedBlob = await quickPreprocess(file)
-
-      // Create form data with the preprocessed image
+      const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
       const formData = new FormData()
-      // Append with original filename but potentially different type/content
-      formData.append('file', preprocessedBlob, file.name)
+
+      if (isPDF) {
+        console.log('PDF detected, skipping client-side optimization...')
+        formData.append('file', file)
+      } else {
+        // 1. Preprocess image (Client-side)
+        setProcessingSteps(prev => [...prev, "Optimizing image quality (Grayscale, Contrast)..."])
+        setStatus("Optimizing image for better accuracy...")
+
+        // Small delay to let user see the step
+        await new Promise(r => setTimeout(r, 800))
+
+        const { quickPreprocess } = await import('@/lib/image-preprocessing')
+        const preprocessedBlob = await quickPreprocess(file)
+
+        // Append with original filename but potentially different type/content
+        formData.append('file', preprocessedBlob, file.name)
+      }
 
       console.log('Sending optimized image to OCR API...')
       setProcessingSteps(prev => [...prev, "Sending to AI OCR engine..."])
