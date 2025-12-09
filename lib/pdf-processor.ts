@@ -3,8 +3,8 @@ const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
 
 // Config for v3 Node.js usage
 if (typeof window === 'undefined') {
-    // Disable worker for Node.js environment in v3
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '';
+    // Explicitly set worker path using require.resolve to ensure bundler includes it
+    pdfjsLib.GlobalWorkerOptions.workerSrc = require.resolve('pdfjs-dist/legacy/build/pdf.worker.js');
 }
 
 export interface PDFPageResult {
