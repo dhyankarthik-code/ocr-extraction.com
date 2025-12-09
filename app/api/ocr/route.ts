@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Mistral } from '@mistralai/mistralai';
-import { extractPDFPages } from '@/lib/pdf-processor';
+// PDF processing handled natively by Mistral OCR - no pdfjs needed
 
 // Configure Vercel Serverless Function timeout (seconds)
 export const maxDuration = 60;
@@ -135,48 +135,55 @@ export async function POST(request: NextRequest) {
         const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 
         if (isPDF) {
-            console.log('📄 PDF detected, extracting pages...');
+            console.log('📄 PDF detected, sending directly to Mistral OCR...');
+
+            if (!mistralApiKey) {
+                return NextResponse.json({
+                    error: 'PDF processing requires Mistral API key',
+                    details: 'Mistral OCR is required for PDF processing'
+                }, { status: 500 });
+            }
+
             try {
-                const pdfPages = await extractPDFPages(buffer);
-                console.log(`✅ Extracted ${pdfPages.length} pages from PDF`);
+                const client = new Mistral({ apiKey: mistralApiKey });
+                const base64 = buffer.toString('base64');
+                const dataUrl = `data:application/pdf;base64,${base64}`;
 
-                const pageResults = [];
-                for (const pdfPage of pdfPages) {
-                    const base64 = pdfPage.imageBase64;
-                    const dataUrl = `data:image/png;base64,${base64}`;
+                console.log('Sending PDF to Mistral OCR...');
+                const response = await client.ocr.process({
+                    model: "mistral-ocr-latest",
+                    document: {
+                        type: "image_url",
+                        imageUrl: dataUrl
+                    }
+                });
 
-                    const { rawText, usedMethod } = await performOCR(base64, dataUrl, mistralApiKey, googleApiKey);
+                if (!response.pages || response.pages.length === 0) {
+                    throw new Error('Mistral OCR returned no pages');
+                }
+
+                console.log(`✅ Mistral extracted ${response.pages.length} pages from PDF`);
+
+                // Format response for multi-page display
+                const pageResults = response.pages.map((page: any, index: number) => {
+                    const rawText = page.markdown || '';
                     const cleanedText = cleanOCROutput(rawText);
 
-                    if (isValidOCROutput(cleanedText)) {
-                        const { validateAndCorrectOCR } = await import('@/lib/ocr-validator');
-                        const { correctedText, warnings } = validateAndCorrectOCR(cleanedText);
-
-                        pageResults.push({
-                            pageNumber: pdfPage.pageNumber,
-                            text: correctedText,
-                            rawText: rawText,
-                            characters: correctedText.length,
-                            warnings: warnings.map(w => w.message),
-                            method: usedMethod
-                        });
-                    } else {
-                        pageResults.push({
-                            pageNumber: pdfPage.pageNumber,
-                            text: '',
-                            rawText: '',
-                            characters: 0,
-                            warnings: ['No valid text found on this page'],
-                            method: usedMethod
-                        });
-                    }
-                }
+                    return {
+                        pageNumber: index + 1,
+                        text: cleanedText,
+                        rawText: rawText,
+                        characters: cleanedText.length,
+                        warnings: [],
+                        method: 'mistral_ocr'
+                    };
+                });
 
                 return NextResponse.json({
                     success: true,
                     isPDF: true,
                     pages: pageResults,
-                    totalPages: pdfPages.length
+                    totalPages: response.pages.length
                 });
 
             } catch (pdfError: any) {
