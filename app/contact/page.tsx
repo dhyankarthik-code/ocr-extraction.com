@@ -294,9 +294,15 @@ export default function ContactPage() {
                     <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
                         Contact Us
                     </h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
                         Have a question or need support? We're here to help!
                     </p>
+                    <div className="flex items-center justify-center gap-2 text-gray-600">
+                        <Mail className="w-5 h-5 text-red-500" />
+                        <a href="mailto:admin@ocr-extraction.com" className="hover:text-red-500 hover:underline transition-colors font-medium">
+                            admin@ocr-extraction.com
+                        </a>
+                    </div>
                 </div>
 
                 <div className="max-w-2xl mx-auto">
@@ -339,8 +345,8 @@ export default function ContactPage() {
                                             onBlur={() => handleBlur("name")}
                                             placeholder="Enter your full name (letters only)"
                                             className={`w-full transition-all ${errors.name
-                                                    ? "border-red-500 border-2 bg-red-50 focus:ring-red-500 focus:border-red-500"
-                                                    : ""
+                                                ? "border-red-500 border-2 bg-red-50 focus:ring-red-500 focus:border-red-500"
+                                                : ""
                                                 }`}
                                         />
                                         {errors.name && (
@@ -365,8 +371,8 @@ export default function ContactPage() {
                                             onBlur={() => handleBlur("email")}
                                             placeholder="your.email@example.com"
                                             className={`w-full transition-all ${errors.email
-                                                    ? "border-red-500 border-2 bg-red-50 focus:ring-red-500 focus:border-red-500"
-                                                    : ""
+                                                ? "border-red-500 border-2 bg-red-50 focus:ring-red-500 focus:border-red-500"
+                                                : ""
                                                 }`}
                                         />
                                         {errors.email && (
@@ -399,8 +405,8 @@ export default function ContactPage() {
                                                     onFocus={() => setShowCountryDropdown(true)}
                                                     placeholder="Search and select your country..."
                                                     className={`w-full pl-10 pr-8 transition-all ${errors.country
-                                                            ? "border-red-500 border-2 bg-red-50 focus:ring-red-500 focus:border-red-500"
-                                                            : ""
+                                                        ? "border-red-500 border-2 bg-red-50 focus:ring-red-500 focus:border-red-500"
+                                                        : ""
                                                         }`}
                                                 />
                                                 {formData.country && (
@@ -481,8 +487,8 @@ export default function ContactPage() {
                                                 onBlur={() => handleBlur("mobile")}
                                                 placeholder={phoneConfig.code ? `Enter ${phoneConfig.digits} digits` : "Enter mobile number"}
                                                 className={`flex-1 transition-all ${errors.mobile
-                                                        ? "border-red-500 border-2 bg-red-50 focus:ring-red-500 focus:border-red-500"
-                                                        : ""
+                                                    ? "border-red-500 border-2 bg-red-50 focus:ring-red-500 focus:border-red-500"
+                                                    : ""
                                                     }`}
                                             />
                                         </div>
@@ -512,8 +518,8 @@ export default function ContactPage() {
                                             onBlur={() => handleBlur("message")}
                                             placeholder="How can we help you?"
                                             className={`w-full min-h-[120px] transition-all ${errors.message
-                                                    ? "border-red-500 border-2 bg-red-50 focus:ring-red-500 focus:border-red-500"
-                                                    : ""
+                                                ? "border-red-500 border-2 bg-red-50 focus:ring-red-500 focus:border-red-500"
+                                                : ""
                                                 }`}
                                         />
                                         {errors.message && (

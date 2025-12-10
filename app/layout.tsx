@@ -54,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geist.className} font-sans antialiased bg-white text-gray-900`}>
         {children}
         <GoogleAnalytics gaId="G-230FBSCTMJ" />
