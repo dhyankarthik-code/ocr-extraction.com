@@ -123,11 +123,16 @@ export async function POST(request: NextRequest) {
         let userEmail: string | null = null
         let userGoogleId: string | null = null
 
+        let userName: string | null = null
+        let userPicture: string | null = null
+
         if (sessionCookie) {
             try {
                 const session = JSON.parse(sessionCookie)
                 userEmail = session.email
                 userGoogleId = session.id.replace("google_", "")
+                userName = session.name || "User"
+                userPicture = session.picture || ""
             } catch (e) {
                 console.error("Session parse error", e)
             }
@@ -143,14 +148,23 @@ export async function POST(request: NextRequest) {
         const fileSizeMB = file.size / (1024 * 1024)
         const FILE_SIZE_LIMIT_MB = 10
 
-        // Check Quota for Logged In Users
-        if (userGoogleId) {
+        // Check Quota for Logged In Users + Lazy Creation
+        if (userGoogleId && userEmail) {
             try {
                 const { default: prisma } = await import("@/lib/db")
 
-                const user = await prisma.user.findUnique({
+                // Ensure user exists using upsert (Lazy Creation)
+                // This handles cases where auth callback failed to create the user
+                const user = await prisma.user.upsert({
                     where: { googleId: userGoogleId },
-                    select: { usagebytes: true }
+                    update: {}, // No update needed if exists
+                    create: {
+                        googleId: userGoogleId,
+                        email: userEmail,
+                        name: userName || "User",
+                        picture: userPicture,
+                        usagebytes: 0
+                    }
                 })
 
                 if (user) {
@@ -159,12 +173,14 @@ export async function POST(request: NextRequest) {
                     if (currentUsageMB + fileSizeMB > FILE_SIZE_LIMIT_MB) {
                         return NextResponse.json({
                             error: 'Quota exceeded',
-                            details: 'You have reached the 10MB lifetime upload limit.'
+                            details: `You have reached the 10MB lifetime upload limit. Used: ${currentUsageMB.toFixed(2)}MB`
                         }, { status: 403 });
                     }
                 }
             } catch (dbError) {
-                console.error("Quota check failed", dbError)
+                console.error("Quota/User Check Failed:", dbError)
+                // We don't block if DB fails, to allow usage, or we could block. 
+                // Given the issue, logging is key.
             }
         }
 
