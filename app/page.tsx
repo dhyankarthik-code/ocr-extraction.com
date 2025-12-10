@@ -8,7 +8,6 @@ import Footer from "@/components/footer"
 import { useSession } from "@/hooks/use-session"
 import TextType from "@/components/text-type"
 import ChatWidget from "@/components/chat-widget"
-import Antigravity from "@/components/ui/Antigravity"
 
 export default function Home() {
   const [uploading, setUploading] = useState(false)
@@ -261,25 +260,8 @@ export default function Home() {
       />
 
       {/* Main Content */}
-      <main className="relative flex-1 flex flex-col items-center justify-center p-6 md:p-8 overflow-hidden">
-        {/* Antigravity Animation Background */}
-        <div className="absolute inset-0 -z-10 opacity-50 pointer-events-none">
-          <Antigravity
-            count={200}
-            magnetRadius={12}
-            ringRadius={12}
-            waveSpeed={0.3}
-            waveAmplitude={1.5}
-            particleSize={2.5}
-            lerpSpeed={0.06}
-            color="#ef4444"
-            autoAnimate={true}
-            particleVariance={1.5}
-            rotationSpeed={0.2}
-          />
-        </div>
-
-        <div className="w-full max-w-2xl relative z-10">
+      <main className="flex-1 flex flex-col items-center justify-center p-6 md:p-8">
+        <div className="w-full max-w-2xl">
           <div className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 text-center text-balance min-h-[4rem] flex items-center justify-center">
             <TextType
               text={["Free OCR Extraction tool", "and Report Generation Tool", "Free OCR Extraction tool and Report Generation Tool"]}

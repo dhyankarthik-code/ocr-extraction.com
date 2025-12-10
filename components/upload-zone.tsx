@@ -146,8 +146,8 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
         )}
       </div>
 
-      {/* Quota Usage Bar (Only shown if data is loaded and non-zero usage, or if specific quota exists) */}
-      {quota && quota.used > 0 && (
+      {/* Quota Usage Bar (Shown for all logged-in users where quota data is loaded) */}
+      {quota && (
         <div className="w-full bg-gray-50 rounded-lg p-3 border border-gray-200 flex items-center gap-4 text-xs md:text-sm">
           <span className="text-gray-600 font-medium whitespace-nowrap">Usage Limit:</span>
           <div className="flex-1 space-y-1">
