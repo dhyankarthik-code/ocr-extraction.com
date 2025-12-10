@@ -1,10 +1,9 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback } from "react"
 import Navbar from "@/components/navbar"
 import UploadZone from "@/components/upload-zone"
 import AuthModal from "@/components/auth-modal"
-import ProfileModal from "@/components/profile-modal"
 import Footer from "@/components/footer"
 import { useSession } from "@/hooks/use-session"
 import TextType from "@/components/text-type"
@@ -16,17 +15,9 @@ export default function Home() {
   const [status, setStatus] = useState("")
   const [processingSteps, setProcessingSteps] = useState<string[]>([])
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [showProfileModal, setShowProfileModal] = useState(false)
   const [pendingFile, setPendingFile] = useState<File | null>(null)
   const [validationError, setValidationError] = useState<string | null>(null)
-  const { session, loading, logout } = useSession()
-
-  // Show profile modal for new users
-  useEffect(() => {
-    if (!loading && session?.isNewUser) {
-      setShowProfileModal(true)
-    }
-  }, [session, loading])
+  const { session, logout } = useSession()
 
   const handleUpload = async (file: File) => {
     if (file.size > 10 * 1024 * 1024) {
@@ -516,18 +507,6 @@ export default function Home() {
             } else {
               window.location.reload()
             }
-          }}
-        />
-      )}
-
-      {/* Profile Completion Modal for New Users */}
-      {showProfileModal && (
-        <ProfileModal
-          userName={session?.name}
-          onClose={() => setShowProfileModal(false)}
-          onComplete={() => {
-            setShowProfileModal(false)
-            window.location.reload()
           }}
         />
       )}
