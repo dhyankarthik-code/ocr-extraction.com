@@ -43,14 +43,14 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-[1002] bg-white border-b border-gray-100 shadow-sm h-16 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-      <div className="container mx-auto px-4 h-full flex items-center justify-between">
+      <div className="container mx-auto px-4 h-full flex items-center justify-between relative">
         {/* Logo */}
-        <Link href="/" className="text-[20px] font-bold text-red-500 hover:text-red-600 transition-colors">
+        <Link href="/" className="text-[20px] font-bold text-red-500 hover:text-red-600 transition-colors z-10">
           Infy Galaxy
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* Desktop Navigation - Centered */}
+        <div className="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -63,7 +63,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
         </div>
 
         {/* Auth Section (Desktop) */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4 z-10">
           {session ? (
             <div className="flex items-center gap-3">
               {session.picture && (

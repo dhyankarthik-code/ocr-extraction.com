@@ -20,7 +20,7 @@ export default function FAQPage() {
 
             <main className="flex-1 container mx-auto px-4 py-12 max-w-4xl">
                 <article className="prose prose-lg max-w-none bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">Frequently Asked Questions</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">Frequently Asked Questions (FAQs)</h1>
 
                     <div className="space-y-6">
                         {[

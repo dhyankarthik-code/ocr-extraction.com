@@ -1,0 +1,26 @@
+// Prisma Schema for Infy Galaxy User Management
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  googleId      String    @unique
+  email         String    @unique
+  name          String?
+  picture       String?
+  phone         String?   // Optional: collected via profile form
+  organization  String?   // Optional: collected via profile form
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime  @default(now())
+  
+  @@index([email])
+  @@index([googleId])
+}
