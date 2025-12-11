@@ -112,8 +112,9 @@ export default function ContactPage() {
     }, [countrySearch])
 
     const validateEmail = (email: string) => {
-        // RFC 5322 compliant email regex
-        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+        // RFC 5322 compliant email regex but with strict TLD requirement (must have at least one dot in domain part)
+        // Previous regex allow user@domain, now we enforce user@domain.com
+        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
         return email.length > 0 && email.length <= 254 && emailRegex.test(email)
     }
 

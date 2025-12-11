@@ -24,9 +24,9 @@ export default function PrivacyPage() {
 
                     <div className="prose prose-red max-w-none text-gray-700 space-y-8">
 
-                        {/* Limitation of Liability Section - Highlighted */}
-                        <section className="bg-red-50 p-6 rounded-xl border border-red-100">
-                            <h2 className="text-xl font-bold text-red-700 mt-0">Limitation of Liability</h2>
+                        {/* Limitation of Liability Section - Standard formatting (NOT red box) */}
+                        <section>
+                            <h2 className="text-xl font-bold text-gray-900 mt-0">Limitation of Liability</h2>
                             <p>
                                 The online tool is provided on an “as-is” and “as-available” basis. To the maximum extent permitted by applicable law, we make no warranties or representations, express or implied, regarding the accuracy, reliability, performance, or suitability of the tool or any output it generates.
                             </p>
@@ -104,8 +104,9 @@ export default function PrivacyPage() {
                             </p>
                         </section>
 
-                        <section>
-                            <h3 className="text-lg font-bold text-gray-900 mb-2">Disclaimer</h3>
+                        {/* General Disclaimer in RED BOX */}
+                        <section className="bg-red-50 p-6 rounded-xl border border-red-100">
+                            <h3 className="text-lg font-bold text-red-700 mb-2">Disclaimer</h3>
                             <p>
                                 This site and the materials and products in this site are provided "as is" and without warranties of any kind, whether express or implied. To the fullest extent permissible pursuant to applicable law, ocr-extraction.com disclaims all warranties, express or implied, including, but not limited to, implied warranties of merchantability and fitness for a particular purpose and non-infringement. ocr-extraction.com does not represent or warrant that the functions contained in the site will be uninterrupted or error-free, that defects will be corrected, or that this site or the server that makes the site available are free of viruses or other harmful components. ocr-extraction.com does not make any warranties or representations regarding the use of the materials in this site in terms of their correctness, accuracy, adequacy, usefulness, timeliness, reliability or otherwise. The above limitations may not apply to you.
                             </p>

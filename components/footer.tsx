@@ -88,12 +88,6 @@ export default function Footer() {
                                     Contact Us
                                 </Link>
                             </li>
-                            <li className="flex items-center gap-2">
-                                <Mail className="w-4 h-4 text-red-500" />
-                                <a href="mailto:admin@ocr-extraction.com" className="hover:text-red-500 transition-colors">
-                                    admin@ocr-extraction.com
-                                </a>
-                            </li>
                         </ul>
                     </div>
                 </div>
