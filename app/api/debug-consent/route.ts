@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
     try {
-        const cookieStore = cookies()
+        const cookieStore = await cookies()
         const sessionCookie = cookieStore.get("session")
         const sessionStatus = sessionCookie ? "Set" : "Missing"
 
