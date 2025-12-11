@@ -4,7 +4,14 @@ import { PrismaClient } from '@prisma/client'
 
 const connectionString = process.env.DATABASE_URL
 
-const pool = new Pool({ connectionString })
+// Supabase requires SSL with rejectUnauthorized: false
+const pool = new Pool({
+    connectionString,
+    ssl: {
+        rejectUnauthorized: false
+    }
+})
+
 const adapter = new PrismaPg(pool)
 
 const globalForPrisma = globalThis as unknown as {
@@ -13,10 +20,7 @@ const globalForPrisma = globalThis as unknown as {
 
 export const prisma =
     globalForPrisma.prisma ??
-    new PrismaClient({
-        adapter,
-        log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-    })
+    new PrismaClient({ adapter })
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
