@@ -58,12 +58,14 @@ export default function ConsentPopup({ session }: ConsentPopupProps) {
 
     return (
         <Dialog open={open} onOpenChange={() => { }}>
-            {/* Overlay with high z-index to cover navbar */}
+            {/* Overlay with high z-index and solid background to cover navbar */}
             <DialogContent
-                className="sm:max-w-md [&>button]:hidden z-[100] fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
+                className="sm:max-w-md [&>button]:hidden z-[9999] fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] bg-white shadow-2xl border-none outline-none ring-0"
                 onPointerDownOutside={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => e.preventDefault()}
             >
+                {/* Full screen white backdrop behind the dialog to ensure navbar is hidden */}
+                <div className="fixed inset-0 bg-white z-[-1]" />
                 <DialogHeader>
                     <div className="mx-auto w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
                         <ShieldCheck className="w-8 h-8 text-red-600" />

@@ -165,8 +165,15 @@ export default function ContactPage() {
 
         // Strict Validation: Allow only digits
         if (value && !/^\d*$/.test(value)) {
-            // Block non-digits
             return
+        }
+
+        // Check max length based on country
+        const phoneConfig = getPhoneConfig()
+        const maxDigits = phoneConfig.digits || 15 // default to 15 if unknown
+
+        if (value.length > maxDigits) {
+            return // Block typing more than allowed digits
         }
 
         setFormData(prev => ({ ...prev, mobile: value }))
