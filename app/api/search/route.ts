@@ -1,4 +1,4 @@
-import { OpenAI } from 'openai';
+import { Mistral } from '@mistralai/mistralai';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
@@ -60,43 +60,48 @@ export async function POST(request: NextRequest) {
         console.log('[Search API] Query:', query)
         console.log('[Search API] Text length:', text.length)
 
-        const apiKey = process.env.OPENAI_API_KEY;
-        if (!apiKey) {
-            console.log('[Search API] OpenAI API key not found')
+        const mistralKey = process.env.MISTRAL_API_KEY;
+        if (!mistralKey) {
+            console.log('[Search API] Mistral API key not found')
             return NextResponse.json(
-                { error: 'OpenAI API key not configured' },
+                { error: 'Mistral API key not configured' },
                 { status: 500 }
             );
         }
 
-        const openai = new OpenAI({ apiKey });
+        const client = new Mistral({ apiKey: mistralKey });
 
         // Split text into chunks
         console.log('[Search API] Chunking text...')
         const chunks = chunkText(text);
         console.log('[Search API] Created', chunks.length, 'chunks')
 
-        // Generate embeddings for query and all chunks
+        // Generate embeddings for query and all chunks using Mistral
         console.log('[Search API] Generating embeddings...')
-        const [queryEmbeddingResponse, ...chunkEmbeddingResponses] = await Promise.all([
-            openai.embeddings.create({
-                model: 'text-embedding-3-small',
-                input: query,
+
+        // Mistral batch embedding
+        // We need to embed the query AND the chunks.
+        // Let's do them in parallel or batch.
+
+        const [queryEmbeddingResponse, chunkEmbeddingsResponse] = await Promise.all([
+            client.embeddings.create({
+                model: 'mistral-embed',
+                inputs: [query],
             }),
-            ...chunks.map(chunk =>
-                openai.embeddings.create({
-                    model: 'text-embedding-3-small',
-                    input: chunk,
-                })
-            ),
+            client.embeddings.create({
+                model: 'mistral-embed',
+                inputs: chunks,
+            }),
         ]);
 
         console.log('[Search API] Embeddings generated successfully')
+
         const queryEmbedding = queryEmbeddingResponse.data[0].embedding;
+        const chunkEmbeddings = chunkEmbeddingsResponse.data.map(d => d.embedding);
 
         // Calculate similarities
         const results = chunks.map((chunk, index) => {
-            const chunkEmbedding = chunkEmbeddingResponses[index].data[0].embedding;
+            const chunkEmbedding = chunkEmbeddings[index];
             const similarity = cosineSimilarity(queryEmbedding, chunkEmbedding);
 
             return {

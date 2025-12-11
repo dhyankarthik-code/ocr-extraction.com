@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
+import { Mistral } from '@mistralai/mistralai';
 import { Resend } from 'resend'
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-})
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -38,8 +34,14 @@ export async function POST(request: NextRequest) {
             .map(m => `${m.role === 'user' ? 'Customer' : 'Bot'}: ${m.content}`)
             .join('\n')
 
-        const summaryResponse = await openai.chat.completions.create({
-            model: 'gpt-3.5-turbo',
+        const mistralKey = process.env.MISTRAL_API_KEY;
+        if (!mistralKey) {
+            throw new Error("Mistral API Key missing");
+        }
+        const client = new Mistral({ apiKey: mistralKey });
+
+        const summaryResponse = await client.chat.complete({
+            model: 'mistral-large-latest',
             messages: [
                 {
                     role: 'system',
@@ -51,10 +53,9 @@ export async function POST(request: NextRequest) {
                 }
             ],
             temperature: 0.3,
-            max_tokens: 150
         })
 
-        const summary = summaryResponse.choices[0]?.message?.content || 'No summary available.'
+        const summary = summaryResponse.choices?.[0]?.message?.content || 'No summary available.'
 
         // Update conversation with summary and end time
         await prisma.chatConversation.update({
