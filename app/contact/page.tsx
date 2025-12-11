@@ -585,13 +585,7 @@ export default function ContactPage() {
                         </Card>
                     )}
 
-                    {/* Email below form */}
-                    <div className="flex items-center justify-center gap-2 text-gray-600 mt-8">
-                        <Mail className="w-5 h-5 text-red-500" />
-                        <a href="mailto:admin@ocr-extraction.com" className="hover:text-red-500 hover:underline transition-colors font-medium">
-                            admin@ocr-extraction.com
-                        </a>
-                    </div>
+
                 </div>
             </main>
 
