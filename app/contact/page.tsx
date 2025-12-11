@@ -131,12 +131,18 @@ export default function ContactPage() {
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
+
+        // Strict Validation: Allow only letters and spaces
+        if (value && !/^[a-zA-Z\s]*$/.test(value)) {
+            // If invalid char is typed, don't update state (prevent typing)
+            // Or unblock typing but show error immediately. 
+            // User requested "not allowing spl characters", so blocking is better UX for strictness.
+            return
+        }
+
         setFormData(prev => ({ ...prev, name: value }))
 
-        // Real-time validation - show error immediately if invalid
-        if (hasInvalidNameChars(value)) {
-            setErrors(prev => ({ ...prev, name: "Name should contain only letters" }))
-        } else if (value.trim().length > 0 && value.trim().length < 2) {
+        if (value.trim().length > 0 && value.trim().length < 2) {
             setErrors(prev => ({ ...prev, name: "Name must be at least 2 characters" }))
         } else {
             setErrors(prev => ({ ...prev, name: "" }))
@@ -156,19 +162,23 @@ export default function ContactPage() {
 
     const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
-        setFormData(prev => ({ ...prev, mobile: value }))
 
-        // Real-time validation - show error immediately if invalid
-        if (hasInvalidMobileChars(value)) {
-            setErrors(prev => ({ ...prev, mobile: "Mobile number should contain only digits" }))
-        } else {
-            setErrors(prev => ({ ...prev, mobile: "" }))
+        // Strict Validation: Allow only digits
+        if (value && !/^\d*$/.test(value)) {
+            // Block non-digits
+            return
         }
+
+        setFormData(prev => ({ ...prev, mobile: value }))
+        setErrors(prev => ({ ...prev, mobile: "" }))
     }
 
     const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setFormData(prev => ({ ...prev, message: e.target.value }))
-        if (errors.message) setErrors(prev => ({ ...prev, message: "" }))
+        const value = e.target.value
+        if (value.length <= 200) {
+            setFormData(prev => ({ ...prev, message: value }))
+            if (errors.message) setErrors(prev => ({ ...prev, message: "" }))
+        }
     }
 
     const handleCountrySelect = (country: string) => {
@@ -515,7 +525,11 @@ export default function ContactPage() {
                                                 ? "border-red-500 border-2 bg-red-50 focus:ring-red-500 focus:border-red-500"
                                                 : ""
                                                 }`}
+                                            maxLength={200}
                                         />
+                                        <div className="text-xs text-gray-500 text-right mt-1">
+                                            {formData.message.length}/200
+                                        </div>
                                         {errors.message && (
                                             <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
                                                 <X className="w-3 h-3" />

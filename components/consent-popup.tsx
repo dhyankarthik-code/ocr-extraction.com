@@ -58,8 +58,12 @@ export default function ConsentPopup({ session }: ConsentPopupProps) {
 
     return (
         <Dialog open={open} onOpenChange={() => { }}>
-            {/* Prevent closing by clicking outside by passing empty onOpenChange and not exposing close button in content */}
-            <DialogContent className="sm:max-w-md [&>button]:hidden" onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+            {/* Overlay with high z-index to cover navbar */}
+            <DialogContent
+                className="sm:max-w-md [&>button]:hidden z-[100] fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
+                onPointerDownOutside={(e) => e.preventDefault()}
+                onEscapeKeyDown={(e) => e.preventDefault()}
+            >
                 <DialogHeader>
                     <div className="mx-auto w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
                         <ShieldCheck className="w-8 h-8 text-red-600" />
