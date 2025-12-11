@@ -186,6 +186,11 @@ export default function ChatWidget() {
         }
     }
 
+    // Only show chat widget for logged-in users
+    if (!session) {
+        return null
+    }
+
     return (
         <div ref={chatContainerRef} className="fixed bottom-6 right-6 z-[50] flex flex-col items-end">
             {/* Chat Window */}
