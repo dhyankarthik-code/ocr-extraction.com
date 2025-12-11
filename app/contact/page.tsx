@@ -204,6 +204,13 @@ export default function ContactPage() {
 
     const handleBlur = (field: string) => {
         setTouched(prev => ({ ...prev, [field]: true }))
+
+        // Validate on blur
+        if (field === 'email') {
+            if (formData.email && !validateEmail(formData.email)) {
+                setErrors(prev => ({ ...prev, email: "Please enter a valid email address" }))
+            }
+        }
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
