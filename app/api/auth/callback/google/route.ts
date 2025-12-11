@@ -46,6 +46,11 @@ export async function GET(request: NextRequest) {
 
     const googleUser = await userResponse.json()
 
+    // Get client IP and location
+    const { getClientIp, getLocationFromIp } = await import("@/lib/geolocation")
+    const clientIp = getClientIp(request)
+    const location = clientIp ? await getLocationFromIp(clientIp) : null
+
     // Upsert user in database (only if DATABASE_URL is configured)
     try {
       // Dynamic import to avoid build-time errors when DATABASE_URL is not set
@@ -55,6 +60,14 @@ export async function GET(request: NextRequest) {
         where: { googleId: googleUser.sub }
       })
 
+      const locationData = {
+        country: location?.country || null,
+        city: location?.city || null,
+        region: location?.region || null,
+        lastLoginIp: clientIp || null,
+        lastLoginAt: new Date()
+      }
+
       if (!existingUser) {
         await prisma.user.create({
           data: {
@@ -62,13 +75,18 @@ export async function GET(request: NextRequest) {
             email: googleUser.email,
             name: googleUser.name,
             picture: googleUser.picture,
-            usagebytes: 0
+            usagebytes: 0,
+            ...locationData
           }
         })
-        console.log("[Auth] Created new user:", googleUser.email)
+        console.log("[Auth] Created new user:", googleUser.email, "from", location?.country || "unknown")
       } else {
-        // Just verify user exists, no specific update needed for now
-        console.log("[Auth] User exists:", googleUser.email)
+        // Update location on every login
+        await prisma.user.update({
+          where: { googleId: googleUser.sub },
+          data: locationData
+        })
+        console.log("[Auth] Updated user location:", googleUser.email, "from", location?.country || "unknown")
       }
     } catch (dbError) {
       console.error("[Auth] Database error (non-fatal):", dbError)
