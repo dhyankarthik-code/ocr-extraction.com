@@ -280,7 +280,7 @@ export default function ContactPage() {
                     name: cleanedName,
                     email: formData.email,
                     country: formData.country,
-                    mobile: phoneConfig.code ? `${phoneConfig.code} ${cleanedMobile}` : cleanedMobile,
+                    mobile: phoneConfig.code ? `'${phoneConfig.code} ${cleanedMobile}` : `'${cleanedMobile}`,
                     message: formData.message
                 })
             })
