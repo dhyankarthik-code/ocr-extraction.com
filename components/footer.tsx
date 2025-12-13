@@ -33,11 +33,7 @@ export default function Footer() {
                                     About OCR
                                 </Link>
                             </li>
-                            <li>
-                                <Link href="/blog" className="hover:text-red-500 transition-colors">
-                                    Blog
-                                </Link>
-                            </li>
+
                         </ul>
                     </div>
 

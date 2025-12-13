@@ -23,7 +23,7 @@ interface BlogPost {
 
 async function getPosts(): Promise<BlogPost[]> {
     try {
-        const res = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/dhyanvrit.wordpress.com/posts')
+        const res = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/234686689/posts')
         const data = await res.json()
         return data.posts || []
     } catch (error) {
