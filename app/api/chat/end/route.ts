@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Mistral } from '@mistralai/mistralai';
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+
 
 export async function POST(request: NextRequest) {
     try {
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
         // Generate AI summary
         const chatLog = conversation.messages
-            .map(m => `${m.role === 'user' ? 'Customer' : 'Bot'}: ${m.content}`)
+            .map((m: any) => `${m.role === 'user' ? 'Customer' : 'Bot'}: ${m.content}`)
             .join('\n')
 
         const mistralKey = process.env.MISTRAL_API_KEY;
@@ -82,12 +82,20 @@ export async function POST(request: NextRequest) {
         <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; white-space: pre-wrap;">${chatLog}</pre>
         `
 
-        await resend.emails.send({
-            from: 'OCR Support <onboarding@resend.dev>',
-            to: 'dhyan@ocr-extraction.com',
-            subject: `[Support Chat] New Conversation - ${sessionId.slice(0, 8)}`,
-            html: emailHtml
-        })
+        // Send email via Resend
+        const resendApiKey = process.env.RESEND_API_KEY;
+        if (resendApiKey) {
+            const resend = new Resend(resendApiKey);
+            await resend.emails.send({
+                from: 'OCR Support <onboarding@resend.dev>',
+                to: 'dhyan@ocr-extraction.com',
+                subject: `[Support Chat] New Conversation - ${sessionId.slice(0, 8)}`,
+                html: emailHtml
+            })
+        } else {
+            console.warn('RESEND_API_KEY missing, skipping email.');
+        }
+
 
         // Mark as sent
         await prisma.chatConversation.update({
