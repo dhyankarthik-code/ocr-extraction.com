@@ -171,37 +171,15 @@ export async function POST(request: NextRequest) {
                     const currentUsageMB = (user.usagebytes || 0) / (1024 * 1024)
                     const userTimezone = user.timezone || 'UTC'
 
-                    // Check if usage needs to be reset (Daily reset at 00:00 User Time)
-                    const now = new Date()
-                    let todayString = now.toISOString().split('T')[0] // Default UTC
 
-                    try {
-                        // Get "today" in user's timezone
-                        todayString = new Date(now.toLocaleString('en-US', { timeZone: userTimezone })).toISOString().split('T')[0]
-                    } catch (e) {
-                        // Fallback to UTC if timezone is invalid
-                    }
+                    // Check if usage needs to be reset (Daily reset at 00:00 User Time) using shared logic
+                    const { checkAndResetUsage } = await import("@/lib/usage-limit")
 
-                    const lastUsageString = user.lastUsageDate ? user.lastUsageDate.toISOString().split('T')[0] : null
+                    // This updates the DB if needed and returns the correct usage
+                    const currentUsageBytes = await checkAndResetUsage(user as any, prisma as any)
 
-                    // If it's a new day for the user, reset quota
-                    if (lastUsageString !== todayString) {
-                        await prisma.user.update({
-                            where: { id: user.id },
-                            data: {
-                                usagebytes: 0,
-                                lastUsageDate: new Date() // Store as UTC, but logic compares string date
-                            }
-                        })
-                        // Reset locally for current check
-                        user.usagebytes = 0
-                    } else {
-                        // Same day, just update timestamp
-                        await prisma.user.update({
-                            where: { id: user.id },
-                            data: { lastUsageDate: new Date() }
-                        })
-                    }
+                    // Update user object locally for the check below
+                    user.usagebytes = currentUsageBytes
 
                     const updatedUsageMB = (user.usagebytes || 0) / (1024 * 1024)
 

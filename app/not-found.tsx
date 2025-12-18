@@ -4,6 +4,14 @@ import Link from 'next/link'
 import Navbar from '@/components/navbar'
 import Footer from '@/components/footer'
 
+
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+    title: "404 - Page Not Found",
+    description: "The page you are looking for does not exist."
+}
+
 export default function NotFound() {
     return (
         <div className="min-h-screen flex flex-col">
