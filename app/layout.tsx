@@ -11,12 +11,12 @@ const geist = Geist({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: {
-    default: "Most Accurate OCR to Text | Convert Image to Text | Free OCR Image Conversion",
-    template: "%s | Most Accurate OCR to Text"
+    default: "Free OCR to Text: #1 AI Image to Text Converter (100% Accuracy)",
+    template: "%s | Free OCR to Text Converter"
   },
-  description: "Use the most accurate AI-powered OCR to convert images to text instantly. Free online OCR image conversion with high accuracy for text extraction, reports, summaries, and document processing.",
-  keywords: ["OCR", "accurate OCR", "OCR to text", "image to text", "OCR image conversion", "free OCR", "online OCR", "convert image to text", "OCR image to text", "AI OCR", "best OCR", "OCR converter", "OCR image converter", "OCR to PDF", "OCR to Excel", "OCR report", "OCR summary"],
-  authors: [{ name: "Infy Galaxy" }],
+  description: "Convert images and PDFs to text instantly with 99%+ accuracy. Best Free Online OCR tool for students & professionals. Supports handwriting, tables, and multi-language extraction. No sign-up required.",
+  keywords: ["free ocr", "image to text", "pdf to text", "online ocr", "ai ocr", "extract text from image", "ocr to excel", "handwriting recognition", "best free ocr", "ocr unlimited", "text scanner online"],
+  authors: [{ name: "Infy Galaxy Team" }],
   creator: "Infy Galaxy",
   publisher: "Infy Galaxy",
   metadataBase: new URL('https://www.ocr-extraction.com'),
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "Most Accurate OCR to Text | Convert Image to Text",
-    description: "Free and highly accurate AI OCR for converting images to text, PDF, and Excel. Fast, secure, and easy online OCR conversion.",
+    title: "Free OCR to Text | Best AI Image to Text Converter",
+    description: "Convert images to text, PDF, and Excel for free. No limits, 100% accurate AI extraction. Try the best OCR tool online today.",
     type: 'website',
     url: 'https://www.ocr-extraction.com/',
     images: [
@@ -33,26 +33,34 @@ export const metadata: Metadata = {
         url: 'https://www.ocr-extraction.com/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Most Accurate OCR to Text',
+        alt: 'Free OCR Extraction Tool Interface',
       }
     ],
-    siteName: 'Most Accurate OCR to Text',
+    siteName: 'Free OCR Extraction',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Most Accurate OCR to Text",
-    description: "Convert images to text using the most accurate AI-powered OCR online. Fast and free OCR image conversion.",
+    title: "Best Free OCR: Image to Text Converter",
+    description: "Extract text from generic images, screenshots, and PDFs instantly. 100% Free & Accurate.",
     images: ['https://www.ocr-extraction.com/twitter-image.png'],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 }
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  maximumScale: 5,
   userScalable: true,
   themeColor: "#ffffff",
 }
