@@ -11,8 +11,8 @@ const geist = Geist({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: {
-    default: "Free OCR to Text: #1 AI Image to Text Converter (100% Accuracy)",
-    template: "%s | Free OCR to Text Converter"
+    default: "Most Accurate OCR to Text | Convert Image to Text | Free OCR Image Conversion",
+    template: "%s | Most Accurate OCR to Text"
   },
   description: "Convert images and PDFs to text instantly with 99%+ accuracy. Best Free Online OCR tool for students & professionals. Supports handwriting, tables, and multi-language extraction. No sign-up required.",
   keywords: ["free ocr", "image to text", "pdf to text", "online ocr", "ai ocr", "extract text from image", "ocr to excel", "handwriting recognition", "best free ocr", "ocr unlimited", "text scanner online"],
