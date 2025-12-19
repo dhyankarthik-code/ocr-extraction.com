@@ -1,9 +1,18 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
-  // In production, this would use NextAuth.js or similar
-  const redirectUri = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/auth/callback/google`
-  const clientId = process.env.GOOGLE_CLIENT_ID || "mock-client-id"
+  // Hardcoded fallbacks for Hostinger reliability
+  const fallbackClientId = "390623147349-v025fheeggrghrcm1cof08aul7qv4l37.apps.googleusercontent.com";
+  const fallbackRedirectUri = "https://www.ocr-extraction.com/api/auth/callback/google";
+
+  const redirectUri = process.env.NEXTAUTH_URL
+    ? `${process.env.NEXTAUTH_URL}/api/auth/callback/google`
+    : fallbackRedirectUri;
+
+  const clientId = process.env.GOOGLE_CLIENT_ID || fallbackClientId;
+
+  // Log for debugging (server-side only)
+  console.log(`[Auth] Using Client ID: ${clientId.substring(0, 10)}... (Env: ${!!process.env.GOOGLE_CLIENT_ID}, Fallback: ${!process.env.GOOGLE_CLIENT_ID})`);
 
   // Build Google OAuth URL
   const googleAuthUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth")
