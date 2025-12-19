@@ -1,41 +1,50 @@
 import { type NextRequest, NextResponse } from "next/server"
 
+// Production URL constant
+const PRODUCTION_URL = "https://www.ocr-extraction.com";
+
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const code = searchParams.get("code")
-  const error = searchParams.get("error")
+  const searchParams = request.nextUrl.searchParams;
+  const code = searchParams.get("code");
+  const error = searchParams.get("error");
 
-  // Hardcoded fallbacks (Split Base64 to bypass security scanners during deployment)
-  const _c1 = "MzkwNjIzMTQ3MzQ5LXYwMjVmaGVlZ2dyZ2hyY201Y29m";
-  const _c2 = "MDhhdWw3cXY0bDM3LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29t";
-  const _s1 = "R09DU1BYLXc4U0IwZ2NOZ2w4M";
-  const _s2 = "jRENEtRR1JZcEtZeVZiSUI=";
-
-  const fallbackClientId = Buffer.from(_c1 + _c2, 'base64').toString();
-  const fallbackClientSecret = Buffer.from(_s1 + _s2, 'base64').toString();
-  const fallbackBaseUrl = "https://www.ocr-extraction.com";
-
-  // Aggressively ignore invalid environment variables from Hostinger
-  const envUrl = process.env.NEXTAUTH_URL;
-  const isInvalidEnv = !envUrl || envUrl.includes("0.0.0.0") || envUrl.includes("127.0.0.1") || envUrl.includes("localhost");
-
-  const baseUrl = isInvalidEnv ? (fallbackBaseUrl || "https://www.ocr-extraction.com") : envUrl!;
-  const clientId = process.env.GOOGLE_CLIENT_ID || fallbackClientId;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET || fallbackClientSecret;
-
+  // Use build-time injected env vars (via next.config.mjs)
+  const isDev = process.env.NODE_ENV !== "production";
+  const baseUrl = isDev ? "http://localhost:3000" : PRODUCTION_URL;
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
   const callbackUrl = `${baseUrl}/api/auth/callback/google`;
 
-  console.log("[Auth] Callback received:", { code: code ? "Present" : "Missing", error })
+  console.log("[Auth] Callback received:", {
+    code: code ? "Present" : "Missing",
+    error,
+    clientIdPresent: !!clientId,
+    clientSecretPresent: !!clientSecret,
+    nodeEnv: process.env.NODE_ENV
+  });
+
+  // Validate OAuth config
+  if (!clientId || !clientSecret) {
+    console.error("[Auth] Missing OAuth credentials");
+    console.error("[Auth] GOOGLE_CLIENT_ID present:", !!clientId);
+    console.error("[Auth] GOOGLE_CLIENT_SECRET present:", !!clientSecret);
+    return NextResponse.redirect(new URL("/?error=config_error", baseUrl));
+  }
 
   if (error) {
-    return NextResponse.redirect(new URL(`/?error=${error}`, baseUrl))
+    console.error("[Auth] OAuth error from Google:", error);
+    return NextResponse.redirect(new URL(`/?error=${error}`, baseUrl));
   }
 
   if (!code) {
-    return NextResponse.redirect(new URL("/?error=no_code", baseUrl))
+    console.error("[Auth] No authorization code received");
+    return NextResponse.redirect(new URL("/?error=no_code", baseUrl));
   }
 
   try {
+    console.log("[Auth] Exchanging code for tokens...");
+    console.log("[Auth] Using redirect_uri:", callbackUrl);
+
     const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -46,49 +55,52 @@ export async function GET(request: NextRequest) {
         redirect_uri: callbackUrl,
         grant_type: "authorization_code",
       }).toString(),
-    })
+    });
 
     if (!tokenResponse.ok) {
-      console.error("[Auth] Token exchange failed:", await tokenResponse.text())
-      return NextResponse.redirect(new URL("/?error=token_exchange_failed", baseUrl))
+      const errorText = await tokenResponse.text();
+      console.error("[Auth] Token exchange failed:", errorText);
+      console.error("[Auth] Status:", tokenResponse.status);
+      return NextResponse.redirect(new URL("/?error=token_exchange_failed", baseUrl));
     }
 
-    const { access_token } = await tokenResponse.json()
+    const { access_token } = await tokenResponse.json();
+    console.log("[Auth] Token exchange successful");
 
     const userResponse = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
       headers: { Authorization: `Bearer ${access_token}` },
-    })
+    });
 
     if (!userResponse.ok) {
-      console.error("[Auth] User info fetch failed:", await userResponse.text())
-      return NextResponse.redirect(new URL("/?error=user_fetch_failed", baseUrl))
+      console.error("[Auth] User info fetch failed:", await userResponse.text());
+      return NextResponse.redirect(new URL("/?error=user_fetch_failed", baseUrl));
     }
 
-    const googleUser = await userResponse.json()
+    const googleUser = await userResponse.json();
+    console.log("[Auth] User authenticated:", googleUser.email);
 
     // Get client IP and location
-    const { getClientIp, getLocationFromIp } = await import("@/lib/geolocation")
-    const clientIp = getClientIp(request)
-    const location = clientIp ? await getLocationFromIp(clientIp) : null
+    const { getClientIp, getLocationFromIp } = await import("@/lib/geolocation");
+    const clientIp = getClientIp(request);
+    const location = clientIp ? await getLocationFromIp(clientIp) : null;
 
     // Upsert user in database (only if DATABASE_URL is configured)
     try {
-      // Dynamic import to avoid build-time errors when DATABASE_URL is not set
-      const { default: prisma } = await import("@/lib/db")
+      const { default: prisma } = await import("@/lib/db");
 
       const existingUser = await prisma.user.findUnique({
         where: { googleId: googleUser.sub }
-      })
+      });
 
       const locationData = {
         country: location?.country || null,
         city: location?.city || null,
         region: location?.region || null,
-        timezone: location?.timezone || null, // Store timezone
+        timezone: location?.timezone || null,
         lastLoginIp: clientIp || null,
         systemIp: clientIp || null,
         lastLoginAt: new Date()
-      }
+      };
 
       if (!existingUser) {
         await prisma.user.create({
@@ -98,21 +110,20 @@ export async function GET(request: NextRequest) {
             name: googleUser.name,
             picture: googleUser.picture,
             usagebytes: 0,
-            lastUsageDate: new Date(), // Initialize
+            lastUsageDate: new Date(),
             ...locationData
           }
-        })
-        console.log("[Auth] Created new user:", googleUser.email, "from", location?.country || "unknown")
+        });
+        console.log("[Auth] Created new user:", googleUser.email, "from", location?.country || "unknown");
       } else {
-        // Update location on every login
         await prisma.user.update({
           where: { googleId: googleUser.sub },
           data: locationData
-        })
-        console.log("[Auth] Updated user location:", googleUser.email, "from", location?.country || "unknown")
+        });
+        console.log("[Auth] Updated user location:", googleUser.email, "from", location?.country || "unknown");
       }
     } catch (dbError) {
-      console.error("[Auth] Database error (non-fatal):", dbError)
+      console.error("[Auth] Database error (non-fatal):", dbError);
       // Continue even if DB fails - session will still work
     }
 
@@ -123,20 +134,21 @@ export async function GET(request: NextRequest) {
       name: googleUser.name,
       picture: googleUser.picture,
       provider: "google",
-    }
+    };
 
     // Set session cookie and redirect to home
-    const response = NextResponse.redirect(new URL("/", baseUrl))
+    const response = NextResponse.redirect(new URL("/", baseUrl));
     response.cookies.set("session", JSON.stringify(user), {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true, // Always secure in production
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, // 7 days
-    })
+    });
 
-    return response
+    console.log("[Auth] Login successful, redirecting to:", baseUrl);
+    return response;
   } catch (error) {
-    console.error("[Auth] OAuth error:", error)
-    return NextResponse.redirect(new URL("/?error=oauth_error", baseUrl))
+    console.error("[Auth] OAuth error:", error);
+    return NextResponse.redirect(new URL("/?error=oauth_error", baseUrl));
   }
 }
