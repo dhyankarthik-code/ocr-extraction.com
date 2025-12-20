@@ -252,7 +252,7 @@ export default function ChatWidget() {
                                     >
                                         {msg.sender === 'bot' ? (
                                             <div
-                                                className="prose prose-sm max-w-none"
+                                                className="prose prose-sm max-w-none text-xs prose-p:my-1 prose-ul:my-1 prose-li:my-0.5"
                                                 dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }}
                                             />
                                         ) : (
