@@ -31,5 +31,6 @@ export const config = {
     // - _next/image (image optimization files)
     // - favicon.ico (favicon file)
     // - googled9dde47a61914ba1.html (Google verification)
-    matcher: ['/((?!api|_next/static|_next/image|favicon.ico|googled9dde47a61914ba1.html).*)'],
+    // - blog (WordPress on Hostinger)
+    matcher: ['/((?!api|_next/static|_next/image|favicon.ico|googled9dde47a61914ba1.html|blog).*)'],
 }
