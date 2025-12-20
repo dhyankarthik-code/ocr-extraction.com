@@ -194,7 +194,7 @@ export default function LocalResultPage() {
             }
 
             const pdfBytes = await pdfDoc.save()
-            const blob = new Blob([pdfBytes.buffer], { type: "application/pdf" })
+            const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" })
             saveAs(blob, `${fileName} AI Report.pdf`)
         }
         setReportFormatModal(false)
