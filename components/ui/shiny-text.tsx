@@ -1,9 +1,5 @@
 import React from 'react';
 
-// Define the animation styles directly in the component or use a CSS file
-// For simplicity and portability in this project structure, we'll inject the styles here
-// but normally these would go in globals.css
-
 interface ShinyTextProps {
   text: string;
   disabled?: boolean;
@@ -12,40 +8,46 @@ interface ShinyTextProps {
 }
 
 const ShinyText: React.FC<ShinyTextProps> = ({ text, disabled = false, speed = 5, className = '' }) => {
-  const animationDuration = `${speed}s`;
-
   return (
     <>
-      <style jsx>{`
-        .shiny-text {
-          color: transparent;
-          -webkit-text-fill-color: transparent;
-          background: linear-gradient(
-            120deg,
-            rgba(255, 255, 255, 0.5) 40%,
-            #ffffff 50%,
-            rgba(255, 255, 255, 0.5) 60%
-          );
-          background-size: 200% auto;
-          -webkit-background-clip: text;
-          background-clip: text;
-          display: inline-block;
-          animation: shine ${animationDuration} linear infinite;
-        }
-
-        @keyframes shine {
-          to {
+      <style jsx global>{`
+        @keyframes shiny-text-animation {
+          0% {
+            background-position: 0% center;
+          }
+          100% {
             background-position: 200% center;
           }
         }
-
-        .shiny-text.disabled {
+        
+        .shiny-text-effect {
+          background: linear-gradient(
+            110deg,
+            rgba(255, 255, 255, 0.4) 0%,
+            rgba(255, 255, 255, 0.4) 40%,
+            rgba(255, 255, 255, 1) 50%,
+            rgba(255, 255, 255, 0.4) 60%,
+            rgba(255, 255, 255, 0.4) 100%
+          );
+          background-size: 200% auto;
+          color: transparent;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: shiny-text-animation var(--animation-duration, 5s) linear infinite;
+        }
+        
+        .shiny-text-effect.disabled {
           animation: none;
+          background: white;
         }
       `}</style>
-      <div className={`shiny-text ${disabled ? 'disabled' : ''} ${className}`}>
+      <span
+        className={`shiny-text-effect ${disabled ? 'disabled' : ''} ${className}`}
+        style={{ '--animation-duration': `${speed}s` } as React.CSSProperties}
+      >
         {text}
-      </div>
+      </span>
     </>
   );
 };
