@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { Resend } from 'resend';
+import prisma from '@/lib/db';
 
 // Admin email list
 const ADMIN_EMAILS = [
@@ -11,8 +11,7 @@ const ADMIN_EMAILS = [
 ];
 
 export async function GET(request: NextRequest) {
-  // Initialize clients inside the function to avoid build-time errors
-  const prisma = new PrismaClient();
+  // Initialize Resend client
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   try {
@@ -252,7 +251,5 @@ export async function GET(request: NextRequest) {
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
