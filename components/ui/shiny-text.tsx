@@ -18,12 +18,13 @@ const ShinyText: React.FC<ShinyTextProps> = ({ text, disabled = false, speed = 5
     <>
       <style jsx>{`
         .shiny-text {
-          color: rgba(255, 255, 255, 0.6); /* Semi-transparent white for base text */
+          color: transparent;
+          -webkit-text-fill-color: transparent;
           background: linear-gradient(
             120deg,
-            rgba(255, 255, 255, 0) 40%,
-            rgba(255, 255, 255, 1) 50%,
-            rgba(255, 255, 255, 0) 60%
+            rgba(255, 255, 255, 0.5) 40%,
+            #ffffff 50%,
+            rgba(255, 255, 255, 0.5) 60%
           );
           background-size: 200% auto;
           -webkit-background-clip: text;
