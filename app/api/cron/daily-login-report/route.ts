@@ -3,13 +3,13 @@ import prisma from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify the request is from Zapier or Vercel Cron
+    // Verify the request is from Vercel Cron
     const authHeader = request.headers.get('authorization');
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Calculate 24-hour window from execution time
+    // Calculate 24-hour window
     const now = new Date();
     const startTime = new Date(now);
     startTime.setDate(startTime.getDate() - 1);
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Format for Zapier consumption
+    // Format for Zapier
     const formattedLogins = loginDetails.map(user => ({
       name: user.name || 'Unknown',
       email: user.email,
@@ -59,13 +59,9 @@ export async function GET(request: NextRequest) {
       }) || 'N/A',
     }));
 
-    // Return JSON for Zapier to consume
-    return NextResponse.json({
-      success: true,
+    const reportData = {
       totalLogins,
       period: {
-        start: startTime.toISOString(),
-        end: now.toISOString(),
         startIST: startTime.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
         endIST: now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
       },
@@ -76,6 +72,25 @@ export async function GET(request: NextRequest) {
         'dhyan@ocr-extraction.com',
         'gajashree@ocr-extraction.com',
       ],
+    };
+
+    // Send to Zapier webhook
+    const zapierWebhookUrl = process.env.ZAPIER_WEBHOOK_URL;
+    if (zapierWebhookUrl) {
+      await fetch(zapierWebhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reportData),
+      });
+    }
+
+    // Return success
+    return NextResponse.json({
+      success: true,
+      message: 'Report sent to Zapier',
+      ...reportData,
     });
 
   } catch (error) {
