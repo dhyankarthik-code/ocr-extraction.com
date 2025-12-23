@@ -24,6 +24,38 @@ export default async function BlogPage() {
                     </p>
                 </div>
 
+                {/* Promo Banner */}
+                <div className="mb-16">
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-600 via-red-500 to-red-700 p-8 md:p-10 shadow-2xl border border-white/10 group">
+                        {/* Glassmorphism/Decorative elements */}
+                        <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-white/10 rounded-full blur-3xl transition-transform duration-1000 group-hover:scale-110" />
+                        <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-48 h-48 bg-black/5 rounded-full blur-2xl" />
+
+                        <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
+                            <div className="text-center md:text-left space-y-3">
+                                <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs font-bold uppercase tracking-wider border border-white/20">
+                                    AI-Powered Tool
+                                </span>
+                                <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight">
+                                    Transform Documents <span className="text-red-100 italic">instantly</span>
+                                </h2>
+                                <p className="text-white/90 text-sm md:text-lg max-w-xl font-medium">
+                                    Convert your images and PDFs into editable text with 99.9% accuracy. No registration required.
+                                </p>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-4 items-center">
+                                <Link href="/">
+                                    <Button size="lg" className="bg-white text-red-600 hover:bg-gray-50 font-bold px-8 py-6 text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all hover:scale-105 active:scale-95 group/btn">
+                                        Try Free OCR
+                                        <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover/btn:translate-x-1" />
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {posts.map((post) => {
                         // Extract featured image or use fallback

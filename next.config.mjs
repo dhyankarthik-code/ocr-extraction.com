@@ -59,6 +59,24 @@ const nextConfig = {
       }
     ]
   },
+  async redirects() {
+    return [
+      // Add your 301 redirects here after checking Google Search Console
+      // Example format:
+      // {
+      //   source: '/old-blog-post-url',
+      //   destination: '/blog/new-blog-post-url',
+      //   permanent: true, // 301 redirect
+      // },
+
+      // Common old WordPress patterns (if applicable)
+      // {
+      //   source: '/blog/:year/:month/:day/:slug',
+      //   destination: '/blog/:slug',
+      //   permanent: true,
+      // },
+    ]
+  },
 }
 
 export default nextConfig
