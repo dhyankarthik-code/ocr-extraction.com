@@ -37,10 +37,10 @@ export default async function BlogPage() {
                                     AI-Powered Tool
                                 </span>
                                 <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight">
-                                    Transform Documents <span className="text-red-100 italic">instantly</span>
+                                    AI technologies
                                 </h2>
                                 <p className="text-white/90 text-sm md:text-lg max-w-xl font-medium">
-                                    Convert your images and PDFs into editable text with 99.9% accuracy. No registration required.
+                                    Shaping AI tools
                                 </p>
                             </div>
 
@@ -77,25 +77,12 @@ export default async function BlogPage() {
                                 key={post.id}
                                 className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col overflow-hidden group"
                             >
-                                {/* Image Container */}
-                                <Link href={`/blog/${post.slug}`} className="relative h-56 overflow-hidden bg-gray-100">
-                                    {featuredMedia ? (
-                                        <img
-                                            src={imageUrl}
-                                            alt={featuredMedia.alt_text || post.title.rendered}
-                                            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
-                                            <span className="text-4xl opacity-20 font-bold">BLOG</span>
-                                        </div>
-                                    )}
-                                </Link>
+
 
                                 <div className="p-6 flex-1 flex flex-col">
                                     {/* Meta */}
                                     <div className="flex items-center gap-4 text-xs font-medium text-gray-500 mb-4">
-                                        <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full">
+                                        <span className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full text-blue-700">
                                             <Calendar className="w-3 h-3" />
                                             {date}
                                         </span>
