@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import prisma from '@/lib/db';
 
-// Admin email list
+// Admin email list for daily login reports
 const ADMIN_EMAILS = [
   'admin@ocr-extraction.com',
   'karthi@ocr-extraction.com',
