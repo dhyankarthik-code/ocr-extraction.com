@@ -25,7 +25,7 @@ const ShinyText: React.FC<ShinyTextProps> = ({ text, disabled = false, speed = 5
             rgba(255, 255, 255, 1) 50%,
             rgba(255, 255, 255, 0) 60%
           );
-          background-size: 200% 100%;
+          background-size: 200% auto;
           -webkit-background-clip: text;
           background-clip: text;
           display: inline-block;
@@ -33,11 +33,8 @@ const ShinyText: React.FC<ShinyTextProps> = ({ text, disabled = false, speed = 5
         }
 
         @keyframes shine {
-          0% {
-            background-position: 100%;
-          }
-          100% {
-            background-position: -100%;
+          to {
+            background-position: 200% center;
           }
         }
 
