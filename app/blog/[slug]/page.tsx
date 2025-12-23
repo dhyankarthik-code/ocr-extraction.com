@@ -98,11 +98,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 />
 
                 {/* Original Source Link */}
-                <div className="mt-12 pt-8 border-t border-gray-100 text-center">
-                    <p className="text-gray-500 italic">
-                        Originally published on <a href={post.link} target="_blank" rel="nofollow noopener" className="text-gray-700 hover:underline">our external blog</a>.
-                    </p>
-                </div>
+
             </article>
         </div>
     );

@@ -5,33 +5,31 @@ import React from 'react';
 // but normally these would go in globals.css
 
 interface ShinyTextProps {
-    text: string;
-    disabled?: boolean;
-    speed?: number;
-    className?: string;
+  text: string;
+  disabled?: boolean;
+  speed?: number;
+  className?: string;
 }
 
 const ShinyText: React.FC<ShinyTextProps> = ({ text, disabled = false, speed = 5, className = '' }) => {
-    const animationDuration = `${speed}s`;
+  const animationDuration = `${speed}s`;
 
-    return (
-        <>
-            <style jsx>{`
+  return (
+    <>
+      <style jsx>{`
         .shiny-text {
-          color: #ffffff; /* Default readable color before shine */
+          color: rgba(255, 255, 255, 0.6); /* Semi-transparent white for base text */
           background: linear-gradient(
             120deg,
-            rgba(255, 255, 255, 0.8) 40%,
+            rgba(255, 255, 255, 0) 40%,
             rgba(255, 255, 255, 1) 50%,
-            rgba(255, 255, 255, 0.8) 60%
+            rgba(255, 255, 255, 0) 60%
           );
           background-size: 200% 100%;
           -webkit-background-clip: text;
           background-clip: text;
           display: inline-block;
           animation: shine ${animationDuration} linear infinite;
-          /* Ensure text is visible even if background-clip fails or during load */
-          text-shadow: 0 0 10px rgba(255,255,255,0.1); 
         }
 
         @keyframes shine {
@@ -47,11 +45,11 @@ const ShinyText: React.FC<ShinyTextProps> = ({ text, disabled = false, speed = 5
           animation: none;
         }
       `}</style>
-            <div className={`shiny-text ${disabled ? 'disabled' : ''} ${className}`}>
-                {text}
-            </div>
-        </>
-    );
+      <div className={`shiny-text ${disabled ? 'disabled' : ''} ${className}`}>
+        {text}
+      </div>
+    </>
+  );
 };
 
 export default ShinyText;
