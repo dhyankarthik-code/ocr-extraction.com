@@ -17,6 +17,14 @@ import AuthModal from "@/components/auth-modal"
 import DocumentChat from "@/components/document-chat"
 import Footer from "@/components/footer"
 
+export const metadata = {
+    title: 'OCR Analysis Results',
+    robots: {
+        index: false,
+        follow: false,
+    },
+}
+
 export default function LocalResultPage() {
     const router = useRouter()
     const { session, logout } = useSession()
@@ -337,16 +345,19 @@ export default function LocalResultPage() {
                     >
                         <Upload className="w-4 h-4" /> Upload More Files
                     </Button>
-                    <div className="flex gap-2">
-                        <Button variant="outline" onClick={handleDownloadTxt}>
-                            <FileText className="w-4 h-4 mr-2" /> TXT
-                        </Button>
-                        <Button variant="outline" onClick={handleDownloadDocx}>
-                            <FileText className="w-4 h-4 mr-2" /> Word
-                        </Button>
-                        <Button variant="outline" onClick={handleDownloadPdf}>
-                            <FileText className="w-4 h-4 mr-2" /> PDF
-                        </Button>
+                    <div className="flex flex-col items-end gap-2">
+                        <span className="text-sm font-semibold text-gray-700">Download the extracted data in:</span>
+                        <div className="flex gap-2">
+                            <Button className="bg-red-600 hover:bg-red-700 text-white border-none" variant="outline" onClick={handleDownloadTxt}>
+                                <FileText className="w-4 h-4 mr-2" /> TXT
+                            </Button>
+                            <Button className="bg-red-600 hover:bg-red-700 text-white border-none" variant="outline" onClick={handleDownloadDocx}>
+                                <FileText className="w-4 h-4 mr-2" /> Word
+                            </Button>
+                            <Button className="bg-red-600 hover:bg-red-700 text-white border-none" variant="outline" onClick={handleDownloadPdf}>
+                                <FileText className="w-4 h-4 mr-2" /> PDF
+                            </Button>
+                        </div>
                     </div>
                 </div>
 

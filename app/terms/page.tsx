@@ -6,6 +6,11 @@ import { useSession } from "@/hooks/use-session"
 import AuthModal from "@/components/auth-modal"
 import { useState } from "react"
 
+export const metadata = {
+    title: 'Terms and Conditions | Infy Galaxy - OCR Extraction',
+    description: 'Read the Terms and Conditions for using Infy Galaxy OCR services. Understand your rights, obligations, and our usage policies.',
+}
+
 export default function TermsPage() {
     const { session, logout } = useSession()
     const [showAuthModal, setShowAuthModal] = useState(false)

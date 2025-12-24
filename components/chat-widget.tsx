@@ -204,7 +204,7 @@ export default function ChatWidget() {
         <div ref={chatContainerRef} className="fixed bottom-6 right-6 z-[50] flex flex-col items-end">
             {/* Chat Window */}
             {isOpen && (
-                <div className="mb-4 w-[350px] md:w-[380px] h-[500px] bg-white rounded-2xl shadow-xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-200">
+                <div className="mb-4 w-[350px] md:w-[380px] h-[500px] max-h-[80vh] bg-white rounded-2xl shadow-xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-200">
                     {/* Header */}
                     <div className="bg-red-600 p-4 flex items-center justify-between text-white">
                         <div className="flex items-center gap-3">
@@ -245,14 +245,14 @@ export default function ChatWidget() {
                                     className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                                 >
                                     <div
-                                        className={`max-w-[80%] p-3 rounded-2xl text-xs leading-relaxed shadow-sm ${msg.sender === 'user'
+                                        className={`max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.sender === 'user'
                                             ? 'bg-red-600 text-white rounded-tr-none'
                                             : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none font-sans'
                                             }`}
                                     >
                                         {msg.sender === 'bot' ? (
                                             <div
-                                                className="prose prose-sm max-w-none text-xs prose-p:my-1 prose-ul:my-1 prose-li:my-0.5"
+                                                className="prose prose-sm max-w-none text-sm prose-p:my-1 prose-ul:my-1 prose-li:my-0.5"
                                                 dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }}
                                             />
                                         ) : (
@@ -273,7 +273,7 @@ export default function ChatWidget() {
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={handleKeyPress}
                             placeholder="Type your message..."
-                            className="flex-1 px-4 py-2 border border-gray-200 rounded-full focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-xs"
+                            className="flex-1 px-4 py-2 border border-gray-200 rounded-full focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm"
                         />
                         <button
                             onClick={handleSendMessage}

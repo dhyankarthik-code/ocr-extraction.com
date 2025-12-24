@@ -6,6 +6,11 @@ import { useSession } from "@/hooks/use-session"
 import { useState } from "react"
 import AuthModal from "@/components/auth-modal"
 
+export const metadata = {
+    title: 'About Infy Galaxy | Leading AI OCR Solutions',
+    description: 'Learn about Infy Galaxy, the team behind the world\'s most accurate free OCR tool. We specialize in AI, automation, and digital productivity solutions.',
+}
+
 export default function AboutPage() {
     const { session, logout } = useSession()
     const [showAuthModal, setShowAuthModal] = useState(false)

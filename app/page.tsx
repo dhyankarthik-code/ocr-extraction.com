@@ -265,20 +265,10 @@ export default function Home() {
         <div className="w-full max-w-2xl">
           <div className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 text-center text-balance min-h-[4rem] flex items-center justify-center">
             {/* SEO H1 (Visually Hidden but accessible to crawlers) */}
-            <h1 className="sr-only">
-              Free OCR to Text - Convert Image and PDF to Text with 100% Accuracy
+            {/* SEO H1 (Visually Hidden but accessible to crawlers) */}
+            <h1 className="text-gray-900 text-center">
+              Free OCR Extraction tool and Report Generation Tool
             </h1>
-            <TextType
-              text={["Free OCR Extraction tool", "and Report Generation Tool", "Free OCR Extraction tool and Report Generation Tool"]}
-              typingSpeed={50}
-              pauseDuration={1500}
-              showCursor={true}
-              cursorCharacter="|"
-              loop={false}
-              onSentenceComplete={(sentence, index) => {
-                // Keep the final sentence
-              }}
-            />
           </div>
 
 
@@ -319,8 +309,7 @@ export default function Home() {
               Welcome to <span className="text-red-500">OCR-Extraction.com</span>
             </h2>
             <div className="mt-8 text-center text-sm text-gray-500">
-              <p>© {new Date().getFullYear()} Free OCR Tool. All rights reserved.</p>
-              <p className="text-xs mt-2 opacity-50">v2.0.2 (Debug: Static Build)</p>
+              {/* <p>© {new Date().getFullYear()} Free OCR Tool. All rights reserved.</p> */}
             </div>
             <p className="text-xl md:text-2xl font-semibold text-gray-700 mb-6">
               The World's "Most Accurate OCR" Tool for Free

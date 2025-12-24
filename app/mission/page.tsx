@@ -6,6 +6,11 @@ import { useSession } from "@/hooks/use-session"
 import { useState } from "react"
 import AuthModal from "@/components/auth-modal"
 
+export const metadata = {
+    title: 'Our Mission | Making AI OCR Accessible to Everyone',
+    description: 'Our mission is to provide free, high-accuracy OCR tools to students, professionals, and businesses worldwide without hidden costs.',
+}
+
 export default function MissionPage() {
     const { session, logout } = useSession()
     const [showAuthModal, setShowAuthModal] = useState(false)

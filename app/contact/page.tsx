@@ -213,6 +213,11 @@ const COUNTRY_PHONE_CODES: { [key: string]: { code: string, digits: number } } =
 
 const COUNTRIES = Object.keys(COUNTRY_PHONE_CODES).sort()
 
+export const metadata = {
+    title: 'Contact Us | Support & Inquiries - OCR Extraction',
+    description: 'Get in touch with the Infy Galaxy team. We are here to help with any questions about our free OCR tool or API services.',
+}
+
 export default function ContactPage() {
     const { session, logout } = useSession()
     const [showAuthModal, setShowAuthModal] = useState(false)

@@ -6,6 +6,11 @@ import { useSession } from "@/hooks/use-session"
 import AuthModal from "@/components/auth-modal"
 import { useState } from "react"
 
+export const metadata = {
+    title: 'Privacy Policy | Data Protection & Security - Infy Galaxy',
+    description: 'Your privacy is our priority. Learn how Infy Galaxy collects, uses, and protects your data while using our free OCR tools.',
+}
+
 export default function PrivacyPage() {
     const { session, logout } = useSession()
     const [showAuthModal, setShowAuthModal] = useState(false)

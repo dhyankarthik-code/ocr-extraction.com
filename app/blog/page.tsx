@@ -20,7 +20,7 @@ export default async function BlogPage() {
                         Latest Updates & Insights
                     </h1>
                     <p className="text-xl text-gray-600 leading-relaxed">
-                        Discover articles about OCR technology, digital transformation, and how to get the most out of your documents.
+                        Discover Blogs about OCR and AI technologies, AI tools and how to leverage them.
                     </p>
                 </div>
 
@@ -88,6 +88,6 @@ export default async function BlogPage() {
                     })}
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

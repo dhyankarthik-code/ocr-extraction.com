@@ -6,6 +6,11 @@ import { useSession } from "@/hooks/use-session"
 import { useState } from "react"
 import AuthModal from "@/components/auth-modal"
 
+export const metadata = {
+    title: 'Company Profile - Infy Galaxy | AI & Automation Experts',
+    description: 'Infy Galaxy is a global technology company specializing in AI, OCR, and intelligent automation. Read our company profile and vision.',
+}
+
 export default function CompanyProfilePage() {
     const { session, logout } = useSession()
     const [showAuthModal, setShowAuthModal] = useState(false)
