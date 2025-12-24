@@ -331,23 +331,23 @@ export default function LocalResultPage() {
             />
 
             <main className="flex-1 container mx-auto px-4 py-8">
-                <div className="mb-6 flex items-center justify-between">
+                <div className="mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
                     <Button
                         onClick={() => router.push("/")}
-                        className="gap-2 bg-red-600 hover:bg-red-700 text-white transition-all duration-300 hover:shadow-lg hover:shadow-red-500/50 hover:scale-[1.02]"
+                        className="w-full md:w-auto gap-2 bg-red-600 hover:bg-red-700 text-white transition-all duration-300 hover:shadow-lg hover:shadow-red-500/50 hover:scale-[1.02]"
                     >
                         <Upload className="w-4 h-4" /> Upload More Files
                     </Button>
-                    <div className="flex flex-col items-end gap-2">
+                    <div className="flex flex-col items-center md:items-end gap-2 w-full md:w-auto">
                         <span className="text-sm font-semibold text-gray-700">Download the extracted data in:</span>
-                        <div className="flex gap-2">
-                            <Button className="bg-red-600 hover:bg-red-700 text-white border-none" variant="outline" onClick={handleDownloadTxt}>
+                        <div className="flex gap-2 flex-wrap justify-center md:justify-end w-full">
+                            <Button className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white border-none min-w-[80px]" variant="outline" onClick={handleDownloadTxt}>
                                 <FileText className="w-4 h-4 mr-2" /> TXT
                             </Button>
-                            <Button className="bg-red-600 hover:bg-red-700 text-white border-none" variant="outline" onClick={handleDownloadDocx}>
+                            <Button className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white border-none min-w-[80px]" variant="outline" onClick={handleDownloadDocx}>
                                 <FileText className="w-4 h-4 mr-2" /> Word
                             </Button>
-                            <Button className="bg-red-600 hover:bg-red-700 text-white border-none" variant="outline" onClick={handleDownloadPdf}>
+                            <Button className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white border-none min-w-[80px]" variant="outline" onClick={handleDownloadPdf}>
                                 <FileText className="w-4 h-4 mr-2" /> PDF
                             </Button>
                         </div>
