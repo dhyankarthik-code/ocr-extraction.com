@@ -273,6 +273,86 @@ export async function POST(request: NextRequest) {
         // Check if PDF
         const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 
+        // Check if Excel
+        const isExcel = file.name.match(/\.xls(x)?$/i) ||
+            file.type.includes('excel') ||
+            file.type.includes('spreadsheet');
+
+        if (isExcel) {
+            console.log('📊 Excel file detected, parsing directly...');
+            try {
+                const { read, utils } = await import('xlsx');
+                const wb = read(buffer, { type: 'buffer' });
+
+                let extractedText = "";
+                const pageResults: any[] = [];
+
+                wb.SheetNames.forEach((sheetName, index) => {
+                    const ws = wb.Sheets[sheetName];
+                    // Convert sheet to CSV (text)
+                    const sheetText = utils.sheet_to_csv(ws);
+
+                    if (sheetText && sheetText.trim().length > 0) {
+                        extractedText += `--- Sheet: ${sheetName} ---\n${sheetText}\n\n`;
+                        pageResults.push({
+                            pageNumber: index + 1,
+                            text: sheetText,
+                            rawText: sheetText,
+                            characters: sheetText.length,
+                            warnings: [],
+                            method: 'excel_parser'
+                        })
+                    }
+                });
+
+                if (extractedText.length === 0) {
+                    throw new Error("No text found in Excel file");
+                }
+
+                // Track Usage for Excel
+                if (userGoogleId) {
+                    try {
+                        const { default: prisma } = await import("@/lib/db")
+                        await prisma.user.update({
+                            where: { googleId: userGoogleId },
+                            data: { usagebytes: { increment: file.size } }
+                        })
+                    } catch (e) { console.error("Failed to update usage stats", e) }
+                } else {
+                    try {
+                        const { default: prisma } = await import("@/lib/db")
+                        const visitor = await prisma.visitor.findFirst({
+                            where: { ipAddress: ipAddress },
+                            orderBy: { createdAt: 'desc' }
+                        })
+                        if (visitor) {
+                            await prisma.visitor.update({
+                                where: { id: visitor.id },
+                                data: {
+                                    usageBytes: { increment: file.size },
+                                    lastUsageDate: new Date()
+                                }
+                            })
+                        }
+                    } catch (e) { console.error("Failed to update visitor usage stats", e) }
+                }
+
+                return NextResponse.json({
+                    success: true,
+                    isPDF: true, // We treat it like a multi-page PDF for frontend compatibility
+                    pages: pageResults,
+                    totalPages: pageResults.length
+                });
+
+            } catch (excelError: any) {
+                logError(excelError, 'Excel Processing');
+                return NextResponse.json({
+                    error: 'Failed to process Excel file',
+                    details: excelError.message
+                }, { status: 500 });
+            }
+        }
+
         if (isPDF) {
             console.log('📄 PDF detected, sending directly to Mistral OCR...');
 
