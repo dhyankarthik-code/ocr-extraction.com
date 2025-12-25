@@ -24,11 +24,11 @@ export async function GET(request: NextRequest) {
                     id: true,
                     timezone: true,
                     lastUsageDate: true,
-                    usagebytes: true
+                    usageMB: true
                 }
             })
 
-            let currentUsage = user?.usagebytes || 0
+            let currentUsage = user?.usageMB || 0
 
             if (user) {
                 // Check if we need to reset stats for today
@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
             }
 
             return NextResponse.json({
-                usagebytes: currentUsage,
-                limit: 10 * 1024 * 1024 // 10MB
+                usageMB: currentUsage,
+                limit: 10 // 10MB
             })
         } catch (e) {
             console.error("User usage fetch error", e)
@@ -56,11 +56,11 @@ export async function GET(request: NextRequest) {
                 id: true,
                 timezone: true,
                 lastUsageDate: true,
-                usageBytes: true
+                usageMB: true
             }
         })
 
-        let currentUsage = visitor?.usageBytes || 0
+        let currentUsage = visitor?.usageMB || 0
 
         if (visitor) {
             // Adapt visitor to User interface for checkAndResetUsage
@@ -68,17 +68,17 @@ export async function GET(request: NextRequest) {
                 id: visitor.id,
                 timezone: visitor.timezone,
                 lastUsageDate: visitor.lastUsageDate,
-                usagebytes: visitor.usageBytes || 0
+                usageMB: visitor.usageMB || 0
             }
             currentUsage = await checkAndResetUsage(visitorAsUser, prisma as any, 'visitor')
         }
 
         return NextResponse.json({
-            usagebytes: currentUsage,
-            limit: 10 * 1024 * 1024 // 10MB
+            usageMB: currentUsage,
+            limit: 10 // 10MB
         })
     } catch (e) {
         console.error("Visitor usage fetch error", e)
-        return NextResponse.json({ usagebytes: 0, limit: 10 * 1024 * 1024 }, { status: 500 })
+        return NextResponse.json({ usageMB: 0, limit: 10 }, { status: 500 })
     }
 }

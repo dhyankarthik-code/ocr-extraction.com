@@ -1,14 +1,7 @@
 "use client"
 
 import { useState, useRef, useMemo } from "react"
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { useSession } from "@/hooks/use-session"
-import AuthModal from "@/components/auth-modal"
+
 import ReCAPTCHA from "react-google-recaptcha"
 import { Loader2, CheckCircle2, Mail, User, Globe, Phone, MessageSquare, Search, X } from "lucide-react"
 
@@ -215,8 +208,6 @@ const COUNTRIES = Object.keys(COUNTRY_PHONE_CODES).sort()
 
 
 export default function ContactPage() {
-    const { session, logout } = useSession()
-    const [showAuthModal, setShowAuthModal] = useState(false)
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -234,7 +225,7 @@ export default function ContactPage() {
     const recaptchaRef = useRef<ReCAPTCHA>(null)
     const countryInputRef = useRef<HTMLInputElement>(null)
 
-    // Filter countries based on search
+    // ... Filter countries based on search ...
     const filteredCountries = useMemo(() => {
         if (!countrySearch) return COUNTRIES
         return COUNTRIES.filter(country =>
@@ -243,8 +234,6 @@ export default function ContactPage() {
     }, [countrySearch])
 
     const validateEmail = (email: string) => {
-        // RFC 5322 compliant email regex but with strict TLD requirement (must have at least one dot in domain part)
-        // Previous regex allow user@domain, now we enforce user@domain.com
         const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
         return email.length > 0 && email.length <= 254 && emailRegex.test(email)
     }
@@ -253,28 +242,20 @@ export default function ContactPage() {
         return COUNTRY_PHONE_CODES[formData.country] || { code: "", digits: 10 }
     }
 
-    // Real-time validation - check if input contains invalid characters
     const hasInvalidNameChars = (value: string) => {
-        return /[0-9]/.test(value) // Returns true if contains numbers
+        return /[0-9]/.test(value)
     }
 
     const hasInvalidMobileChars = (value: string) => {
-        return /[a-zA-Z]/.test(value) // Returns true if contains letters
+        return /[a-zA-Z]/.test(value)
     }
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
-
-        // Strict Validation: Allow only letters and spaces
         if (value && !/^[a-zA-Z\s]*$/.test(value)) {
-            // If invalid char is typed, don't update state (prevent typing)
-            // Or unblock typing but show error immediately. 
-            // User requested "not allowing spl characters", so blocking is better UX for strictness.
             return
         }
-
         setFormData(prev => ({ ...prev, name: value }))
-
         if (value.trim().length > 0 && value.trim().length < 2) {
             setErrors(prev => ({ ...prev, name: "Name must be at least 2 characters" }))
         } else {
@@ -285,9 +266,6 @@ export default function ContactPage() {
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
         setFormData(prev => ({ ...prev, email: value }))
-
-        // Only show error after user has typed @ (indicating they're attempting full email)
-        // Otherwise wait for blur to validate
         if (value.includes('@') && !validateEmail(value)) {
             setErrors(prev => ({ ...prev, email: "Please enter a valid email address" }))
         } else {
@@ -297,20 +275,14 @@ export default function ContactPage() {
 
     const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
-
-        // Strict Validation: Allow only digits
         if (value && !/^\d*$/.test(value)) {
             return
         }
-
-        // Check max length based on country
         const phoneConfig = getPhoneConfig()
-        const maxDigits = phoneConfig.digits || 15 // default to 15 if unknown
-
+        const maxDigits = phoneConfig.digits || 15
         if (value.length > maxDigits) {
-            return // Block typing more than allowed digits
+            return
         }
-
         setFormData(prev => ({ ...prev, mobile: value }))
         setErrors(prev => ({ ...prev, mobile: "" }))
     }
@@ -336,8 +308,6 @@ export default function ContactPage() {
 
     const handleBlur = (field: string) => {
         setTouched(prev => ({ ...prev, [field]: true }))
-
-        // Validate on blur
         if (field === 'email') {
             if (formData.email && !validateEmail(formData.email)) {
                 setErrors(prev => ({ ...prev, email: "Please enter a valid email address" }))
@@ -347,13 +317,9 @@ export default function ContactPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-
         const newErrors: { [key: string]: string } = {}
         const phoneConfig = getPhoneConfig()
-
-        // Clean name (remove numbers for submission)
         const cleanedName = formData.name.replace(/[^a-zA-Z\s]/g, "").trim()
-
         if (!cleanedName) {
             newErrors.name = "Name is required"
         } else if (cleanedName.length < 2) {
@@ -361,20 +327,15 @@ export default function ContactPage() {
         } else if (hasInvalidNameChars(formData.name)) {
             newErrors.name = "Name should contain only letters"
         }
-
         if (!formData.email.trim()) {
             newErrors.email = "Email is required"
         } else if (!validateEmail(formData.email)) {
             newErrors.email = "Please enter a valid email address"
         }
-
         if (!formData.country) {
             newErrors.country = "Please select a country"
         }
-
-        // Clean mobile (remove non-digits for validation)
         const cleanedMobile = formData.mobile.replace(/[^0-9]/g, "")
-
         if (!cleanedMobile) {
             newErrors.mobile = "Mobile number is required"
         } else if (hasInvalidMobileChars(formData.mobile)) {
@@ -384,25 +345,20 @@ export default function ContactPage() {
         } else if (!phoneConfig.code && cleanedMobile.length < 7) {
             newErrors.mobile = "Please enter a valid mobile number"
         }
-
         if (!formData.message.trim()) {
             newErrors.message = "Message is required"
         } else if (formData.message.trim().length < 10) {
             newErrors.message = "Message must be at least 10 characters"
         }
-
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
             return
         }
-
         if (!captchaVerified) {
             alert("Please verify you're not a robot")
             return
         }
-
         setSubmitting(true)
-
         try {
             const response = await fetch("/api/contact", {
                 method: "POST",
@@ -415,11 +371,9 @@ export default function ContactPage() {
                     message: formData.message
                 })
             })
-
             if (!response.ok) {
                 throw new Error("Failed to submit form")
             }
-
             setSubmitted(true)
             setFormData({
                 name: "",
@@ -441,14 +395,8 @@ export default function ContactPage() {
     const phoneConfig = getPhoneConfig()
 
     return (
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100">
-            <Navbar
-                session={session}
-                onLogout={logout}
-                onLoginClick={() => setShowAuthModal(true)}
-            />
-
-            <main className="flex-1 container mx-auto px-4 py-12 pt-24">
+        <div className="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 py-12">
+            <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
                     <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
                         Contact Us
@@ -715,22 +663,8 @@ export default function ContactPage() {
                             </CardContent>
                         </Card>
                     )}
-
-
                 </div>
-            </main>
-
-            <Footer />
-
-            {showAuthModal && (
-                <AuthModal
-                    onClose={() => setShowAuthModal(false)}
-                    onSuccess={() => {
-                        setShowAuthModal(false)
-                        window.location.reload()
-                    }}
-                />
-            )}
+            </div>
         </div>
     )
 }

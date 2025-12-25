@@ -8,17 +8,17 @@ interface UsageUser {
     id: string
     timezone: string | null
     lastUsageDate: Date | null
-    usagebytes: number
+    usageMB: number
 }
 
 /**
  * Checks if the user's daily usage quota needs to be reset based on their local timezone.
- * If strictly a new day in their timezone, resets usagebytes to 0 and updates lastUsageDate.
+ * If strictly a new day in their timezone, resets usageMB to 0 and updates lastUsageDate.
  * 
- * @param user The user/visitor object (must include id, timezone, lastUsageDate, usagebytes)
+ * @param user The user/visitor object (must include id, timezone, lastUsageDate, usageMB)
  * @param prisma The prisma client instance
  * @param modelType 'user' or 'visitor' - determines which table to update
- * @returns The effective usagebytes (0 if reset, or current value)
+ * @returns The effective usageMB (0 if reset, or current value)
  */
 export async function checkAndResetUsage(user: UsageUser, prisma: PrismaClient, modelType: 'user' | 'visitor' = 'user'): Promise<number> {
     const userTimezone = user.timezone || 'UTC'
@@ -67,7 +67,7 @@ export async function checkAndResetUsage(user: UsageUser, prisma: PrismaClient, 
             await prisma.visitor.update({
                 where: { id: user.id },
                 data: {
-                    usageBytes: 0,
+                    usageMB: 0.0,
                     lastUsageDate: now
                 }
             })
@@ -75,7 +75,7 @@ export async function checkAndResetUsage(user: UsageUser, prisma: PrismaClient, 
             await prisma.user.update({
                 where: { id: user.id },
                 data: {
-                    usagebytes: 0,
+                    usageMB: 0.0,
                     // We update the timestamp to NOW (UTC). 
                     // Next time we check, we convert THIS new UTC timestamp to user's local YYYY-MM-DD.
                     lastUsageDate: now
@@ -86,5 +86,5 @@ export async function checkAndResetUsage(user: UsageUser, prisma: PrismaClient, 
     }
 
     // No reset needed
-    return user.usagebytes
+    return user.usageMB
 }

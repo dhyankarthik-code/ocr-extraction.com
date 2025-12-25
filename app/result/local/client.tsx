@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import Navbar from "@/components/navbar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,15 +11,13 @@ import { saveAs } from "file-saver"
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
 import { Document, Packer, Paragraph, TextRun } from "docx"
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
-import { useSession } from "@/hooks/use-session"
-import AuthModal from "@/components/auth-modal"
 import DocumentChat from "@/components/document-chat"
-import Footer from "@/components/footer"
+import * as XLSX from "xlsx"
+import pptxgen from "pptxgenjs"
 
 
 export default function LocalResultPage() {
     const router = useRouter()
-    const { session, logout } = useSession()
     const [text, setText] = useState<string>("")
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState("")
@@ -28,7 +25,6 @@ export default function LocalResultPage() {
     const [searching, setSearching] = useState(false)
     const [summary, setSummary] = useState("")
     const [generatingSummary, setGeneratingSummary] = useState(false)
-    const [showAuthModal, setShowAuthModal] = useState(false)
     const [isMultiPage, setIsMultiPage] = useState(false)
     const [isBatch, setIsBatch] = useState(false)
     const [pages, setPages] = useState<Array<{ pageNumber: number, text: string, imageName?: string }>>([])
@@ -195,7 +191,33 @@ export default function LocalResultPage() {
         saveAs(blob, `${fileName} ocr result.pdf`)
     }
 
-    const handleDownloadReport = async (format: 'txt' | 'docx' | 'pdf') => {
+    const handleDownloadXlsx = () => {
+        const fullText = getFullText()
+        const wb = XLSX.utils.book_new()
+        const ws = XLSX.utils.aoa_to_sheet([[fullText]])
+        // Set column width for better readability
+        ws['!cols'] = [{ wch: 100 }];
+        XLSX.utils.book_append_sheet(wb, ws, "OCR Result")
+        XLSX.writeFile(wb, `${fileName} ocr result.xlsx`)
+    }
+
+    const handleDownloadPpt = async () => {
+        const pres = new pptxgen()
+
+        if (isMultiPage && pages.length > 0) {
+            pages.forEach((page, idx) => {
+                let slide = pres.addSlide()
+                slide.addText(`Page ${idx + 1}`, { x: 0.5, y: 0.5, fontSize: 14, bold: true })
+                slide.addText(page.text, { x: 0.5, y: 1.0, w: '90%', h: '80%', fontSize: 12, color: '363636' })
+            })
+        } else {
+            let slide = pres.addSlide()
+            slide.addText(text, { x: 0.5, y: 0.5, w: '90%', h: '90%', fontSize: 12, color: '363636' })
+        }
+        await pres.writeFile({ fileName: `${fileName} ocr result.pptx` })
+    }
+
+    const handleDownloadReport = async (format: 'txt' | 'docx' | 'pdf' | 'xlsx' | 'pptx') => {
         if (format === 'txt') {
             const blob = new Blob([summary], { type: "text/plain;charset=utf-8" })
             saveAs(blob, `${fileName} AI Report.txt`)
@@ -245,6 +267,18 @@ export default function LocalResultPage() {
             const pdfBytes = await pdfDoc.save()
             const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" })
             saveAs(blob, `${fileName} AI Report.pdf`)
+        } else if (format === 'xlsx') {
+            const wb = XLSX.utils.book_new()
+            const ws = XLSX.utils.aoa_to_sheet([[summary]])
+            ws['!cols'] = [{ wch: 100 }];
+            XLSX.utils.book_append_sheet(wb, ws, "AI Report")
+            XLSX.writeFile(wb, `${fileName} AI Report.xlsx`)
+        } else if (format === 'pptx') {
+            const pres = new pptxgen()
+            let slide = pres.addSlide()
+            slide.addText("AI Report", { x: 0.5, y: 0.5, fontSize: 18, bold: true })
+            slide.addText(summary, { x: 0.5, y: 1.0, w: '90%', h: '80%', fontSize: 12, color: '363636' })
+            await pres.writeFile({ fileName: `${fileName} AI Report.pptx` })
         }
         setReportFormatModal(false)
     }
@@ -323,24 +357,21 @@ export default function LocalResultPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col pt-16">
-            <Navbar
-                session={session}
-                onLogout={logout}
-                onLoginClick={() => setShowAuthModal(true)}
-            />
+        <div className="bg-gray-50 flex-1 py-8">
+            <div className="container mx-auto px-4">
+                <div className="mb-6 grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+                    <div className="flex justify-center md:justify-start">
+                        <Button
+                            onClick={() => router.push("/")}
+                            className="w-full md:w-auto gap-2 bg-red-600 hover:bg-red-700 text-white transition-all duration-300 hover:shadow-lg hover:shadow-red-500/50 hover:scale-[1.02] py-4 px-8 text-lg font-bold"
+                        >
+                            <Upload className="w-4 h-4" /> Upload More Files
+                        </Button>
+                    </div>
 
-            <main className="flex-1 container mx-auto px-4 py-8">
-                <div className="mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <Button
-                        onClick={() => router.push("/")}
-                        className="w-full md:w-auto gap-2 bg-red-600 hover:bg-red-700 text-white transition-all duration-300 hover:shadow-lg hover:shadow-red-500/50 hover:scale-[1.02]"
-                    >
-                        <Upload className="w-4 h-4" /> Upload More Files
-                    </Button>
-                    <div className="flex flex-col items-center md:items-end gap-2 w-full md:w-auto">
-                        <span className="text-sm font-semibold text-gray-700">Download the extracted data in:</span>
-                        <div className="flex gap-2 flex-wrap justify-center md:justify-end w-full">
+                    <div className="flex flex-col items-center justify-center gap-3 w-full md:w-auto md:col-start-2">
+                        <span className="text-xl font-bold text-gray-700 text-center">Download the extracted data in:</span>
+                        <div className="flex gap-2 flex-wrap justify-center w-full">
                             <Button className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white border-none min-w-[80px]" variant="outline" onClick={handleDownloadTxt}>
                                 <FileText className="w-4 h-4 mr-2" /> TXT
                             </Button>
@@ -349,6 +380,12 @@ export default function LocalResultPage() {
                             </Button>
                             <Button className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white border-none min-w-[80px]" variant="outline" onClick={handleDownloadPdf}>
                                 <FileText className="w-4 h-4 mr-2" /> PDF
+                            </Button>
+                            <Button className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white border-none min-w-[80px]" variant="outline" onClick={handleDownloadXlsx}>
+                                <FileText className="w-4 h-4 mr-2" /> Excel
+                            </Button>
+                            <Button className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white border-none min-w-[80px]" variant="outline" onClick={handleDownloadPpt}>
+                                <FileText className="w-4 h-4 mr-2" /> PPT
                             </Button>
                         </div>
                     </div>
@@ -445,7 +482,7 @@ export default function LocalResultPage() {
                             <span className="text-xl">✨</span>
                         </div>
                         <div className="flex flex-col items-start">
-                            <span className="font-semibold text-sm">AI Report</span>
+                            <span className="font-semibold text-sm">Generate AI Report and Download</span>
                             <span className="text-xs opacity-90">{generatingSummary ? "Generating..." : "Click to generate"}</span>
                         </div>
                     </button>
@@ -518,7 +555,7 @@ export default function LocalResultPage() {
                                     ) : (
                                         <div className="bg-purple-50 p-4 rounded-xl border border-purple-100 animate-in fade-in zoom-in-95 duration-200">
                                             <p className="text-sm font-bold text-purple-900 mb-3 text-center">Select Download Format</p>
-                                            <div className="grid grid-cols-3 gap-3">
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                                                 <button
                                                     onClick={() => handleDownloadReport('txt')}
                                                     className="bg-white hover:bg-purple-100 text-purple-700 border border-purple-200 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1"
@@ -537,6 +574,18 @@ export default function LocalResultPage() {
                                                 >
                                                     <FileText className="w-3 h-3" /> PDF File (.pdf)
                                                 </button>
+                                                <button
+                                                    onClick={() => handleDownloadReport('xlsx')}
+                                                    className="bg-white hover:bg-red-100 text-red-700 border border-red-200 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1"
+                                                >
+                                                    <FileText className="w-3 h-3" /> Excel (.xlsx)
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDownloadReport('pptx')}
+                                                    className="bg-white hover:bg-red-100 text-red-700 border border-red-200 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1"
+                                                >
+                                                    <FileText className="w-3 h-3" /> PPT (.pptx)
+                                                </button>
                                             </div>
                                             <button
                                                 onClick={() => setReportFormatModal(false)}
@@ -551,16 +600,7 @@ export default function LocalResultPage() {
                         </div>
                     </div>
                 )}
-            </main>
-
-            <Footer />
-
-            {showAuthModal && (
-                <AuthModal
-                    onClose={() => setShowAuthModal(false)}
-                    onSuccess={() => setShowAuthModal(false)}
-                />
-            )}
+            </div>
         </div>
     )
 }

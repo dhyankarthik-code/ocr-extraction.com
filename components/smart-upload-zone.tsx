@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react"
 import UploadZone from "@/components/upload-zone"
 import { useSession } from "@/hooks/use-session"
 import LimitWarningModal from "@/components/limit-warning-modal"
+import { useVisitorTracker } from "@/hooks/use-visitor-tracker"
 
 export default function SmartUploadZone() {
     const [uploading, setUploading] = useState(false)
@@ -15,38 +16,28 @@ export default function SmartUploadZone() {
     const [quota, setQuota] = useState<{ used: number, limit: number } | null>(null)
 
     const { session } = useSession()
+    const { trackUsage } = useVisitorTracker()
     const visitorTrackedRef = useRef(false)
 
-    // Fetch quota 
-    useEffect(() => {
-        fetch('/api/user/usage')
-            .then(res => res.json())
-            .then(data => {
-                if (data.usagebytes !== undefined) {
-                    setQuota({ used: data.usagebytes, limit: data.limit })
-                }
-            })
-            .catch(() => { })
-    }, [])
-
-    // Track visitor silently on first interaction
+    // Track visitor silently on first interaction (OCR Tool)
     const trackVisitor = useCallback(async () => {
         if (visitorTrackedRef.current) return
         visitorTrackedRef.current = true
-
-        try {
-            const email = session?.email || 'anonymous'
-            await fetch('/api/visitor', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email }),
-            })
-        } catch (error) {
-            console.error('Visitor tracking failed:', error)
-        }
-    }, [session])
+        trackUsage('OCR')
+    }, [trackUsage])
 
     const handleUpload = async (file: File) => {
+        // STRICT CONSENT CHECK (Omitted for now)
+        /*
+        const termsAccepted = typeof window !== 'undefined' && localStorage.getItem("terms_accepted") === "true"
+        const cookiesAccepted = typeof window !== 'undefined' && localStorage.getItem("cookies_accepted") === "true"
+
+        if (!termsAccepted || !cookiesAccepted) {
+            alert("Please accept both the Privacy Policy and Cookie Consent to use this tool.")
+            return
+        }
+        */
+
         // Basic file size check for single file > 10MB
         if (file.size > 10 * 1024 * 1024) {
             setShowLimitWarning(true)

@@ -12,7 +12,7 @@ const config: ToolConfig = {
     description: 'Convert your images to editable Word (DOCX) files using advanced OCR.',
     fromFormat: 'Image',
     toFormat: 'Word',
-    type: 'ocr',
+    type: 'coming-soon',
     accept: {
         'image/*': ['.png', '.jpg', '.jpeg', '.webp']
     }

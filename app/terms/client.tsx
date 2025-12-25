@@ -1,25 +1,12 @@
 "use client"
 
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
-import { useSession } from "@/hooks/use-session"
-import AuthModal from "@/components/auth-modal"
-import { useState } from "react"
+
 
 
 export default function TermsPage() {
-    const { session, logout } = useSession()
-    const [showAuthModal, setShowAuthModal] = useState(false)
-
     return (
-        <div className="min-h-screen flex flex-col bg-gray-50">
-            <Navbar
-                session={session}
-                onLogout={logout}
-                onLoginClick={() => setShowAuthModal(true)}
-            />
-
-            <main className="flex-1 container mx-auto px-4 py-12 pt-24 max-w-4xl">
+        <div className="bg-gray-50 flex-1 py-12">
+            <div className="container mx-auto px-4 max-w-4xl">
                 <div className="bg-white rounded-2xl shadow-sm p-8 md:p-12">
                     <h1 className="text-3xl font-bold text-gray-900 mb-8">Terms and Conditions</h1>
 
@@ -190,19 +177,7 @@ export default function TermsPage() {
                         </p>
                     </div>
                 </div>
-            </main>
-
-            <Footer />
-
-            {showAuthModal && (
-                <AuthModal
-                    onClose={() => setShowAuthModal(false)}
-                    onSuccess={() => {
-                        setShowAuthModal(false)
-                        window.location.reload()
-                    }}
-                />
-            )}
+            </div>
         </div>
     )
 }

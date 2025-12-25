@@ -8,30 +8,38 @@ import { ShieldCheck } from "lucide-react"
 
 interface ConsentPopupProps {
     session: any
+    onAccept?: () => void
 }
 
-export default function ConsentPopup({ session }: ConsentPopupProps) {
+export default function ConsentPopup({ session, onAccept }: ConsentPopupProps) {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         const checkConsent = async () => {
-            if (!session?.email) return
+            // 1. Check LocalStorage (for guests/everyone)
+            const localConsent = localStorage.getItem("terms_accepted")
+            if (localConsent === "true") return
 
-            try {
-                // Check consent status from dedicated API or pass it in session
-                // For now, we'll fetch a simple status check endpoint
-                const response = await fetch(`/api/user/status?email=${session.email}`)
-                if (response.ok) {
-                    const data = await response.json()
-                    // If user hasn't accepted terms yet, show popup
-                    if (!data.acceptedTerms) {
-                        setOpen(true)
+            // 2. If logged in, check DB (double-check sync)
+            if (session?.email) {
+                try {
+                    const response = await fetch(`/api/user/status?email=${session.email}`)
+                    if (response.ok) {
+                        const data = await response.json()
+                        if (data.acceptedTerms) {
+                            // Sync local
+                            localStorage.setItem("terms_accepted", "true")
+                            return
+                        }
                     }
+                } catch (error) {
+                    console.error("Failed to check consent:", error)
                 }
-            } catch (error) {
-                console.error("Failed to check consent:", error)
             }
+
+            // If we reach here, no consent found
+            setOpen(true)
         }
 
         checkConsent()
@@ -40,15 +48,21 @@ export default function ConsentPopup({ session }: ConsentPopupProps) {
     const handleAccept = async () => {
         setLoading(true)
         try {
-            const response = await fetch("/api/user/consent", {
-                method: "POST"
-            })
+            // 1. Save locally
+            localStorage.setItem("terms_accepted", "true")
 
-            if (response.ok) {
-                setOpen(false)
-            } else {
-                alert("Failed to save consent. Please try again.")
+            // 2. If logged in, save to DB
+            if (session?.email) {
+                const response = await fetch("/api/user/consent", {
+                    method: "POST"
+                })
+                if (!response.ok) {
+                    console.warn("Failed to sync consent to DB")
+                }
             }
+
+            if (onAccept) onAccept()
+            setOpen(false)
         } catch (error) {
             console.error("Consent error:", error)
         } finally {

@@ -1,26 +1,13 @@
 "use client"
 
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
-import { useSession } from "@/hooks/use-session"
-import { useState } from "react"
-import AuthModal from "@/components/auth-modal"
+
 import CtaSection from "@/components/cta-section"
 
 
 export default function AboutPage() {
-    const { session, logout } = useSession()
-    const [showAuthModal, setShowAuthModal] = useState(false)
-
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col pt-16">
-            <Navbar
-                session={session}
-                onLogout={logout}
-                onLoginClick={() => setShowAuthModal(true)}
-            />
-
-            <main className="flex-1 container mx-auto px-4 py-12 max-w-4xl">
+        <div className="bg-gray-50 flex-1 py-12">
+            <div className="container mx-auto px-4 max-w-4xl">
                 <CtaSection
                     title="Free online OCR Engine"
                     description="Convert images, scanned documents, photos or any documents to text, download in any format, get AI summary and AI report for free"
@@ -55,16 +42,7 @@ export default function AboutPage() {
                         </div>
                     </div>
                 </article>
-            </main>
-
-            <Footer />
-
-            {showAuthModal && (
-                <AuthModal
-                    onClose={() => setShowAuthModal(false)}
-                    onSuccess={() => window.location.reload()}
-                />
-            )}
+            </div>
         </div>
     )
 }

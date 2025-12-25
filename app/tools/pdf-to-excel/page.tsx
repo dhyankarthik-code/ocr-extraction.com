@@ -12,7 +12,7 @@ const config: ToolConfig = {
     description: 'Convert your PDF tables to editable Excel (XLSX) spreadsheets.',
     fromFormat: 'PDF',
     toFormat: 'Excel',
-    type: 'ocr',
+    type: 'coming-soon',
     accept: {
         'application/pdf': ['.pdf']
     }

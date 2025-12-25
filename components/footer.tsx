@@ -39,38 +39,28 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/tools/pdf-to-image" className="hover:text-red-500 transition-colors">
-                                    PDF to Image
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/tools/pdf-to-text" className="hover:text-red-500 transition-colors">
-                                    PDF to Text
-                                </Link>
-                            </li>
-                            <li>
                                 <Link href="/tools/text-to-pdf" className="hover:text-red-500 transition-colors">
                                     Text to PDF
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/tools/pdf-to-excel" className="hover:text-red-500 transition-colors">
-                                    PDF to Excel
+                                <Link href="/tools/text-to-word" className="hover:text-red-500 transition-colors">
+                                    Text to Word
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/tools/excel-to-pdf" className="hover:text-red-500 transition-colors">
-                                    Excel to PDF
+                                <Link href="/tools/text-to-excel" className="hover:text-red-500 transition-colors">
+                                    Text to Excel
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/tools/pdf-to-ppt" className="hover:text-red-500 transition-colors">
-                                    PDF to PPT
+                                <Link href="/tools/text-to-ppt" className="hover:text-red-500 transition-colors">
+                                    Text to PPT
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/tools/ppt-to-pdf" className="hover:text-red-500 transition-colors">
-                                    PPT to PDF
+                                <Link href="/tools/text-to-image" className="hover:text-red-500 transition-colors">
+                                    Text to Image
                                 </Link>
                             </li>
                         </ul>

@@ -19,39 +19,43 @@ const truncateFilename = (name: string, maxLength: number = 20) => {
   return name.slice(0, half) + "..." + name.slice(-half)
 }
 
-export default function UploadZone({ onDrop, uploading, progress, processingSteps = [] }: UploadZoneProps) {
+export default function UploadZone({ onDrop, uploading, progress, processingSteps = [], accept, hideUsage = false }: UploadZoneProps & { accept?: Record<string, string[]>, hideUsage?: boolean }) {
   const [isDragging, setIsDragging] = useState(false)
   const [quota, setQuota] = useState<{ used: number, limit: number } | null>(null)
 
   // Fetch quota on mount
   useEffect(() => {
+    if (hideUsage) return;
+
     fetch('/api/user/usage')
       .then(res => res.json())
       .then(data => {
-        if (data.usagebytes !== undefined) {
-          setQuota({ used: data.usagebytes, limit: data.limit })
+        if (data.usageMB !== undefined) {
+          setQuota({ used: data.usageMB, limit: data.limit })
         }
       })
       .catch(() => { }) // Ignore errors, just don't show bar
-  }, [])
+  }, [hideUsage])
 
   // Calculate usage percentage
   const usagePercent = quota ? Math.min((quota.used / quota.limit) * 100, 100) : 0
-  const usedMB = quota ? (quota.used / (1024 * 1024)).toFixed(1) : "0"
+  const usedMB = quota ? quota.used.toFixed(1) : "0"
 
   // Color code usage: Green < 70%, Yellow < 90%, Red > 90%
   const usageColor = usagePercent > 90 ? "bg-red-500" : usagePercent > 70 ? "bg-yellow-500" : "bg-green-500"
 
+  const defaultAccept = {
+    "image/jpeg": [".jpg", ".jpeg"],
+    "image/png": [".png"],
+    "image/webp": [".webp"],
+    "image/gif": [".gif"],
+    "image/bmp": [".bmp"],
+    "application/pdf": [".pdf"],
+  }
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      "image/jpeg": [".jpg", ".jpeg"],
-      "image/png": [".png"],
-      "image/webp": [".webp"],
-      "image/gif": [".gif"],
-      "image/bmp": [".bmp"],
-      "application/pdf": [".pdf"],
-    },
+    accept: accept || defaultAccept,
     multiple: true,
     disabled: uploading,
   })
@@ -147,7 +151,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
       </div>
 
       {/* Quota Usage Bar (Shown for all logged-in users where quota data is loaded) */}
-      {quota && (
+      {!hideUsage && quota && (
         <div className="w-full bg-gray-50 rounded-lg p-3 border border-gray-200 flex items-center gap-4 text-xs md:text-sm">
           <span className="text-gray-600 font-medium whitespace-nowrap">Usage Limit:</span>
           <div className="flex-1 space-y-1">

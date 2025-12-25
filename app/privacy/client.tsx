@@ -1,25 +1,12 @@
 "use client"
 
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
-import { useSession } from "@/hooks/use-session"
-import AuthModal from "@/components/auth-modal"
-import { useState } from "react"
+
 
 
 export default function PrivacyPage() {
-    const { session, logout } = useSession()
-    const [showAuthModal, setShowAuthModal] = useState(false)
-
     return (
-        <div className="min-h-screen flex flex-col bg-gray-50">
-            <Navbar
-                session={session}
-                onLogout={logout}
-                onLoginClick={() => setShowAuthModal(true)}
-            />
-
-            <main className="flex-1 container mx-auto px-4 py-12 pt-24 max-w-4xl">
+        <div className="bg-gray-50 flex-1 py-12">
+            <div className="container mx-auto px-4 max-w-4xl">
                 <div className="bg-white rounded-2xl shadow-sm p-8 md:p-12">
                     <h1 className="text-3xl font-bold text-gray-900 mb-8">Privacy Policy & Terms</h1>
 
@@ -55,6 +42,8 @@ export default function PrivacyPage() {
                                 <li>The Internet Protocol address or gateway of the visitor's web server</li>
                                 <li>The previous website address from which the visitor reached us</li>
                                 <li>Clickstream data which shows the traffic of visitors around this web site (for example pages accessed and documents downloaded)</li>
+                                <li>Specific tool usage statistics (e.g., number of times OCR or PDF conversion tools are used)</li>
+                                <li>Geolocation data derived from IP address (Country, City, Region, Timezone) to provide regional service optimization</li>
                                 <li>The type of web browser used by the visitor</li>
                                 <li>The operating system of the visitor's computer</li>
                                 <li>The screen resolution of the visitor's computer monitor</li>
@@ -112,19 +101,7 @@ export default function PrivacyPage() {
 
                     </div>
                 </div>
-            </main>
-
-            <Footer />
-
-            {showAuthModal && (
-                <AuthModal
-                    onClose={() => setShowAuthModal(false)}
-                    onSuccess={() => {
-                        setShowAuthModal(false)
-                        window.location.reload()
-                    }}
-                />
-            )}
+            </div>
         </div>
     )
 }

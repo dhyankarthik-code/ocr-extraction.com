@@ -192,12 +192,12 @@ export async function POST(request: NextRequest) {
                         email: userEmail,
                         name: userName || "User",
                         picture: userPicture,
-                        usagebytes: 0
+                        usageMB: 0.0
                     }
                 })
 
                 if (user) {
-                    const currentUsageMB = (user.usagebytes || 0) / (1024 * 1024)
+                    const currentUsageMB = user.usageMB || 0.0
                     const userTimezone = user.timezone || 'UTC'
 
 
@@ -205,17 +205,15 @@ export async function POST(request: NextRequest) {
                     const { checkAndResetUsage } = await import("@/lib/usage-limit")
 
                     // This updates the DB if needed and returns the correct usage
-                    const currentUsageBytes = await checkAndResetUsage(user as any, prisma as any)
+                    const currentUsage = await checkAndResetUsage(user as any, prisma as any)
 
                     // Update user object locally for the check below
-                    user.usagebytes = currentUsageBytes
+                    user.usageMB = currentUsage
 
-                    const updatedUsageMB = (user.usagebytes || 0) / (1024 * 1024)
-
-                    if (updatedUsageMB + fileSizeMB > FILE_SIZE_LIMIT_MB) {
+                    if (user.usageMB + fileSizeMB > FILE_SIZE_LIMIT_MB) {
                         return NextResponse.json({
                             error: 'Daily Quota exceeded',
-                            details: `You have reached the 10MB daily upload limit. Resets at 00:00 (${userTimezone}). Used: ${updatedUsageMB.toFixed(2)}MB`
+                            details: `You have reached the 10MB daily upload limit. Resets at 00:00 (${userTimezone}). Used: ${(user.usageMB).toFixed(2)}MB`
                         }, { status: 403 });
                     }
                 }
@@ -244,14 +242,12 @@ export async function POST(request: NextRequest) {
                     // Adapt visitor to match User interface for the shared function
                     const visitorAsUser = {
                         id: visitor.id,
-                        usagebytes: visitor.usageBytes || 0,
+                        usageMB: visitor.usageMB || 0.0,
                         lastUsageDate: visitor.lastUsageDate,
                         timezone: visitorTimezone
                     }
 
-                    const currentUsageBytes = await checkAndResetUsage(visitorAsUser as any, prisma as any, 'visitor')
-
-                    const currentUsageMB = currentUsageBytes / (1024 * 1024)
+                    const currentUsageMB = await checkAndResetUsage(visitorAsUser as any, prisma as any, 'visitor')
 
                     if (currentUsageMB + fileSizeMB > FILE_SIZE_LIMIT_MB) {
                         return NextResponse.json({
@@ -315,7 +311,7 @@ export async function POST(request: NextRequest) {
                         const { default: prisma } = await import("@/lib/db")
                         await prisma.user.update({
                             where: { googleId: userGoogleId },
-                            data: { usagebytes: { increment: file.size } }
+                            data: { usageMB: { increment: fileSizeMB } }
                         })
                     } catch (e) { console.error("Failed to update usage stats", e) }
                 } else {
@@ -329,7 +325,7 @@ export async function POST(request: NextRequest) {
                             await prisma.visitor.update({
                                 where: { id: visitor.id },
                                 data: {
-                                    usageBytes: { increment: file.size },
+                                    usageMB: { increment: fileSizeMB },
                                     lastUsageDate: new Date()
                                 }
                             })
@@ -414,7 +410,7 @@ export async function POST(request: NextRequest) {
                         const { default: prisma } = await import("@/lib/db")
                         await prisma.user.update({
                             where: { googleId: userGoogleId },
-                            data: { usagebytes: { increment: file.size } }
+                            data: { usageMB: { increment: fileSizeMB } }
                         })
                     } catch (e) {
                         console.error("Failed to update usage stats", e)
@@ -431,7 +427,7 @@ export async function POST(request: NextRequest) {
                             await prisma.visitor.update({
                                 where: { id: visitor.id },
                                 data: {
-                                    usageBytes: { increment: file.size },
+                                    usageMB: { increment: fileSizeMB },
                                     lastUsageDate: new Date()
                                 }
                             })
@@ -478,7 +474,7 @@ export async function POST(request: NextRequest) {
                     const { default: prisma } = await import("@/lib/db")
                     await prisma.user.update({
                         where: { googleId: userGoogleId },
-                        data: { usagebytes: { increment: file.size } }
+                        data: { usageMB: { increment: fileSizeMB } }
                     })
                 } catch (e) {
                     console.error("Failed to update usage stats", e)
@@ -495,7 +491,7 @@ export async function POST(request: NextRequest) {
                         await prisma.visitor.update({
                             where: { id: visitor.id },
                             data: {
-                                usageBytes: { increment: file.size },
+                                usageMB: { increment: fileSizeMB },
                                 lastUsageDate: new Date()
                             }
                         })

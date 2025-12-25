@@ -12,7 +12,7 @@ const config: ToolConfig = {
     description: 'Convert image data (tables, invoices) to Excel (XLSX) spreadsheets.',
     fromFormat: 'Image',
     toFormat: 'Excel',
-    type: 'ocr',
+    type: 'coming-soon',
     accept: {
         'image/*': ['.png', '.jpg', '.jpeg', '.webp']
     }

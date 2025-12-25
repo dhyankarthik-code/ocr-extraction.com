@@ -12,7 +12,7 @@ const config: ToolConfig = {
     description: 'Convert your PDF documents to editable Word (DOCX) files with high accuracy.',
     fromFormat: 'PDF',
     toFormat: 'Word',
-    type: 'ocr',
+    type: 'coming-soon',
     accept: {
         'application/pdf': ['.pdf']
     }

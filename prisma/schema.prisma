@@ -17,7 +17,7 @@ model User {
   name          String?
   picture       String?
   // Quota Tracking (Lifetime)
-  usagebytes    Int       @default(0)
+  usageMB       Float     @default(0.0)
   
   // Location Tracking (from IP)
   country       String?
@@ -78,15 +78,27 @@ model ContactSubmission {
 model Visitor {
   id            String   @id @default(cuid())
   email         String
-  ipAddress     String?
+  ipAddress     String?  @unique
   country       String?
   city          String?
   region        String?
   timezone      String?
   userAgent     String?
-  usageBytes    Int      @default(0)
+  usageMB       Float    @default(0.0)
   lastUsageDate DateTime?
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Tool Usage Counters
+  usageOCR          Int @default(0)
+  usageImageToPdf   Int @default(0)
+  usagePdfToImage   Int @default(0)
+  usagePdfToText    Int @default(0)
+  usageTextToPdf    Int @default(0)
+  usagePdfToExcel   Int @default(0)
+  usageExcelToPdf   Int @default(0)
+  usagePdfToPpt     Int @default(0)
+  usagePptToPdf     Int @default(0)
 
   @@index([email])
   @@index([ipAddress])

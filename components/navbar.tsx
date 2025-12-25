@@ -37,59 +37,15 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
       items: [
         { label: 'Image to PDF', href: '/tools/image-to-pdf' },
         { label: 'Text to PDF', href: '/tools/text-to-pdf' },
-        { label: 'Excel to PDF', href: '/tools/excel-to-pdf' },
-        { label: 'PPT to PDF', href: '/tools/ppt-to-pdf' },
-        { label: 'Word to PDF', href: '/tools/word-to-pdf' },
       ]
     },
     {
-      name: "Word Tools",
+      name: "Document Tools",
       items: [
-        { label: 'PDF to Word', href: '/tools/pdf-to-word' },
-        { label: 'Image to Word', href: '/tools/image-to-word' },
         { label: 'Text to Word', href: '/tools/text-to-word' },
-        { label: 'Excel to Word', href: '/tools/excel-to-word' },
-        { label: 'PPT to Word', href: '/tools/ppt-to-word' },
-      ]
-    },
-    {
-      name: "Image Tools",
-      items: [
-        { label: 'PDF to Image', href: '/tools/pdf-to-image' },
-        { label: 'Word to Image', href: '/tools/word-to-image' },
-        { label: 'Text to Image', href: '/tools/text-to-image' },
-        { label: 'Excel to Image', href: '/tools/excel-to-image' },
-        { label: 'PPT to Image', href: '/tools/ppt-to-image' },
-      ]
-    },
-    {
-      name: "Text Tools",
-      items: [
-        { label: 'PDF to Text', href: '/tools/pdf-to-text' },
-        { label: 'Word to Text', href: '/tools/word-to-text' },
-        { label: 'Image to Text', href: '/tools/image-to-text' },
-        { label: 'Excel to Text', href: '/tools/excel-to-text' },
-        { label: 'PPT to Text', href: '/tools/ppt-to-text' },
-      ]
-    },
-    {
-      name: "Excel Tools",
-      items: [
-        { label: 'PDF to Excel', href: '/tools/pdf-to-excel' },
-        { label: 'Word to Excel', href: '/tools/word-to-excel' },
-        { label: 'Image to Excel', href: '/tools/image-to-excel' },
         { label: 'Text to Excel', href: '/tools/text-to-excel' },
-        { label: 'PPT to Excel', href: '/tools/ppt-to-excel' },
-      ]
-    },
-    {
-      name: "PPT Tools",
-      items: [
-        { label: 'PDF to PPT', href: '/tools/pdf-to-ppt' },
-        { label: 'Word to PPT', href: '/tools/word-to-ppt' },
-        { label: 'Image to PPT', href: '/tools/image-to-ppt' },
         { label: 'Text to PPT', href: '/tools/text-to-ppt' },
-        { label: 'Excel to PPT', href: '/tools/excel-to-ppt' },
+        { label: 'Text to Image', href: '/tools/text-to-image' },
       ]
     }
   ]
@@ -125,68 +81,25 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
             <DropdownMenuContent
               align="center"
               sideOffset={8}
-              className="w-[800px] bg-white border border-gray-100 shadow-xl rounded-xl p-6 animate-in fade-in zoom-in-95 duration-200 z-[110]"
+              className="w-[400px] bg-white border border-gray-100 shadow-xl rounded-xl p-6 animate-in fade-in zoom-in-95 duration-200 z-[110]"
             >
-              <div className="grid grid-cols-3 gap-8">
-                {/* Column 1 */}
-                <div className="space-y-6">
-                  {toolCategories.slice(0, 2).map((category) => (
-                    <div key={category.name} className="space-y-2">
-                      <div className="text-sm font-bold text-red-500 uppercase tracking-wider mb-2">
-                        {category.name}
-                      </div>
-                      <div className="space-y-1">
-                        {category.items.map((tool) => (
-                          <DropdownMenuItem key={tool.href} asChild className="focus:bg-red-50 focus:text-red-600 rounded-lg cursor-pointer p-0">
-                            <Link href={tool.href} className="block w-full text-base font-medium text-gray-600 hover:text-red-600 px-2 py-1.5 transition-colors">
-                              {tool.label}
-                            </Link>
-                          </DropdownMenuItem>
-                        ))}
-                      </div>
+              <div className="grid grid-cols-2 gap-8">
+                {toolCategories.map((category) => (
+                  <div key={category.name} className="space-y-2">
+                    <div className="text-sm font-bold text-red-500 uppercase tracking-wider mb-2">
+                      {category.name}
                     </div>
-                  ))}
-                </div>
-
-                {/* Column 2 */}
-                <div className="space-y-6">
-                  {toolCategories.slice(2, 4).map((category) => (
-                    <div key={category.name} className="space-y-2">
-                      <div className="text-sm font-bold text-red-500 uppercase tracking-wider mb-2">
-                        {category.name}
-                      </div>
-                      <div className="space-y-1">
-                        {category.items.map((tool) => (
-                          <DropdownMenuItem key={tool.href} asChild className="focus:bg-red-50 focus:text-red-600 rounded-lg cursor-pointer p-0">
-                            <Link href={tool.href} className="block w-full text-base font-medium text-gray-600 hover:text-red-600 px-2 py-1.5 transition-colors">
-                              {tool.label}
-                            </Link>
-                          </DropdownMenuItem>
-                        ))}
-                      </div>
+                    <div className="space-y-1">
+                      {category.items.map((tool) => (
+                        <DropdownMenuItem key={tool.href} asChild className="focus:bg-red-50 focus:text-red-600 rounded-lg cursor-pointer p-0">
+                          <Link href={tool.href} className="block w-full text-base font-medium text-gray-600 hover:text-red-600 px-2 py-1.5 transition-colors">
+                            {tool.label}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
                     </div>
-                  ))}
-                </div>
-
-                {/* Column 3 */}
-                <div className="space-y-6">
-                  {toolCategories.slice(4, 6).map((category) => (
-                    <div key={category.name} className="space-y-2">
-                      <div className="text-sm font-bold text-red-500 uppercase tracking-wider mb-2">
-                        {category.name}
-                      </div>
-                      <div className="space-y-1">
-                        {category.items.map((tool) => (
-                          <DropdownMenuItem key={tool.href} asChild className="focus:bg-red-50 focus:text-red-600 rounded-lg cursor-pointer p-0">
-                            <Link href={tool.href} className="block w-full text-base font-medium text-gray-600 hover:text-red-600 px-2 py-1.5 transition-colors">
-                              {tool.label}
-                            </Link>
-                          </DropdownMenuItem>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             </DropdownMenuContent>
           </DropdownMenu>

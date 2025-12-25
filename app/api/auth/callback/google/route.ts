@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
             email: googleUser.email,
             name: googleUser.name,
             picture: googleUser.picture,
-            usagebytes: 0,
+            usageMB: 0.0,
             lastUsageDate: new Date(),
             ...locationData
           }
