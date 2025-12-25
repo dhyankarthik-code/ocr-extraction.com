@@ -77,6 +77,10 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 }
 
+import MainLayout from "@/components/main-layout"
+
+// ... imports ...
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -85,7 +89,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geist.className} font-sans antialiased bg-white text-gray-900`}>
-        {children}
+        <MainLayout>
+          {children}
+        </MainLayout>
         <ClientConsentWrapper />
         <Analytics />
         <SpeedInsights />
