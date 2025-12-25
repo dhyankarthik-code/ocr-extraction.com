@@ -1,13 +1,13 @@
 "use client"
 
 import Link from "next/link"
-import { Heart, FileText, Wrench, BookOpen, Info, Mail } from "lucide-react"
+import { Heart, FileText, Wrench, BookOpen, Info, Mail, Newspaper } from "lucide-react"
 
 export default function Footer() {
     return (
         <footer className="bg-gray-900 text-gray-300 border-t border-gray-800">
             <div className="container mx-auto px-4 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
                     {/* Brand */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
@@ -34,11 +34,60 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/blog" className="hover:text-red-500 transition-colors">
-                                    Blog
+                                <Link href="/tools/image-to-pdf" className="hover:text-red-500 transition-colors">
+                                    Image to PDF
                                 </Link>
                             </li>
+                            <li>
+                                <Link href="/tools/pdf-to-image" className="hover:text-red-500 transition-colors">
+                                    PDF to Image
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/tools/pdf-to-text" className="hover:text-red-500 transition-colors">
+                                    PDF to Text
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/tools/text-to-pdf" className="hover:text-red-500 transition-colors">
+                                    Text to PDF
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/tools/pdf-to-excel" className="hover:text-red-500 transition-colors">
+                                    PDF to Excel
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/tools/excel-to-pdf" className="hover:text-red-500 transition-colors">
+                                    Excel to PDF
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/tools/pdf-to-ppt" className="hover:text-red-500 transition-colors">
+                                    PDF to PPT
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/tools/ppt-to-pdf" className="hover:text-red-500 transition-colors">
+                                    PPT to PDF
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
 
+                    {/* Blog */}
+                    <div>
+                        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                            <Newspaper className="w-4 h-4" />
+                            Blog
+                        </h3>
+                        <ul className="space-y-2 text-sm">
+                            <li>
+                                <Link href="/blog" className="hover:text-red-500 transition-colors">
+                                    Latest Updates
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 
