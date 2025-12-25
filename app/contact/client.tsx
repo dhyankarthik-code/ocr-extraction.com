@@ -3,6 +3,10 @@
 import { useState, useRef, useMemo } from "react"
 
 import ReCAPTCHA from "react-google-recaptcha"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, CheckCircle2, Mail, User, Globe, Phone, MessageSquare, Search, X } from "lucide-react"
 
 const COUNTRY_PHONE_CODES: { [key: string]: { code: string, digits: number } } = {
