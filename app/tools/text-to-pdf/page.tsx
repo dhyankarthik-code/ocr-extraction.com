@@ -3,7 +3,15 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'Text to PDF Converter - Free Galaxy OCR',
-    description: 'Convert plain text to PDF documents.',
+    description: 'Convert plain text to PDF documents. Free online tool to transform your text files into PDF format.',
+    alternates: {
+        canonical: '/tools/text-to-pdf',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Text to PDF Converter - Free Galaxy OCR',
+        description: 'Convert plain text to PDF documents. Free online tool.',
+    },
 }
 
 const config: ToolConfig = {

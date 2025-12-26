@@ -3,7 +3,15 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'Text to Image Converter - Free Galaxy OCR',
-    description: 'Convert plain text to Images.',
+    description: 'Convert plain text to images. Free online tool to transform your text files into PNG images.',
+    alternates: {
+        canonical: '/tools/text-to-image',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Text to Image Converter - Free Galaxy OCR',
+        description: 'Convert plain text to images. Free online tool.',
+    },
 }
 
 const config: ToolConfig = {

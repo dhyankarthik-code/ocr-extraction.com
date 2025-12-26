@@ -22,16 +22,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
+    const description = post.excerpt.rendered.replace(/<[^>]*>/g, '').slice(0, 160);
+    const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+
     return {
         title: `${post.title.rendered} - OCR Extraction Blog`,
-        description: post.excerpt.rendered.replace(/<[^>]*>/g, '').slice(0, 160),
-        openGraph: {
-            images: post._embedded?.['wp:featuredmedia']?.[0]?.source_url
-                ? [post._embedded['wp:featuredmedia'][0].source_url]
-                : [],
-        },
+        description,
         alternates: {
-            canonical: `/blog/${slug}`,
+            canonical: `https://www.ocr-extraction.com/blog/${slug}`,
+        },
+        openGraph: {
+            title: `${post.title.rendered} - OCR Extraction Blog`,
+            description,
+            url: `https://www.ocr-extraction.com/blog/${slug}`,
+            type: 'article',
+            images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630 }] : [],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: `${post.title.rendered} - OCR Extraction Blog`,
+            description,
+            images: imageUrl ? [imageUrl] : [],
         },
     };
 }

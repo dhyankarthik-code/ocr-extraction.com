@@ -3,7 +3,15 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'Image to PDF Converter - Free Galaxy OCR',
-    description: 'Convert Images to PDF documents.',
+    description: 'Convert images to PDF documents. Free online tool to merge multiple images into a single PDF file.',
+    alternates: {
+        canonical: '/tools/image-to-pdf',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Image to PDF Converter - Free Galaxy OCR',
+        description: 'Convert images to PDF documents. Free online tool.',
+    },
 }
 
 const config: ToolConfig = {

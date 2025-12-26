@@ -435,6 +435,7 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
             </div>
 
             <div className="mt-12 grid md:grid-cols-3 gap-8 text-center bg-gray-50 p-8 rounded-2xl">
+                <h2 className="sr-only">Key Features</h2>
                 <div className="space-y-2">
                     <h3 className="font-bold text-gray-900">Fast Extraction</h3>
                     <p className="text-sm text-gray-600">Powered by advanced AI for quick and accurate results.</p>
