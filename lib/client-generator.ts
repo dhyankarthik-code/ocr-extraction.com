@@ -1237,3 +1237,199 @@ export const generateMergedWordFromPPT = async (files: File[]): Promise<Blob> =>
     const doc = new Document({ sections: [{ properties: {}, children: paragraphs }] });
     return await Packer.toBlob(doc);
 };
+
+/**
+ * Convert PDF to PPT
+ */
+export const generatePPTFromPDF = async (file: File): Promise<Blob> => {
+    const pdfjs = await getPdfJs();
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+
+    const pptx = new PptxGenJS();
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map((item: any) => item.str).join(' ');
+
+        const slide = pptx.addSlide();
+        slide.addText(`Page ${pageNum}`, { x: 0.5, y: 0.3, fontSize: 24, bold: true, color: '363636' });
+        if (pageText.trim()) {
+            slide.addText(pageText.substring(0, 2000), { x: 0.5, y: 1, w: 9, fontSize: 14, color: '666666', valign: 'top' });
+        }
+    }
+
+    return await pptx.write({ outputType: 'blob' }) as Blob;
+};
+
+/**
+ * Convert Word to PPT
+ */
+export const generatePPTFromWord = async (file: File): Promise<Blob> => {
+    const buffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+    const text = result.value;
+
+    const pptx = new PptxGenJS();
+    const paragraphs = text.split('\n').filter(p => p.trim());
+
+    // Group paragraphs into slides (approx 5 per slide)
+    const slideParagraphs: string[][] = [];
+    for (let i = 0; i < paragraphs.length; i += 5) {
+        slideParagraphs.push(paragraphs.slice(i, i + 5));
+    }
+
+    slideParagraphs.forEach((group, idx) => {
+        const slide = pptx.addSlide();
+        slide.addText(`Slide ${idx + 1}`, { x: 0.5, y: 0.3, fontSize: 24, bold: true, color: '363636' });
+        slide.addText(group.join('\n\n'), { x: 0.5, y: 1, w: 9, fontSize: 14, color: '666666', valign: 'top' });
+    });
+
+    if (slideParagraphs.length === 0) {
+        const slide = pptx.addSlide();
+        slide.addText('(No text extracted)', { x: 0.5, y: 1, fontSize: 14, color: '999999' });
+    }
+
+    return await pptx.write({ outputType: 'blob' }) as Blob;
+};
+
+/**
+ * Convert Excel to PPT
+ */
+export const generatePPTFromExcel = async (file: File): Promise<Blob> => {
+    const buffer = await file.arrayBuffer();
+    const workbook = read(buffer);
+
+    const pptx = new PptxGenJS();
+
+    for (const sheetName of workbook.SheetNames) {
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData: any[][] = utils.sheet_to_json(worksheet, { header: 1 });
+
+        const slide = pptx.addSlide();
+        slide.addText(`Sheet: ${sheetName}`, { x: 0.5, y: 0.3, fontSize: 24, bold: true, color: '363636' });
+
+        // Take first 20 rows
+        const rows = jsonData.slice(0, 20).map(row =>
+            Array.isArray(row) ? row.map(cell => String(cell ?? '')).join(' | ') : ''
+        ).filter(r => r.trim());
+
+        if (rows.length > 0) {
+            slide.addText(rows.join('\n'), { x: 0.5, y: 1, w: 9, fontSize: 12, color: '666666', valign: 'top' });
+        }
+    }
+
+    return await pptx.write({ outputType: 'blob' }) as Blob;
+};
+
+/**
+ * Generate merged PPT from multiple PDFs
+ */
+export const generateMergedPPTFromPDF = async (files: File[]): Promise<Blob> => {
+    const pdfjs = await getPdfJs();
+    const pptx = new PptxGenJS();
+
+    for (const file of files) {
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+
+            // Title slide for each file
+            const titleSlide = pptx.addSlide();
+            titleSlide.addText(file.name, { x: 0.5, y: 2, fontSize: 28, bold: true, color: '363636' });
+
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const page = await pdf.getPage(pageNum);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map((item: any) => item.str).join(' ');
+
+                const slide = pptx.addSlide();
+                slide.addText(`Page ${pageNum}`, { x: 0.5, y: 0.3, fontSize: 18, bold: true, color: '363636' });
+                if (pageText.trim()) {
+                    slide.addText(pageText.substring(0, 2000), { x: 0.5, y: 0.8, w: 9, fontSize: 12, color: '666666', valign: 'top' });
+                }
+            }
+        } catch (e) {
+            const errorSlide = pptx.addSlide();
+            errorSlide.addText(`Error: ${file.name}`, { x: 0.5, y: 2, fontSize: 14, color: 'FF0000' });
+        }
+    }
+
+    return await pptx.write({ outputType: 'blob' }) as Blob;
+};
+
+/**
+ * Generate merged PPT from multiple Word files
+ */
+export const generateMergedPPTFromWord = async (files: File[]): Promise<Blob> => {
+    const pptx = new PptxGenJS();
+
+    for (const file of files) {
+        try {
+            const buffer = await file.arrayBuffer();
+            const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+            const text = result.value;
+
+            // Title slide
+            const titleSlide = pptx.addSlide();
+            titleSlide.addText(file.name, { x: 0.5, y: 2, fontSize: 28, bold: true, color: '363636' });
+
+            const paragraphs = text.split('\n').filter(p => p.trim());
+            const slideParagraphs: string[][] = [];
+            for (let i = 0; i < paragraphs.length; i += 5) {
+                slideParagraphs.push(paragraphs.slice(i, i + 5));
+            }
+
+            slideParagraphs.forEach((group, idx) => {
+                const slide = pptx.addSlide();
+                slide.addText(`Slide ${idx + 1}`, { x: 0.5, y: 0.3, fontSize: 18, bold: true, color: '363636' });
+                slide.addText(group.join('\n\n'), { x: 0.5, y: 0.8, w: 9, fontSize: 12, color: '666666', valign: 'top' });
+            });
+        } catch (e) {
+            const errorSlide = pptx.addSlide();
+            errorSlide.addText(`Error: ${file.name}`, { x: 0.5, y: 2, fontSize: 14, color: 'FF0000' });
+        }
+    }
+
+    return await pptx.write({ outputType: 'blob' }) as Blob;
+};
+
+/**
+ * Generate merged PPT from multiple Excel files
+ */
+export const generateMergedPPTFromExcel = async (files: File[]): Promise<Blob> => {
+    const pptx = new PptxGenJS();
+
+    for (const file of files) {
+        try {
+            const buffer = await file.arrayBuffer();
+            const workbook = read(buffer);
+
+            // Title slide
+            const titleSlide = pptx.addSlide();
+            titleSlide.addText(file.name, { x: 0.5, y: 2, fontSize: 28, bold: true, color: '363636' });
+
+            for (const sheetName of workbook.SheetNames) {
+                const worksheet = workbook.Sheets[sheetName];
+                const jsonData: any[][] = utils.sheet_to_json(worksheet, { header: 1 });
+
+                const slide = pptx.addSlide();
+                slide.addText(`Sheet: ${sheetName}`, { x: 0.5, y: 0.3, fontSize: 18, bold: true, color: '363636' });
+
+                const rows = jsonData.slice(0, 15).map(row =>
+                    Array.isArray(row) ? row.map(cell => String(cell ?? '')).join(' | ') : ''
+                ).filter(r => r.trim());
+
+                if (rows.length > 0) {
+                    slide.addText(rows.join('\n'), { x: 0.5, y: 0.8, w: 9, fontSize: 10, color: '666666', valign: 'top' });
+                }
+            }
+        } catch (e) {
+            const errorSlide = pptx.addSlide();
+            errorSlide.addText(`Error: ${file.name}`, { x: 0.5, y: 2, fontSize: 14, color: 'FF0000' });
+        }
+    }
+
+    return await pptx.write({ outputType: 'blob' }) as Blob;
+};

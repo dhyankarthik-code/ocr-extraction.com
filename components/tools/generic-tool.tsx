@@ -38,7 +38,13 @@ import {
     generateWordFromPPT,
     generateMergedWordFromPDF,
     generateMergedWordFromExcel,
-    generateMergedWordFromPPT
+    generateMergedWordFromPPT,
+    generatePPTFromPDF,
+    generatePPTFromWord,
+    generatePPTFromExcel,
+    generateMergedPPTFromPDF,
+    generateMergedPPTFromWord,
+    generateMergedPPTFromExcel
 } from "@/lib/client-generator"
 import JSZip from 'jszip'
 
@@ -49,6 +55,7 @@ export type ToolType =
     | 'office-to-image' // Convert document to images (one per page)
     | 'office-to-excel' // Convert document to Excel
     | 'office-to-word' // Convert document to Word
+    | 'office-to-ppt' // Convert document to PPT
     | 'coming-soon'
 
 export interface ToolConfig {
@@ -266,6 +273,23 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
                 updateFileState(id, { status: 'success', progress: 100, result: { wordBlob, officeFile: true } })
                 toast.success(`${file.name} converted!`)
+            } else if (config.type === 'office-to-ppt') {
+                // Document to PPT conversion
+                updateFileState(id, { progress: 50 })
+
+                let pptBlob: Blob
+                if (config.fromFormat === 'PDF') {
+                    pptBlob = await generatePPTFromPDF(file)
+                } else if (config.fromFormat === 'Word') {
+                    pptBlob = await generatePPTFromWord(file)
+                } else if (config.fromFormat === 'Excel') {
+                    pptBlob = await generatePPTFromExcel(file)
+                } else {
+                    throw new Error(`Unsupported format: ${config.fromFormat}`)
+                }
+
+                updateFileState(id, { status: 'success', progress: 100, result: { pptBlob, officeFile: true } })
+                toast.success(`${file.name} converted!`)
             } else {
                 updateFileState(id, { status: 'error', progress: 100, error: "This feature is coming soon" })
             }
@@ -301,6 +325,12 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
             // Handle office-to-word conversion result
             if (result.officeFile && result.wordBlob) {
                 downloadBlob(result.wordBlob, filename.replace('pdf', 'docx').replace('xlsx', 'docx').replace('pptx', 'docx'))
+                return
+            }
+
+            // Handle office-to-ppt conversion result
+            if (result.officeFile && result.pptBlob) {
+                downloadBlob(result.pptBlob, filename.replace('pdf', 'pptx').replace('docx', 'pptx').replace('xlsx', 'pptx'))
                 return
             }
 
@@ -424,6 +454,26 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
                 downloadBlob(blob, `${config.title.toLowerCase().replace(/\s+/g, '_')}_merged.docx`)
                 toast.success("Merged Word Downloaded!")
+                return
+            }
+
+            // Office-to-PPT merged mode
+            if (config.type === 'office-to-ppt' && config.toFormat === 'PPT') {
+                const files = successfulFiles.map(fs => fs.file)
+                let blob: Blob
+
+                if (config.fromFormat === 'PDF') {
+                    blob = await generateMergedPPTFromPDF(files)
+                } else if (config.fromFormat === 'Word') {
+                    blob = await generateMergedPPTFromWord(files)
+                } else if (config.fromFormat === 'Excel') {
+                    blob = await generateMergedPPTFromExcel(files)
+                } else {
+                    throw new Error(`Unsupported format: ${config.fromFormat}`)
+                }
+
+                downloadBlob(blob, `${config.title.toLowerCase().replace(/\s+/g, '_')}_merged.pptx`)
+                toast.success("Merged PPT Downloaded!")
                 return
             }
 
@@ -615,20 +665,14 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
                                             </div>
                                         )}
 
-                                        {/* Individual download button only for Image output, others are merged */}
-                                        {config.toFormat === 'Image' ? (
-                                            <button
-                                                onClick={() => handleDownload(fs)}
-                                                className="w-full py-2 bg-red-600 text-white rounded-lg font-medium text-sm hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
-                                            >
-                                                <Download className="w-4 h-4" />
-                                                Download {config.toFormat}
-                                            </button>
-                                        ) : (
-                                            <div className="text-center text-xs text-gray-400 italic">
-                                                Will be included in the merged document
-                                            </div>
-                                        )}
+                                        {/* Individual download button for each file */}
+                                        <button
+                                            onClick={() => handleDownload(fs)}
+                                            className="w-full py-2 bg-red-600 text-white rounded-lg font-medium text-sm hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            <Download className="w-4 h-4" />
+                                            Download {config.toFormat}
+                                        </button>
                                     </div>
                                 )}
 
