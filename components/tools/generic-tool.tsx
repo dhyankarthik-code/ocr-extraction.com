@@ -22,7 +22,11 @@ import {
     generatePDFFromPPT,
     generateMergedPDFFromExcel,
     generateMergedPDFFromWord,
-    generateMergedPDFFromPPT
+    generateMergedPDFFromPPT,
+    generateImagesFromPDF,
+    generateImagesFromWord,
+    generateImagesFromExcel,
+    generateImagesFromPPT
 } from "@/lib/client-generator"
 import JSZip from 'jszip'
 
@@ -30,6 +34,7 @@ export type ToolType =
     | 'ocr' // Use main OCR API
     | 'client-convert' // Use client-side logic
     | 'office-to-pdf' // Direct Office file to PDF conversion
+    | 'office-to-image' // Convert document to images (one per page)
     | 'coming-soon'
 
 export interface ToolConfig {
@@ -194,6 +199,25 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
                 updateFileState(id, { status: 'success', progress: 100, result: { pdfBlob, officeFile: true } })
                 toast.success(`${file.name} converted!`)
+            } else if (config.type === 'office-to-image') {
+                // Document to Image conversion
+                updateFileState(id, { progress: 50 })
+
+                let images: Blob[]
+                if (config.fromFormat === 'PDF') {
+                    images = await generateImagesFromPDF(file)
+                } else if (config.fromFormat === 'Word') {
+                    images = await generateImagesFromWord(file)
+                } else if (config.fromFormat === 'Excel') {
+                    images = await generateImagesFromExcel(file)
+                } else if (config.fromFormat === 'PPT') {
+                    images = await generateImagesFromPPT(file)
+                } else {
+                    throw new Error(`Unsupported format: ${config.fromFormat}`)
+                }
+
+                updateFileState(id, { status: 'success', progress: 100, result: { images } })
+                toast.success(`${file.name} converted!`)
             } else {
                 updateFileState(id, { status: 'error', progress: 100, error: "This feature is coming soon" })
             }
@@ -216,6 +240,21 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
             // Handle office-to-pdf conversion result
             if (result.officeFile && result.pdfBlob) {
                 downloadBlob(result.pdfBlob, filename)
+                return
+            }
+
+            // Handle office-to-image conversion result
+            if (result.images && Array.isArray(result.images)) {
+                if (result.images.length === 1) {
+                    downloadBlob(result.images[0], filename.replace('pdf', 'png').replace('docx', 'png').replace('xlsx', 'png').replace('pptx', 'png'))
+                } else {
+                    const zip = new JSZip()
+                    result.images.forEach((blob: Blob, index: number) => {
+                        zip.file(`page_${index + 1}.png`, blob)
+                    })
+                    const content = await zip.generateAsync({ type: "blob" })
+                    downloadBlob(content, `${file.name.split('.')[0]}_images.zip`)
+                }
                 return
             }
 
@@ -284,6 +323,25 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
                 downloadBlob(blob, `${config.title.toLowerCase().replace(/\s+/g, '_')}_merged.pdf`)
                 toast.success("Merged PDF Downloaded!")
+                return
+            }
+
+            // Office-to-Image merged mode (ZIP)
+            if (config.type === 'office-to-image') {
+                const zip = new JSZip()
+
+                successfulFiles.forEach((fs) => {
+                    const filenameBase = fs.file.name.split('.')[0]
+                    if (Array.isArray(fs.result.images)) {
+                        fs.result.images.forEach((blob: Blob, index: number) => {
+                            zip.file(`${filenameBase}_page_${index + 1}.png`, blob)
+                        })
+                    }
+                })
+
+                const content = await zip.generateAsync({ type: "blob" })
+                downloadBlob(content, `${config.title.toLowerCase().replace(/\s+/g, '_')}_images.zip`)
+                toast.success("All Images Downloaded!")
                 return
             }
 

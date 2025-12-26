@@ -6,6 +6,12 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import mammoth from 'mammoth'
 import JSZip from 'jszip'
+import * as pdfjsLib from 'pdfjs-dist'
+
+// Configure PDF.js worker
+if (typeof window !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+}
 
 export const generateWord = async (text: string): Promise<Blob> => {
     const doc = new Document({
@@ -731,4 +737,71 @@ export const generateMergedPDFFromPPT = async (files: File[]): Promise<Blob> => 
     }
 
     return doc.output('blob');
+};
+
+/**
+ * Convert PDF to Images (PNG)
+ * Uses pdfjs-dist to render each page to canvas
+ */
+export const generateImagesFromPDF = async (file: File): Promise<Blob[]> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+    const pdf = await loadingTask.promise;
+    const images: Blob[] = [];
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const viewport = page.getViewport({ scale: 2.0 }); // 2x scale for better quality
+
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        if (!context) continue;
+
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        await page.render({
+            canvasContext: context,
+            viewport: viewport,
+            canvas: canvas
+        }).promise;
+
+        const blob = await new Promise<Blob>((resolve) => {
+            canvas.toBlob((b) => resolve(b || new Blob()), 'image/png');
+        });
+
+        images.push(blob);
+    }
+
+    return images;
+};
+
+/**
+ * Convert Word document to Images
+ * Converts to PDF first, then to images
+ */
+export const generateImagesFromWord = async (file: File): Promise<Blob[]> => {
+    const pdfBlob = await generatePDFFromWord(file);
+    const pdfFile = new File([pdfBlob], 'temp.pdf', { type: 'application/pdf' });
+    return await generateImagesFromPDF(pdfFile);
+};
+
+/**
+ * Convert Excel spreadsheet to Images
+ * Converts to PDF first, then to images
+ */
+export const generateImagesFromExcel = async (file: File): Promise<Blob[]> => {
+    const pdfBlob = await generatePDFFromExcel(file);
+    const pdfFile = new File([pdfBlob], 'temp.pdf', { type: 'application/pdf' });
+    return await generateImagesFromPDF(pdfFile);
+};
+
+/**
+ * Convert PowerPoint to Images
+ * Converts to PDF first, then to images
+ */
+export const generateImagesFromPPT = async (file: File): Promise<Blob[]> => {
+    const pdfBlob = await generatePDFFromPPT(file);
+    const pdfFile = new File([pdfBlob], 'temp.pdf', { type: 'application/pdf' });
+    return await generateImagesFromPDF(pdfFile);
 };
