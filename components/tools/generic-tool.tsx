@@ -44,7 +44,10 @@ import {
     generatePPTFromExcel,
     generateMergedPPTFromPDF,
     generateMergedPPTFromWord,
-    generateMergedPPTFromExcel
+    generateMergedPPTFromExcel,
+    extractTextFromWord,
+    extractTextFromExcel,
+    extractTextFromPPT
 } from "@/lib/client-generator"
 import JSZip from 'jszip'
 
@@ -56,6 +59,7 @@ export type ToolType =
     | 'office-to-excel' // Convert document to Excel
     | 'office-to-word' // Convert document to Word
     | 'office-to-ppt' // Convert document to PPT
+    | 'office-to-text' // Convert document to Text
     | 'coming-soon'
 
 export interface ToolConfig {
@@ -290,6 +294,23 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
                 updateFileState(id, { status: 'success', progress: 100, result: { pptBlob, officeFile: true } })
                 toast.success(`${file.name} converted!`)
+            } else if (config.type === 'office-to-text') {
+                // Document to Text conversion
+                updateFileState(id, { progress: 50 })
+
+                let text = ""
+                if (config.fromFormat === 'Word') {
+                    text = await extractTextFromWord(file)
+                } else if (config.fromFormat === 'Excel') {
+                    text = await extractTextFromExcel(file)
+                } else if (config.fromFormat === 'PPT') {
+                    text = await extractTextFromPPT(file)
+                } else {
+                    throw new Error(`Unsupported format: ${config.fromFormat}`)
+                }
+
+                updateFileState(id, { status: 'success', progress: 100, result: { text } })
+                toast.success(`${file.name} converted!`)
             } else {
                 updateFileState(id, { status: 'error', progress: 100, error: "This feature is coming soon" })
             }
@@ -365,7 +386,7 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
                     await downloadBlob(blob, filename.replace('word', 'docx'))
                     break
                 case 'Excel':
-                    blob = generateExcel(result.text)
+                    blob = await generateExcel(result.text)
                     downloadBlob(blob, filename.replace('excel', 'xlsx'))
                     break
                 case 'PPT':
@@ -373,7 +394,7 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
                     downloadBlob(blob, filename.replace('ppt', 'pptx'))
                     break
                 case 'PDF':
-                    blob = generatePDF(result.text)
+                    blob = await generatePDF(result.text)
                     downloadBlob(blob, filename.replace('pdf', 'pdf'))
                     break
                 case 'Text':
@@ -514,7 +535,7 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
             // Merged Excel Mode
             if (config.toFormat === 'Excel') {
-                const blob = generateMergedExcel(successfulFiles)
+                const blob = await generateMergedExcel(successfulFiles)
                 downloadBlob(blob, `${config.title.toLowerCase().replace(/\s+/g, '_')}_merged.xlsx`)
                 toast.success("Merged Excel Spreadsheet Downloaded!")
                 return

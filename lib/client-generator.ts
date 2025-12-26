@@ -1,11 +1,10 @@
-
-import { Document, Packer, Paragraph, TextRun } from 'docx'
-import { utils, write, read } from 'xlsx'
-import PptxGenJS from 'pptxgenjs'
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
-import mammoth from 'mammoth'
-import JSZip from 'jszip'
+import type { Document, Packer, Paragraph, TextRun } from 'docx'
+// import { utils, write, read } from 'xlsx'
+import type PptxGenJS from 'pptxgenjs'
+import type jsPDF from 'jspdf'
+// import autoTable from 'jspdf-autotable'
+// import mammoth from 'mammoth'
+import type JSZip from 'jszip'
 
 // Helper to load pdfjs-dist dynamically to avoid SSR issues
 async function getPdfJs() {
@@ -17,7 +16,18 @@ async function getPdfJs() {
     return pdfjs;
 }
 
+// Dynamic import helpers
+async function getDocx() { return import('docx'); }
+async function getXlsx() { return import('xlsx'); }
+async function getPptxGen() { return (await import('pptxgenjs')).default; }
+async function getJsPDF() { return (await import('jspdf')).default; }
+async function getAutoTable() { return (await import('jspdf-autotable')).default; }
+async function getMammoth() { return (await import('mammoth')); }
+async function getJSZip() { return (await import('jszip')).default; }
+
+
 export const generateWord = async (text: string): Promise<Blob> => {
+    const { Document, Packer, Paragraph, TextRun } = await getDocx();
     const doc = new Document({
         sections: [{
             properties: {},
@@ -31,6 +41,7 @@ export const generateWord = async (text: string): Promise<Blob> => {
 }
 
 export const generateMergedWord = async (fileStates: Array<{ file: File, result: any }>): Promise<Blob> => {
+    const { Document, Packer, Paragraph, TextRun } = await getDocx();
     const children: Paragraph[] = [];
 
     fileStates.forEach((fs, index) => {
@@ -56,7 +67,8 @@ export const generateMergedWord = async (fileStates: Array<{ file: File, result:
     return await Packer.toBlob(doc);
 }
 
-export const generateExcel = (text: string): Blob => {
+export const generateExcel = async (text: string): Promise<Blob> => {
+    const { utils, write } = await getXlsx();
     const wb = utils.book_new();
     const rows = text.split('\n').map((line: string) => [line]);
     const ws = utils.aoa_to_sheet(rows);
@@ -67,7 +79,8 @@ export const generateExcel = (text: string): Blob => {
     return new Blob([wbout], { type: 'application/octet-stream' });
 }
 
-export const generateMergedExcel = (fileStates: Array<{ file: File, result: any }>): Blob => {
+export const generateMergedExcel = async (fileStates: Array<{ file: File, result: any }>): Promise<Blob> => {
+    const { utils, write } = await getXlsx();
     const wb = utils.book_new();
 
     fileStates.forEach((fs, index) => {
@@ -83,7 +96,8 @@ export const generateMergedExcel = (fileStates: Array<{ file: File, result: any 
 }
 
 export const generatePPT = async (text: string): Promise<Blob> => {
-    const pres = new PptxGenJS();
+    const PptxGenModule = await getPptxGen();
+    const pres = new PptxGenModule();
     const lines = text.split('\n');
     const linesPerSlide = 15;
 
@@ -114,8 +128,9 @@ export const generateMergedPPT = async (fileStates: Array<{ file: File, result: 
     return (await pres.write({ outputType: 'blob' })) as unknown as Blob;
 }
 
-export const generatePDF = (text: string): Blob => {
-    const doc = new jsPDF();
+export const generatePDF = async (text: string): Promise<Blob> => {
+    const jsPDFModule = await getJsPDF();
+    const doc = new jsPDFModule();
     const splitText = doc.splitTextToSize(text, 180);
 
     let y = 10;
@@ -134,7 +149,8 @@ export const generatePDF = (text: string): Blob => {
 }
 
 export const generatePDFFromImage = async (imageFile: File): Promise<Blob> => {
-    const doc = new jsPDF();
+    const jsPDFModule = await getJsPDF();
+    const doc = new jsPDFModule();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -181,7 +197,8 @@ export const downloadBlob = (blob: Blob, filename: string) => {
 }
 
 export const generateMergedPDFFromImages = async (imageFiles: File[]): Promise<Blob> => {
-    const doc = new jsPDF();
+    const jsPDFModule = await getJsPDF();
+    const doc = new jsPDFModule();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -220,7 +237,8 @@ export const generateMergedPDFFromImages = async (imageFiles: File[]): Promise<B
 }
 
 export const generateMergedPDF = async (fileStates: Array<{ file: File, result: any }>): Promise<Blob> => {
-    const doc = new jsPDF();
+    const jsPDFModule = await getJsPDF();
+    const doc = new jsPDFModule();
     let isFirstPage = true;
 
     for (const fs of fileStates) {
@@ -339,9 +357,13 @@ export const generateImageFromText = (text: string): Promise<Blob> => {
  * Uses xlsx to parse and jspdf-autotable for table rendering
  */
 export const generatePDFFromExcel = async (file: File): Promise<Blob> => {
+    const { utils, read } = await getXlsx();
+    const jsPDFModule = await getJsPDF();
+    const autoTable = await getAutoTable();
+
     const buffer = await file.arrayBuffer();
     const workbook = read(buffer);
-    const doc = new jsPDF();
+    const doc = new jsPDFModule();
 
     let isFirstSheet = true;
 
@@ -403,13 +425,16 @@ export const generatePDFFromExcel = async (file: File): Promise<Blob> => {
  * Uses mammoth to extract text/HTML and jsPDF for rendering
  */
 export const generatePDFFromWord = async (file: File): Promise<Blob> => {
+    const mammoth = await getMammoth();
+    const jsPDFModule = await getJsPDF();
+
     const buffer = await file.arrayBuffer();
 
     // Extract raw text from DOCX using mammoth
     const result = await mammoth.extractRawText({ arrayBuffer: buffer });
     const text = result.value;
 
-    const doc = new jsPDF();
+    const doc = new jsPDFModule();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 20;
@@ -449,10 +474,13 @@ export const generatePDFFromWord = async (file: File): Promise<Blob> => {
  * Uses JSZip to parse PPTX and extract slide content
  */
 export const generatePDFFromPPT = async (file: File): Promise<Blob> => {
-    const buffer = await file.arrayBuffer();
-    const zip = await JSZip.loadAsync(buffer);
+    const JSZipClass = await getJSZip();
+    const jsPDFModule = await getJsPDF();
 
-    const doc = new jsPDF('landscape'); // PPT is usually landscape
+    const buffer = await file.arrayBuffer();
+    const zip = await JSZipClass.loadAsync(buffer);
+
+    const doc = new jsPDFModule('landscape'); // PPT is usually landscape
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -551,7 +579,11 @@ export const generatePDFFromPPT = async (file: File): Promise<Blob> => {
  * Generate merged PDF from multiple Excel files
  */
 export const generateMergedPDFFromExcel = async (files: File[]): Promise<Blob> => {
-    const doc = new jsPDF();
+    const { utils, read } = await getXlsx();
+    const jsPDFModule = await getJsPDF();
+    const autoTable = await getAutoTable();
+
+    const doc = new jsPDFModule();
     let isFirstPage = true;
 
     for (const file of files) {
@@ -605,7 +637,9 @@ export const generateMergedPDFFromExcel = async (files: File[]): Promise<Blob> =
  * Generate merged PDF from multiple Word files
  */
 export const generateMergedPDFFromWord = async (files: File[]): Promise<Blob> => {
-    const doc = new jsPDF();
+    const mammoth = await getMammoth();
+    const jsPDFModule = await getJsPDF();
+    const doc = new jsPDFModule();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 20;
@@ -658,7 +692,10 @@ export const generateMergedPDFFromWord = async (files: File[]): Promise<Blob> =>
  * Generate merged PDF from multiple PPT files
  */
 export const generateMergedPDFFromPPT = async (files: File[]): Promise<Blob> => {
-    const doc = new jsPDF('landscape');
+    const JSZipClass = await getJSZip();
+    const jsPDFModule = await getJsPDF();
+
+    const doc = new jsPDFModule('landscape');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     let isFirstSlide = true;
@@ -666,7 +703,7 @@ export const generateMergedPDFFromPPT = async (files: File[]): Promise<Blob> => 
 
     for (const file of files) {
         const buffer = await file.arrayBuffer();
-        const zip = await JSZip.loadAsync(buffer);
+        const zip = await JSZipClass.loadAsync(buffer);
 
         const slideFiles: string[] = [];
         zip.forEach((relativePath) => {
@@ -817,6 +854,8 @@ export const generateImagesFromPPT = async (file: File): Promise<Blob[]> => {
  */
 export const generateExcelFromPDF = async (file: File): Promise<Blob> => {
     const pdfjs = await getPdfJs();
+    const { utils, write } = await getXlsx();
+
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
 
@@ -846,6 +885,9 @@ export const generateExcelFromPDF = async (file: File): Promise<Blob> => {
  * Extracts text from Word and creates Excel rows
  */
 export const generateExcelFromWord = async (file: File): Promise<Blob> => {
+    const mammoth = await getMammoth();
+    const { utils, write } = await getXlsx();
+
     const buffer = await file.arrayBuffer();
     const result = await mammoth.extractRawText({ arrayBuffer: buffer });
     const text = result.value;
@@ -868,8 +910,11 @@ export const generateExcelFromWord = async (file: File): Promise<Blob> => {
  * Extracts text from PowerPoint slides and creates Excel rows
  */
 export const generateExcelFromPPT = async (file: File): Promise<Blob> => {
+    const JSZipClass = await getJSZip();
+    const { utils, write } = await getXlsx();
+
     const buffer = await file.arrayBuffer();
-    const zip = new JSZip();
+    const zip = new JSZipClass();
     const zipContent = await zip.loadAsync(buffer);
 
     const slideFiles = Object.keys(zipContent.files)
@@ -903,6 +948,8 @@ export const generateExcelFromPPT = async (file: File): Promise<Blob> => {
  */
 export const generateMergedExcelFromPDF = async (files: File[]): Promise<Blob> => {
     const pdfjs = await getPdfJs();
+    const { utils, write } = await getXlsx();
+
     const rows: string[][] = [];
 
     for (const file of files) {
@@ -945,6 +992,9 @@ export const generateMergedExcelFromPDF = async (files: File[]): Promise<Blob> =
  * Generate merged Excel from multiple Word files
  */
 export const generateMergedExcelFromWord = async (files: File[]): Promise<Blob> => {
+    const mammoth = await getMammoth();
+    const { utils, write } = await getXlsx();
+
     const rows: string[][] = [];
 
     for (const file of files) {
@@ -980,13 +1030,16 @@ export const generateMergedExcelFromWord = async (files: File[]): Promise<Blob> 
  * Generate merged Excel from multiple PPT files
  */
 export const generateMergedExcelFromPPT = async (files: File[]): Promise<Blob> => {
+    const JSZipClass = await getJSZip();
+    const { utils, write } = await getXlsx();
+
     const rows: string[][] = [];
 
     for (const file of files) {
         rows.push([`--- ${file.name} ---`]);
         try {
             const buffer = await file.arrayBuffer();
-            const zip = new JSZip();
+            const zip = new JSZipClass();
             const zipContent = await zip.loadAsync(buffer);
 
             const slideFiles = Object.keys(zipContent.files)
@@ -1028,6 +1081,7 @@ export const generateMergedExcelFromPPT = async (files: File[]): Promise<Blob> =
  * Convert PDF to Word
  */
 export const generateWordFromPDF = async (file: File): Promise<Blob> => {
+    const { Document, Packer, Paragraph, TextRun } = await getDocx();
     const pdfjs = await getPdfJs();
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
@@ -1056,6 +1110,9 @@ export const generateWordFromPDF = async (file: File): Promise<Blob> => {
  * Convert Excel to Word
  */
 export const generateWordFromExcel = async (file: File): Promise<Blob> => {
+    const { Document, Packer, Paragraph, TextRun } = await getDocx();
+    const { read, utils } = await getXlsx();
+
     const buffer = await file.arrayBuffer();
     const workbook = read(buffer);
 
@@ -1086,8 +1143,11 @@ export const generateWordFromExcel = async (file: File): Promise<Blob> => {
  * Convert PPT to Word
  */
 export const generateWordFromPPT = async (file: File): Promise<Blob> => {
+    const { Document, Packer, Paragraph, TextRun } = await getDocx();
+    const JSZipClass = await getJSZip();
+
     const buffer = await file.arrayBuffer();
-    const zip = new JSZip();
+    const zip = new JSZipClass();
     const zipContent = await zip.loadAsync(buffer);
 
     const slideFiles = Object.keys(zipContent.files)
@@ -1125,6 +1185,7 @@ export const generateWordFromPPT = async (file: File): Promise<Blob> => {
  * Generate merged Word from multiple PDFs
  */
 export const generateMergedWordFromPDF = async (files: File[]): Promise<Blob> => {
+    const { Document, Packer, Paragraph, TextRun } = await getDocx();
     const pdfjs = await getPdfJs();
     const paragraphs: Paragraph[] = [];
 
@@ -1159,6 +1220,9 @@ export const generateMergedWordFromPDF = async (files: File[]): Promise<Blob> =>
  * Generate merged Word from multiple Excel files
  */
 export const generateMergedWordFromExcel = async (files: File[]): Promise<Blob> => {
+    const { Document, Packer, Paragraph, TextRun } = await getDocx();
+    const { read, utils } = await getXlsx();
+
     const paragraphs: Paragraph[] = [];
 
     for (const file of files) {
@@ -1199,6 +1263,9 @@ export const generateMergedWordFromExcel = async (files: File[]): Promise<Blob> 
  * Generate merged Word from multiple PPT files
  */
 export const generateMergedWordFromPPT = async (files: File[]): Promise<Blob> => {
+    const { Document, Packer, Paragraph, TextRun } = await getDocx();
+    const JSZipClass = await getJSZip();
+
     const paragraphs: Paragraph[] = [];
 
     for (const file of files) {
@@ -1208,7 +1275,7 @@ export const generateMergedWordFromPPT = async (files: File[]): Promise<Blob> =>
 
         try {
             const buffer = await file.arrayBuffer();
-            const zip = new JSZip();
+            const zip = new JSZipClass();
             const zipContent = await zip.loadAsync(buffer);
 
             const slideFiles = Object.keys(zipContent.files)
@@ -1243,10 +1310,12 @@ export const generateMergedWordFromPPT = async (files: File[]): Promise<Blob> =>
  */
 export const generatePPTFromPDF = async (file: File): Promise<Blob> => {
     const pdfjs = await getPdfJs();
+    const PptxGenModule = await getPptxGen();
+
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
 
-    const pptx = new PptxGenJS();
+    const pptx = new PptxGenModule();
 
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         const page = await pdf.getPage(pageNum);
@@ -1267,11 +1336,14 @@ export const generatePPTFromPDF = async (file: File): Promise<Blob> => {
  * Convert Word to PPT
  */
 export const generatePPTFromWord = async (file: File): Promise<Blob> => {
+    const mammoth = await getMammoth();
+    const PptxGenModule = await getPptxGen();
+
     const buffer = await file.arrayBuffer();
     const result = await mammoth.extractRawText({ arrayBuffer: buffer });
     const text = result.value;
 
-    const pptx = new PptxGenJS();
+    const pptx = new PptxGenModule();
     const paragraphs = text.split('\n').filter(p => p.trim());
 
     // Group paragraphs into slides (approx 5 per slide)
@@ -1298,10 +1370,13 @@ export const generatePPTFromWord = async (file: File): Promise<Blob> => {
  * Convert Excel to PPT
  */
 export const generatePPTFromExcel = async (file: File): Promise<Blob> => {
+    const { read, utils } = await getXlsx();
+    const PptxGenModule = await getPptxGen();
+
     const buffer = await file.arrayBuffer();
     const workbook = read(buffer);
 
-    const pptx = new PptxGenJS();
+    const pptx = new PptxGenModule();
 
     for (const sheetName of workbook.SheetNames) {
         const worksheet = workbook.Sheets[sheetName];
@@ -1328,7 +1403,8 @@ export const generatePPTFromExcel = async (file: File): Promise<Blob> => {
  */
 export const generateMergedPPTFromPDF = async (files: File[]): Promise<Blob> => {
     const pdfjs = await getPdfJs();
-    const pptx = new PptxGenJS();
+    const PptxGenModule = await getPptxGen();
+    const pptx = new PptxGenModule();
 
     for (const file of files) {
         try {
@@ -1363,7 +1439,9 @@ export const generateMergedPPTFromPDF = async (files: File[]): Promise<Blob> => 
  * Generate merged PPT from multiple Word files
  */
 export const generateMergedPPTFromWord = async (files: File[]): Promise<Blob> => {
-    const pptx = new PptxGenJS();
+    const mammoth = await getMammoth();
+    const PptxGenModule = await getPptxGen();
+    const pptx = new PptxGenModule();
 
     for (const file of files) {
         try {
@@ -1399,7 +1477,9 @@ export const generateMergedPPTFromWord = async (files: File[]): Promise<Blob> =>
  * Generate merged PPT from multiple Excel files
  */
 export const generateMergedPPTFromExcel = async (files: File[]): Promise<Blob> => {
-    const pptx = new PptxGenJS();
+    const { read, utils } = await getXlsx();
+    const PptxGenModule = await getPptxGen();
+    const pptx = new PptxGenModule();
 
     for (const file of files) {
         try {
@@ -1432,4 +1512,74 @@ export const generateMergedPPTFromExcel = async (files: File[]): Promise<Blob> =
     }
 
     return await pptx.write({ outputType: 'blob' }) as Blob;
+};
+
+/**
+ * Extract text from Word document
+ */
+export const extractTextFromWord = async (file: File): Promise<string> => {
+    const mammoth = await getMammoth();
+    const buffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+    return result.value || '';
+};
+
+/**
+ * Extract text from Excel spreadsheet
+ */
+export const extractTextFromExcel = async (file: File): Promise<string> => {
+    const { read, utils } = await getXlsx();
+    const buffer = await file.arrayBuffer();
+    const workbook = read(buffer);
+
+    let text = '';
+    for (const sheetName of workbook.SheetNames) {
+        text += `--- Sheet: ${sheetName} ---\n\n`;
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = utils.sheet_to_json<any[]>(worksheet, { header: 1 });
+
+        for (const row of jsonData) {
+            if (Array.isArray(row) && row.some(cell => cell !== null && cell !== undefined)) {
+                text += row.map(cell => String(cell ?? '')).join('\t') + '\n';
+            }
+        }
+        text += '\n';
+    }
+    return text || '(No text found)';
+};
+
+/**
+ * Extract text from PowerPoint presentation
+ */
+export const extractTextFromPPT = async (file: File): Promise<string> => {
+    const JSZipClass = await getJSZip();
+    const buffer = await file.arrayBuffer();
+    const zip = new JSZipClass();
+    const zipContent = await zip.loadAsync(buffer);
+
+    const slideFiles = Object.keys(zipContent.files)
+        .filter(name => name.startsWith('ppt/slides/slide') && name.endsWith('.xml'))
+        .sort((a, b) => {
+            const numA = parseInt(a.replace(/\D/g, '') || '0');
+            const numB = parseInt(b.replace(/\D/g, '') || '0');
+            return numA - numB;
+        });
+
+    let text = '';
+    let slideIndex = 1;
+
+    for (const slideFile of slideFiles) {
+        text += `--- Slide ${slideIndex} ---\n\n`;
+        const slideXml = await zipContent.files[slideFile].async('text');
+        const textMatches = slideXml.match(/<a:t>([^<]+)<\/a:t>/g) || [];
+        const slideText = textMatches.map(match => match.replace(/<\/?a:t>/g, '')).join(' ');
+
+        if (slideText.trim()) {
+            text += slideText + '\n\n';
+        } else {
+            text += '(No text found)\n\n';
+        }
+        slideIndex++;
+    }
+    return text || '(No text found)';
 };
