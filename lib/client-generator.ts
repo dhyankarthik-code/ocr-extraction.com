@@ -342,7 +342,12 @@ export const generatePDFFromExcel = async (file: File): Promise<Blob> => {
         isFirstSheet = false;
 
         const worksheet = workbook.Sheets[sheetName];
-        const jsonData = utils.sheet_to_json<string[]>(worksheet, { header: 1 });
+        let jsonData = utils.sheet_to_json<any[]>(worksheet, { header: 1 });
+
+        // Filter out completely empty rows
+        jsonData = jsonData.filter(row =>
+            Array.isArray(row) && row.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== '')
+        );
 
         if (jsonData.length === 0) continue;
 
@@ -550,7 +555,12 @@ export const generateMergedPDFFromExcel = async (files: File[]): Promise<Blob> =
             isFirstPage = false;
 
             const worksheet = workbook.Sheets[sheetName];
-            const jsonData = utils.sheet_to_json<string[]>(worksheet, { header: 1 });
+            let jsonData = utils.sheet_to_json<any[]>(worksheet, { header: 1 });
+
+            // Filter out completely empty rows
+            jsonData = jsonData.filter(row =>
+                Array.isArray(row) && row.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== '')
+            );
 
             if (jsonData.length === 0) continue;
 
