@@ -4,14 +4,15 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
     const hostname = request.headers.get('host') || ''
 
-    // Check if the hostname is the default Vercel production domain
+    // Check if the hostname is the default Vercel production domain or the root domain
     // We strictly target the known production alias to avoid breaking Previews (which also end in vercel.app)
     // Your team can still access Previews, but the main "free-ocr-app.vercel.app" will redirect to the .com
     const isVercelProd = hostname === 'free-ocr-app.vercel.app' || hostname === 'freeocnpp.vercelapp'
+    const isRootDomain = hostname === 'ocr-extraction.com'
 
     if (
         process.env.NODE_ENV === 'production' &&
-        isVercelProd
+        (isVercelProd || isRootDomain)
     ) {
         const url = request.nextUrl.clone()
         url.hostname = 'www.ocr-extraction.com'

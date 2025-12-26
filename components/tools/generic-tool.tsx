@@ -5,7 +5,19 @@ import { Upload, FileText, ArrowRight, Download, CheckCircle, AlertCircle, Loade
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
 import UploadZone from "@/components/upload-zone"
 import { toast } from "sonner"
-import { generateWord, generateExcel, generatePPT, generatePDF, generatePDFFromImage, generateMergedPDF, downloadBlob } from "@/lib/client-generator"
+import {
+    generateWord,
+    generateExcel,
+    generatePPT,
+    generatePDF,
+    generatePDFFromImage,
+    generateMergedPDF,
+    downloadBlob,
+    generateMergedWord,
+    generateMergedExcel,
+    generateMergedPPT,
+    generateImageFromText
+} from "@/lib/client-generator"
 import JSZip from 'jszip'
 
 export type ToolType =
@@ -209,8 +221,9 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
                     downloadBlob(blob, filename.replace('text', 'txt'))
                     break
                 case 'Image':
-                    toast.error("Image generation not supported yet.")
-                    return;
+                    blob = await generateImageFromText(result.text)
+                    downloadBlob(blob, filename.replace('image', 'png'))
+                    break
             }
 
         } catch (e: any) {
@@ -232,7 +245,40 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
                 return
             }
 
-            // Standard ZIP Mode for non-PDF outputs
+            // Merged Word Mode
+            if (config.toFormat === 'Word') {
+                const blob = await generateMergedWord(successfulFiles)
+                downloadBlob(blob, `${config.title.toLowerCase().replace(/\s+/g, '_')}_merged.docx`)
+                toast.success("Merged Word Document Downloaded!")
+                return
+            }
+
+            // Merged Excel Mode
+            if (config.toFormat === 'Excel') {
+                const blob = generateMergedExcel(successfulFiles)
+                downloadBlob(blob, `${config.title.toLowerCase().replace(/\s+/g, '_')}_merged.xlsx`)
+                toast.success("Merged Excel Spreadsheet Downloaded!")
+                return
+            }
+
+            // Merged PPT Mode
+            if (config.toFormat === 'PPT') {
+                const blob = await generateMergedPPT(successfulFiles)
+                downloadBlob(blob, `${config.title.toLowerCase().replace(/\s+/g, '_')}_merged.pptx`)
+                toast.success("Merged Presentation Downloaded!")
+                return
+            }
+
+            // Merged Text Mode
+            if (config.toFormat === 'Text') {
+                const mergedText = successfulFiles.map(fs => `--- ${fs.file.name} ---\n\n${fs.result.text}`).join('\n\n\n')
+                const blob = new Blob([mergedText], { type: 'text/plain' })
+                downloadBlob(blob, `${config.title.toLowerCase().replace(/\s+/g, '_')}_merged.txt`)
+                toast.success("Merged Text File Downloaded!")
+                return
+            }
+
+            // Standard ZIP Mode for non-document outputs (e.g. Image output)
             const zip = new JSZip()
             let count = 0
 
@@ -243,10 +289,7 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
                 if (result.text) {
                     switch (config.toFormat) {
-                        case 'Word': blob = await generateWord(result.text); break;
-                        case 'Excel': blob = generateExcel(result.text); break;
-                        case 'PPT': blob = await generatePPT(result.text); break;
-                        case 'Text': blob = new Blob([result.text], { type: 'text/plain' }); break;
+                        case 'Image': blob = await generateImageFromText(result.text); break;
                     }
                 }
 
@@ -298,15 +341,19 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
                                 {fileStates.some(fs => fs.status === 'success') && (
                                     <button
                                         onClick={handleDownloadAll}
-                                        className="text-sm bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 font-medium flex items-center gap-2 transition-colors"
+                                        className="text-sm bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 font-bold flex items-center gap-2 transition-all hover:scale-[1.05] shadow-md shadow-red-500/20"
                                     >
                                         {config.toFormat === 'PDF' ? (
                                             <>
                                                 <FileStack className="w-4 h-4" /> Download Merged PDF
                                             </>
+                                        ) : config.toFormat === 'Image' ? (
+                                            <>
+                                                <Archive className="w-4 h-4" /> Download All (ZIP)
+                                            </>
                                         ) : (
                                             <>
-                                                <Archive className="w-4 h-4" /> Download All
+                                                <FileStack className="w-4 h-4" /> Download Merged {config.toFormat}
                                             </>
                                         )}
                                     </button>
@@ -353,19 +400,26 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
                                     <div className="p-4 border-t border-gray-200 bg-white">
                                         {/* Text Preview Snippet */}
                                         {fs.result?.text && (
-                                            <div className="mb-4 p-3 bg-gray-50 rounded-lg text-xs font-mono text-gray-600 max-h-24 overflow-hidden relative">
+                                            <div className="mb-2 p-3 bg-gray-50 rounded-lg text-xs font-mono text-gray-600 max-h-24 overflow-hidden relative">
                                                 {fs.result.text.slice(0, 300)}...
                                                 <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-gray-50 to-transparent"></div>
                                             </div>
                                         )}
 
-                                        <button
-                                            onClick={() => handleDownload(fs)}
-                                            className="w-full py-2 bg-red-600 text-white rounded-lg font-medium text-sm hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
-                                        >
-                                            <Download className="w-4 h-4" />
-                                            Download {config.toFormat}
-                                        </button>
+                                        {/* Individual download button only for Image output, others are merged */}
+                                        {config.toFormat === 'Image' ? (
+                                            <button
+                                                onClick={() => handleDownload(fs)}
+                                                className="w-full py-2 bg-red-600 text-white rounded-lg font-medium text-sm hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                                            >
+                                                <Download className="w-4 h-4" />
+                                                Download {config.toFormat}
+                                            </button>
+                                        ) : (
+                                            <div className="text-center text-xs text-gray-400 italic">
+                                                Will be included in the merged document
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 

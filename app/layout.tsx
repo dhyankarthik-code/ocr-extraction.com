@@ -34,9 +34,6 @@ export const metadata: Metadata = {
   creator: "Infy Galaxy",
   publisher: "Infy Galaxy",
   metadataBase: new URL('https://www.ocr-extraction.com'),
-  alternates: {
-    canonical: './', // Self-referencing canonical
-  },
   openGraph: {
     title: "Free OCR to Text | Convert Image/PDF to Text & Excel",
     description: "Convert images to text, PDF, and Excel for free. No limits, 100% accurate AI extraction (Mistral/VLM). Try the best OCR tool online today.",
