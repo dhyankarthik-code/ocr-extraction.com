@@ -32,7 +32,13 @@ import {
     generateExcelFromPPT,
     generateMergedExcelFromPDF,
     generateMergedExcelFromWord,
-    generateMergedExcelFromPPT
+    generateMergedExcelFromPPT,
+    generateWordFromPDF,
+    generateWordFromExcel,
+    generateWordFromPPT,
+    generateMergedWordFromPDF,
+    generateMergedWordFromExcel,
+    generateMergedWordFromPPT
 } from "@/lib/client-generator"
 import JSZip from 'jszip'
 
@@ -42,6 +48,7 @@ export type ToolType =
     | 'office-to-pdf' // Direct Office file to PDF conversion
     | 'office-to-image' // Convert document to images (one per page)
     | 'office-to-excel' // Convert document to Excel
+    | 'office-to-word' // Convert document to Word
     | 'coming-soon'
 
 export interface ToolConfig {
@@ -242,6 +249,23 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
                 updateFileState(id, { status: 'success', progress: 100, result: { excelBlob, officeFile: true } })
                 toast.success(`${file.name} converted!`)
+            } else if (config.type === 'office-to-word') {
+                // Document to Word conversion
+                updateFileState(id, { progress: 50 })
+
+                let wordBlob: Blob
+                if (config.fromFormat === 'PDF') {
+                    wordBlob = await generateWordFromPDF(file)
+                } else if (config.fromFormat === 'Excel') {
+                    wordBlob = await generateWordFromExcel(file)
+                } else if (config.fromFormat === 'PPT') {
+                    wordBlob = await generateWordFromPPT(file)
+                } else {
+                    throw new Error(`Unsupported format: ${config.fromFormat}`)
+                }
+
+                updateFileState(id, { status: 'success', progress: 100, result: { wordBlob, officeFile: true } })
+                toast.success(`${file.name} converted!`)
             } else {
                 updateFileState(id, { status: 'error', progress: 100, error: "This feature is coming soon" })
             }
@@ -271,6 +295,12 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
             // Handle office-to-excel conversion result
             if (result.officeFile && result.excelBlob) {
                 downloadBlob(result.excelBlob, filename.replace('pdf', 'xlsx').replace('docx', 'xlsx').replace('pptx', 'xlsx'))
+                return
+            }
+
+            // Handle office-to-word conversion result
+            if (result.officeFile && result.wordBlob) {
+                downloadBlob(result.wordBlob, filename.replace('pdf', 'docx').replace('xlsx', 'docx').replace('pptx', 'docx'))
                 return
             }
 
@@ -374,6 +404,26 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
                 downloadBlob(blob, `${config.title.toLowerCase().replace(/\s+/g, '_')}_merged.xlsx`)
                 toast.success("Merged Excel Downloaded!")
+                return
+            }
+
+            // Office-to-Word merged mode
+            if (config.type === 'office-to-word' && config.toFormat === 'Word') {
+                const files = successfulFiles.map(fs => fs.file)
+                let blob: Blob
+
+                if (config.fromFormat === 'PDF') {
+                    blob = await generateMergedWordFromPDF(files)
+                } else if (config.fromFormat === 'Excel') {
+                    blob = await generateMergedWordFromExcel(files)
+                } else if (config.fromFormat === 'PPT') {
+                    blob = await generateMergedWordFromPPT(files)
+                } else {
+                    throw new Error(`Unsupported format: ${config.fromFormat}`)
+                }
+
+                downloadBlob(blob, `${config.title.toLowerCase().replace(/\s+/g, '_')}_merged.docx`)
+                toast.success("Merged Word Downloaded!")
                 return
             }
 

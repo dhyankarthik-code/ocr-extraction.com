@@ -69,6 +69,16 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
         { label: 'Image to Excel', href: '/tools/image-to-excel' },
         { label: 'PPT to Excel', href: '/tools/ppt-to-excel' },
       ]
+    },
+    {
+      name: "Word Tools",
+      items: [
+        { label: 'PDF to Word', href: '/tools/pdf-to-word' },
+        { label: 'Image to Word', href: '/tools/image-to-word' },
+        { label: 'Text to Word', href: '/tools/text-to-word' },
+        { label: 'Excel to Word', href: '/tools/excel-to-word' },
+        { label: 'PPT to Word', href: '/tools/ppt-to-word' },
+      ]
     }
   ]
 
@@ -103,9 +113,9 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
             <DropdownMenuContent
               align="center"
               sideOffset={8}
-              className="w-[800px] bg-white border border-gray-100 shadow-xl rounded-xl p-6 animate-in fade-in zoom-in-95 duration-200 z-[110]"
+              className="w-[1000px] bg-white border border-gray-100 shadow-xl rounded-xl p-6 animate-in fade-in zoom-in-95 duration-200 z-[110]"
             >
-              <div className="grid grid-cols-4 gap-8">
+              <div className="grid grid-cols-5 gap-6">
                 {toolCategories.map((category) => (
                   <div key={category.name} className="space-y-2">
                     <div className="text-sm font-bold text-red-500 uppercase tracking-wider mb-2">

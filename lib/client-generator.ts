@@ -1023,3 +1023,217 @@ export const generateMergedExcelFromPPT = async (files: File[]): Promise<Blob> =
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     });
 };
+
+/**
+ * Convert PDF to Word
+ */
+export const generateWordFromPDF = async (file: File): Promise<Blob> => {
+    const pdfjs = await getPdfJs();
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+
+    const paragraphs: Paragraph[] = [];
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map((item: any) => item.str).join(' ');
+
+        if (pageText.trim()) {
+            paragraphs.push(new Paragraph({ children: [new TextRun(pageText)] }));
+        }
+    }
+
+    if (paragraphs.length === 0) {
+        paragraphs.push(new Paragraph({ children: [new TextRun('(No text extracted)')] }));
+    }
+
+    const doc = new Document({ sections: [{ properties: {}, children: paragraphs }] });
+    return await Packer.toBlob(doc);
+};
+
+/**
+ * Convert Excel to Word
+ */
+export const generateWordFromExcel = async (file: File): Promise<Blob> => {
+    const buffer = await file.arrayBuffer();
+    const workbook = read(buffer);
+
+    const paragraphs: Paragraph[] = [];
+
+    for (const sheetName of workbook.SheetNames) {
+        paragraphs.push(new Paragraph({
+            children: [new TextRun({ text: `Sheet: ${sheetName}`, bold: true })]
+        }));
+
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = utils.sheet_to_json<any[]>(worksheet, { header: 1 });
+
+        for (const row of jsonData) {
+            if (Array.isArray(row) && row.some(cell => cell !== null && cell !== undefined)) {
+                const rowText = row.map(cell => String(cell ?? '')).join(' | ');
+                paragraphs.push(new Paragraph({ children: [new TextRun(rowText)] }));
+            }
+        }
+        paragraphs.push(new Paragraph({ children: [] })); // Empty line
+    }
+
+    const doc = new Document({ sections: [{ properties: {}, children: paragraphs }] });
+    return await Packer.toBlob(doc);
+};
+
+/**
+ * Convert PPT to Word
+ */
+export const generateWordFromPPT = async (file: File): Promise<Blob> => {
+    const buffer = await file.arrayBuffer();
+    const zip = new JSZip();
+    const zipContent = await zip.loadAsync(buffer);
+
+    const slideFiles = Object.keys(zipContent.files)
+        .filter(name => name.startsWith('ppt/slides/slide') && name.endsWith('.xml'))
+        .sort();
+
+    const paragraphs: Paragraph[] = [];
+    let slideNum = 1;
+
+    for (const slideFile of slideFiles) {
+        paragraphs.push(new Paragraph({
+            children: [new TextRun({ text: `Slide ${slideNum}`, bold: true })]
+        }));
+
+        const slideXml = await zipContent.files[slideFile].async('text');
+        const textMatches = slideXml.match(/<a:t>([^<]+)<\/a:t>/g) || [];
+        const slideText = textMatches.map(match => match.replace(/<\/?a:t>/g, '')).join(' ');
+
+        if (slideText.trim()) {
+            paragraphs.push(new Paragraph({ children: [new TextRun(slideText)] }));
+        }
+        paragraphs.push(new Paragraph({ children: [] }));
+        slideNum++;
+    }
+
+    if (paragraphs.length === 0) {
+        paragraphs.push(new Paragraph({ children: [new TextRun('(No text found)')] }));
+    }
+
+    const doc = new Document({ sections: [{ properties: {}, children: paragraphs }] });
+    return await Packer.toBlob(doc);
+};
+
+/**
+ * Generate merged Word from multiple PDFs
+ */
+export const generateMergedWordFromPDF = async (files: File[]): Promise<Blob> => {
+    const pdfjs = await getPdfJs();
+    const paragraphs: Paragraph[] = [];
+
+    for (const file of files) {
+        paragraphs.push(new Paragraph({
+            children: [new TextRun({ text: `--- ${file.name} ---`, bold: true })]
+        }));
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const page = await pdf.getPage(pageNum);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map((item: any) => item.str).join(' ');
+                if (pageText.trim()) {
+                    paragraphs.push(new Paragraph({ children: [new TextRun(pageText)] }));
+                }
+            }
+        } catch (e) {
+            paragraphs.push(new Paragraph({ children: [new TextRun(`Error: ${e}`)] }));
+        }
+        paragraphs.push(new Paragraph({ children: [] }));
+    }
+
+    const doc = new Document({ sections: [{ properties: {}, children: paragraphs }] });
+    return await Packer.toBlob(doc);
+};
+
+/**
+ * Generate merged Word from multiple Excel files
+ */
+export const generateMergedWordFromExcel = async (files: File[]): Promise<Blob> => {
+    const paragraphs: Paragraph[] = [];
+
+    for (const file of files) {
+        paragraphs.push(new Paragraph({
+            children: [new TextRun({ text: `--- ${file.name} ---`, bold: true })]
+        }));
+
+        try {
+            const buffer = await file.arrayBuffer();
+            const workbook = read(buffer);
+
+            for (const sheetName of workbook.SheetNames) {
+                paragraphs.push(new Paragraph({
+                    children: [new TextRun({ text: `Sheet: ${sheetName}`, italics: true })]
+                }));
+
+                const worksheet = workbook.Sheets[sheetName];
+                const jsonData: any[][] = utils.sheet_to_json(worksheet, { header: 1 });
+
+                for (const row of jsonData) {
+                    if (Array.isArray(row) && row.some(cell => cell != null)) {
+                        const rowText = row.map(cell => String(cell ?? '')).join(' | ');
+                        paragraphs.push(new Paragraph({ children: [new TextRun(rowText)] }));
+                    }
+                }
+            }
+        } catch (e) {
+            paragraphs.push(new Paragraph({ children: [new TextRun(`Error: ${e}`)] }));
+        }
+        paragraphs.push(new Paragraph({ children: [] }));
+    }
+
+    const doc = new Document({ sections: [{ properties: {}, children: paragraphs }] });
+    return await Packer.toBlob(doc);
+};
+
+/**
+ * Generate merged Word from multiple PPT files
+ */
+export const generateMergedWordFromPPT = async (files: File[]): Promise<Blob> => {
+    const paragraphs: Paragraph[] = [];
+
+    for (const file of files) {
+        paragraphs.push(new Paragraph({
+            children: [new TextRun({ text: `--- ${file.name} ---`, bold: true })]
+        }));
+
+        try {
+            const buffer = await file.arrayBuffer();
+            const zip = new JSZip();
+            const zipContent = await zip.loadAsync(buffer);
+
+            const slideFiles = Object.keys(zipContent.files)
+                .filter(name => name.startsWith('ppt/slides/slide') && name.endsWith('.xml'))
+                .sort();
+
+            let slideNum = 1;
+            for (const slideFile of slideFiles) {
+                const slideXml = await zipContent.files[slideFile].async('text');
+                const textMatches = slideXml.match(/<a:t>([^<]+)<\/a:t>/g) || [];
+                const slideText = textMatches.map(match => match.replace(/<\/?a:t>/g, '')).join(' ');
+
+                if (slideText.trim()) {
+                    paragraphs.push(new Paragraph({
+                        children: [new TextRun({ text: `Slide ${slideNum}: `, bold: true }), new TextRun(slideText)]
+                    }));
+                }
+                slideNum++;
+            }
+        } catch (e) {
+            paragraphs.push(new Paragraph({ children: [new TextRun(`Error: ${e}`)] }));
+        }
+        paragraphs.push(new Paragraph({ children: [] }));
+    }
+
+    const doc = new Document({ sections: [{ properties: {}, children: paragraphs }] });
+    return await Packer.toBlob(doc);
+};
