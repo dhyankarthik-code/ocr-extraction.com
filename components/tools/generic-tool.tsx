@@ -201,6 +201,8 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
             } else if (config.type === 'client-convert') {
                 if (file.type.startsWith('image/')) {
+                    // For image-to-pdf, the result needs to indicate it's an image
+                    // The preview is already there from the input
                     updateFileState(id, { status: 'success', progress: 100, result: { image: true } })
                 } else {
                     const text = await file.text()
@@ -223,6 +225,20 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
                 }
 
                 updateFileState(id, { status: 'success', progress: 100, result: { pdfBlob, officeFile: true } })
+
+                // Generate preview for PDF
+                try {
+                    const tempFile = new File([pdfBlob], "temp.pdf", { type: "application/pdf" })
+                    generateImagesFromPDF(tempFile).then(images => {
+                        if (images.length > 0) {
+                            const previewUrl = URL.createObjectURL(images[0])
+                            updateFileState(id, { previewUrl })
+                        }
+                    }).catch(err => console.error("Preview generation failed", err))
+                } catch (e) {
+                    console.error("Failed to initiate preview", e)
+                }
+
                 toast.success(`${file.name} converted!`)
             } else if (config.type === 'office-to-image') {
                 // Document to Image conversion
@@ -241,7 +257,13 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
                     throw new Error(`Unsupported format: ${config.fromFormat}`)
                 }
 
-                updateFileState(id, { status: 'success', progress: 100, result: { images } })
+                // Create preview URL from the first image
+                let previewUrl = null
+                if (images.length > 0) {
+                    previewUrl = URL.createObjectURL(images[0])
+                }
+
+                updateFileState(id, { status: 'success', progress: 100, result: { images }, previewUrl: previewUrl || fileState.previewUrl })
                 toast.success(`${file.name} converted!`)
             } else if (config.type === 'office-to-excel') {
                 // Document to Excel conversion
@@ -328,51 +350,66 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
         try {
             const { file, result } = fileState
             let blob: Blob | null = null
-            const filename = file.name.split('.')[0] + `_converted.${config.toFormat.toLowerCase()}`
 
+            // Helper to get correct extension
+            const getExt = (format: string) => {
+                switch (format) {
+                    case 'Image': return 'png'
+                    case 'PDF': return 'pdf'
+                    case 'Word': return 'docx'
+                    case 'Excel': return 'xlsx'
+                    case 'PPT': return 'pptx'
+                    case 'Text': return 'txt'
+                    default: return format.toLowerCase()
+                }
+            }
+
+            const ext = getExt(config.toFormat)
+            const filenameBase = file.name.split('.')[0]
+            const filename = `${filenameBase}_converted.${ext}`
 
             // Handle office-to-pdf conversion result
             if (result.officeFile && result.pdfBlob) {
-                downloadBlob(result.pdfBlob, filename)
+                downloadBlob(result.pdfBlob, `${filenameBase}_converted.pdf`)
                 return
             }
 
             // Handle office-to-excel conversion result
             if (result.officeFile && result.excelBlob) {
-                downloadBlob(result.excelBlob, filename.replace('pdf', 'xlsx').replace('docx', 'xlsx').replace('pptx', 'xlsx'))
+                downloadBlob(result.excelBlob, `${filenameBase}_converted.xlsx`)
                 return
             }
 
             // Handle office-to-word conversion result
             if (result.officeFile && result.wordBlob) {
-                downloadBlob(result.wordBlob, filename.replace('pdf', 'docx').replace('xlsx', 'docx').replace('pptx', 'docx'))
+                downloadBlob(result.wordBlob, `${filenameBase}_converted.docx`)
                 return
             }
 
             // Handle office-to-ppt conversion result
             if (result.officeFile && result.pptBlob) {
-                downloadBlob(result.pptBlob, filename.replace('pdf', 'pptx').replace('docx', 'pptx').replace('xlsx', 'pptx'))
+                downloadBlob(result.pptBlob, `${filenameBase}_converted.pptx`)
                 return
             }
 
             // Handle office-to-image conversion result
             if (result.images && Array.isArray(result.images)) {
                 if (result.images.length === 1) {
-                    downloadBlob(result.images[0], filename.replace('pdf', 'png').replace('docx', 'png').replace('xlsx', 'png').replace('pptx', 'png'))
+                    downloadBlob(result.images[0], `${filenameBase}_page_1.png`)
                 } else {
                     const zip = new JSZip()
                     result.images.forEach((blob: Blob, index: number) => {
                         zip.file(`page_${index + 1}.png`, blob)
                     })
                     const content = await zip.generateAsync({ type: "blob" })
-                    downloadBlob(content, `${file.name.split('.')[0]}_images.zip`)
+                    downloadBlob(content, `${filenameBase}_images.zip`)
                 }
                 return
             }
 
             if (result.image && config.toFormat === 'PDF') {
                 blob = await generatePDFFromImage(file)
-                downloadBlob(blob, filename.replace('image', 'pdf'))
+                downloadBlob(blob, `${filenameBase}_converted.pdf`)
                 return
             }
 
@@ -383,27 +420,27 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
             switch (config.toFormat) {
                 case 'Word':
                     blob = await generateWord(result.text)
-                    await downloadBlob(blob, filename.replace('word', 'docx'))
+                    downloadBlob(blob, `${filenameBase}_converted.docx`)
                     break
                 case 'Excel':
                     blob = await generateExcel(result.text)
-                    downloadBlob(blob, filename.replace('excel', 'xlsx'))
+                    downloadBlob(blob, `${filenameBase}_converted.xlsx`)
                     break
                 case 'PPT':
                     blob = await generatePPT(result.text)
-                    downloadBlob(blob, filename.replace('ppt', 'pptx'))
+                    downloadBlob(blob, `${filenameBase}_converted.pptx`)
                     break
                 case 'PDF':
                     blob = await generatePDF(result.text)
-                    downloadBlob(blob, filename.replace('pdf', 'pdf'))
+                    downloadBlob(blob, `${filenameBase}_converted.pdf`)
                     break
                 case 'Text':
                     blob = new Blob([result.text], { type: 'text/plain' })
-                    downloadBlob(blob, filename.replace('text', 'txt'))
+                    downloadBlob(blob, `${filenameBase}_converted.txt`)
                     break
                 case 'Image':
                     blob = await generateImageFromText(result.text)
-                    downloadBlob(blob, filename.replace('image', 'png'))
+                    downloadBlob(blob, `${filenameBase}_converted.png`)
                     break
             }
 
@@ -564,7 +601,9 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
             for (const fs of successfulFiles) {
                 const { file, result } = fs
-                const filename = file.name.split('.')[0] + `_converted.${config.toFormat.toLowerCase()}`
+                const filenameBase = file.name.split('.')[0]
+                const ext = config.toFormat === 'Image' ? 'png' : config.toFormat.toLowerCase()
+                const filename = `${filenameBase}_converted.${ext}`
                 let blob: Blob | null = null
 
                 if (result.text) {
@@ -572,6 +611,10 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
                         case 'Image': blob = await generateImageFromText(result.text); break;
                     }
                 }
+
+                // Handle client-convert with 'image: true' (image-to-pdf converted flow)
+                // This seems to be handled by generateMergedPDF above if format is PDF
+                // But if they want ZIP of single PDFs? Unlikely.
 
                 if (blob) {
                     zip.file(filename, blob)
