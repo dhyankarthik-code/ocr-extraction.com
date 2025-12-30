@@ -65,6 +65,7 @@ export default function SmartUploadZone() {
 
                 const { quickPreprocess } = await import('@/lib/image-preprocessing')
                 const preprocessedBlob = await quickPreprocess(file)
+                console.log(`Preprocessed image size: ${(preprocessedBlob.size / 1024 / 1024).toFixed(2)} MB`)
                 formData.append('file', preprocessedBlob, file.name)
             }
 

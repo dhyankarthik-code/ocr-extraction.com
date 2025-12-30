@@ -161,6 +161,14 @@ export async function preprocessImageForOCR(
                 canvas.width = img.width;
                 canvas.height = img.height;
 
+                // Resize if too large (Max 2000px) significantly reduces payload size
+                const MAX_DIMENSION = 2000;
+                if (canvas.width > MAX_DIMENSION || canvas.height > MAX_DIMENSION) {
+                    const ratio = Math.min(MAX_DIMENSION / canvas.width, MAX_DIMENSION / canvas.height);
+                    canvas.width = Math.round(canvas.width * ratio);
+                    canvas.height = Math.round(canvas.height * ratio);
+                }
+
                 // Apply EXIF orientation correction
                 if (autoRotate && orientation !== 1) {
                     applyExifOrientation(ctx, canvas, img, orientation);
@@ -346,6 +354,6 @@ export async function quickPreprocess(file: File): Promise<Blob> {
         reduceNoise: true,
         sharpen: true,
         autoRotate: true,
-        quality: 0.95,
+        quality: 0.8,
     });
 }

@@ -29,7 +29,7 @@ export default function CtaSection({
     }
 
     return (
-        <section className="w-full max-w-3xl mb-12 px-4 text-center mx-auto">
+        <section className="w-full max-w-3xl mb-12 mt-20 px-4 text-center mx-auto">
             <h3 className={titleClassName + " mb-4"}>
                 {title}
             </h3>

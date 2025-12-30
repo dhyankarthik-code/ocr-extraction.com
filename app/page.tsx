@@ -1,9 +1,14 @@
 "use client"
 
-import { TypeAnimation } from 'react-type-animation';
-
+import dynamic from 'next/dynamic'
 import SmartUploadZone from "@/components/smart-upload-zone"
 import CtaSection from "@/components/cta-section"
+
+// Lazy load TypeAnimation for better performance
+const TypeAnimation = dynamic(
+  () => import('react-type-animation').then(mod => mod.TypeAnimation),
+  { ssr: false }
+)
 
 export default function Home() {
   return (
@@ -139,6 +144,7 @@ export default function Home() {
             </p>
           </div>
 
+
           {/* Feature 6 */}
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
             <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center mb-4">
@@ -150,6 +156,47 @@ export default function Home() {
             <p className="text-gray-600 text-sm">
               Desktop, laptop, tablet, or smartphone — OCR-Extraction.com adapts to every screen
               for a seamless user experience.
+            </p>
+          </div>
+
+          {/* Feature 7 - Convert File Formats */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </div>
+            <h4 className="text-lg font-bold text-gray-900 mb-2">Convert File Formats</h4>
+            <p className="text-gray-600 text-sm">
+              Accurate conversion from one format to another is simple, fast, and secure with 100% quality.
+              Examples: Word to PDF, PDF to Excel, PDF to PPT, Excel to PDF, PPT to PDF, Image to Word, or Text to PDF.
+            </p>
+          </div>
+
+          {/* Feature 8 - Extract DATA */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+              </svg>
+            </div>
+            <h4 className="text-lg font-bold text-gray-900 mb-2">Extract DATA</h4>
+            <p className="text-gray-600 text-sm">
+              Extract data from PDFs, images, handwritten notes, or any documents. We have solved the complexity of manual data entry for you.
+            </p>
+          </div>
+
+          {/* Feature 9 - Digital Documentation */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+              </svg>
+            </div>
+            <h4 className="text-lg font-bold text-gray-900 mb-2">Digital Documentation</h4>
+            <p className="text-gray-600 text-sm">
+              Extract and save documents in digital formats for documentation such as <strong>invoice details, billing details,
+                insurance claims, loan documents, contracts, logistics documents, and any type of documents</strong>.
             </p>
           </div>
         </div>

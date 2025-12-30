@@ -88,7 +88,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geist.className} font-sans antialiased bg-white text-gray-900`}>
+      <body className={`${geist.className} font-sans antialiased bg-white text-gray-900`} suppressHydrationWarning>
         <MainLayout>
           {children}
         </MainLayout>

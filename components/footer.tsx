@@ -1,13 +1,44 @@
 "use client"
 
 import Link from "next/link"
+import { toolCategories } from "@/lib/tools-data"
 import { Heart, FileText, Wrench, BookOpen, Info, Mail, Newspaper } from "lucide-react"
 
 export default function Footer() {
     return (
         <footer className="bg-gray-900 text-gray-300 border-t border-gray-800">
             <div className="container mx-auto px-4 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+                {/* Upper Section: Tools */}
+                <div className="mb-12">
+                    <h3 className="text-white text-xl md:text-2xl font-bold mb-8 flex items-center gap-3">
+                        <Wrench className="w-6 h-6 md:w-8 md:h-8" />
+                        File Format Conversion Tools for Documentation and Digital Record Keeping
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+                        {toolCategories.map((category) => (
+                            <div key={category.name}>
+                                <h4 className="text-white font-bold uppercase tracking-wider mb-3">
+                                    {category.name}
+                                </h4>
+                                <ul className="space-y-2 text-sm">
+                                    {category.items.map((tool) => (
+                                        <li key={tool.label}>
+                                            <Link href={tool.href} className="hover:text-red-500 transition-colors">
+                                                {tool.label}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-gray-800 my-8"></div>
+
+                {/* Lower Section: Brand & Nav Links */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
                     {/* Brand */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
@@ -21,46 +52,16 @@ export default function Footer() {
                         </p>
                     </div>
 
-                    {/* OCR & Tools */}
+                    {/* OCR */}
                     <div>
                         <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                             <FileText className="w-4 h-4" />
-                            OCR & Tools
+                            OCR
                         </h3>
                         <ul className="space-y-2 text-sm">
                             <li>
                                 <Link href="/about-ocr" className="hover:text-red-500 transition-colors">
                                     About OCR
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/tools/image-to-pdf" className="hover:text-red-500 transition-colors">
-                                    Image to PDF
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/tools/text-to-pdf" className="hover:text-red-500 transition-colors">
-                                    Text to PDF
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/tools/text-to-word" className="hover:text-red-500 transition-colors">
-                                    Text to Word
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/tools/text-to-excel" className="hover:text-red-500 transition-colors">
-                                    Text to Excel
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/tools/text-to-ppt" className="hover:text-red-500 transition-colors">
-                                    Text to PPT
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/tools/text-to-image" className="hover:text-red-500 transition-colors">
-                                    Text to Image
                                 </Link>
                             </li>
                         </ul>
@@ -150,6 +151,6 @@ export default function Footer() {
                     {/* Privacy Policy and Terms of Service removed */}
                 </div>
             </div>
-        </footer>
+        </footer >
     )
 }

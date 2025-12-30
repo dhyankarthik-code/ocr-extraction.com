@@ -751,19 +751,42 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
                 )}
             </div>
 
-            <div className="mt-12 grid md:grid-cols-3 gap-8 text-center bg-gray-50 p-8 rounded-2xl">
+            <div className="mt-12 grid md:grid-cols-3 gap-6">
                 <h2 className="sr-only">Key Features</h2>
-                <div className="space-y-2">
-                    <h3 className="font-bold text-gray-900">Fast Extraction</h3>
-                    <p className="text-sm text-gray-600">Powered by advanced AI for quick and accurate results.</p>
+
+                {/* Card 1 - Exceptional Accuracy */}
+                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3">
+                    <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+                        <CheckCircle className="w-6 h-6 text-red-500" />
+                    </div>
+                    <h3 className="font-bold text-gray-900 text-lg">Exceptional Accuracy</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                        Our AI-powered optical character recognition engine is trained on millions of samples to ensure unmatched detail, clarity, and precision. From printed text to complex documents, you get near-perfect extraction every time.
+                    </p>
                 </div>
-                <div className="space-y-2">
-                    <h3 className="font-bold text-gray-900">Secure Processing</h3>
-                    <p className="text-sm text-gray-600">All files are processed securely and deleted automatically.</p>
+
+                {/* Card 2 - Instant Results */}
+                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3">
+                    <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
+                        <Loader2 className="w-6 h-6 text-blue-500" />
+                    </div>
+                    <h3 className="font-bold text-gray-900 text-lg">Instant Results</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                        Upload your file and watch it convert within seconds. Thanks to our optimized backend and fast cloud processing, your workflow stays smooth and effortless.
+                    </p>
                 </div>
-                <div className="space-y-2">
-                    <h3 className="font-bold text-gray-900">High Quality</h3>
-                    <p className="text-sm text-gray-600">Maintains formatting and structure of your documents.</p>
+
+                {/* Card 3 - 100% Free to Use */}
+                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3">
+                    <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 className="font-bold text-gray-900 text-lg">100% Free to Use</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                        No hidden fees, no limits, no sign-ups. Access all features without worrying about subscriptions or trials.
+                    </p>
                 </div>
             </div>
         </div>

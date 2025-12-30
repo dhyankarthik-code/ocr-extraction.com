@@ -97,11 +97,37 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
           </p>
 
           {/* Button-like visual */}
-          <div className="pointer-events-none">
-            <InteractiveHoverButton
-              text="Browse Files"
-              className="pointer-events-auto w-48"
-            />
+          <div className="flex gap-5 items-center justify-center flex-wrap">
+            <div className="pointer-events-none">
+              <InteractiveHoverButton
+                text="Browse Files"
+                className="pointer-events-auto w-48"
+              />
+            </div>
+
+            {/* Camera Button - Mobile Only */}
+            <div className="block md:hidden">
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={(e) => {
+                  const files = e.target.files
+                  if (files && files.length > 0) {
+                    onDrop(Array.from(files))
+                    e.target.value = '' // Reset input
+                  }
+                }}
+                className="hidden"
+                id="camera-input"
+              />
+              <label htmlFor="camera-input" className="cursor-pointer">
+                <InteractiveHoverButton
+                  text="Take Photo"
+                  className="w-48"
+                />
+              </label>
+            </div>
           </div>
         </div>
 
