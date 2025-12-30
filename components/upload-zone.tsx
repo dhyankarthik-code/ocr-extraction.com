@@ -109,7 +109,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
             <div className="block md:hidden">
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*;capture=camera"
                 capture="environment"
                 onChange={(e) => {
                   const files = e.target.files

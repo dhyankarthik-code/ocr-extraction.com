@@ -10,11 +10,11 @@ export default function Footer() {
             <div className="container mx-auto px-4 py-12">
                 {/* Upper Section: Tools */}
                 <div className="mb-12">
-                    <h3 className="text-white text-xl md:text-2xl font-bold mb-8 flex items-center gap-3">
-                        <Wrench className="w-6 h-6 md:w-8 md:h-8" />
-                        File Format Conversion Tools for Documentation and Digital Record Keeping
+                    <h3 className="text-white font-bold mb-8 flex flex-col md:flex-row items-center md:items-center justify-center md:justify-start gap-3 md:gap-3 text-center md:text-left">
+                        <Wrench className="w-10 h-10 md:w-8 md:h-8 flex-shrink-0" />
+                        <span className="text-lg md:text-2xl leading-tight">File Format Conversion Tools for Documentation and Digital Record Keeping</span>
                     </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-8">
                         {toolCategories.map((category) => (
                             <div key={category.name}>
                                 <h4 className="text-white font-bold uppercase tracking-wider mb-3">

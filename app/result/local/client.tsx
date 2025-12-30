@@ -14,6 +14,7 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
 import DocumentChat from "@/components/document-chat"
 import * as XLSX from "xlsx"
 import pptxgen from "pptxgenjs"
+import { jsPDF } from "jspdf"
 
 
 export default function LocalResultPage() {
@@ -135,60 +136,38 @@ export default function LocalResultPage() {
         saveAs(blob, `${fileName} ocr result.docx`)
     }
 
-    const handleDownloadPdf = async () => {
-        const pdfDoc = await PDFDocument.create()
-        const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman)
-        const boldFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold)
-        const { width, height } = pdfDoc.addPage().getSize()
-        pdfDoc.removePage(0) // Remove the blank page we used to get dimensions
+    const handleDownloadPdf = () => {
+        try {
+            const doc = new jsPDF()
+            const fullText = getFullText()
 
-        const fontSize = 12
-        const headerFontSize = 14
+            const pageWidth = doc.internal.pageSize.getWidth()
+            const margin = 15
+            const maxLineWidth = pageWidth - (margin * 2)
+            const lineHeight = 7
 
-        if (isMultiPage && pages.length > 0) {
-            // Create separate PDF page for each OCR page
-            for (let i = 0; i < pages.length; i++) {
-                const page = pages[i];
-                let pdfPage = pdfDoc.addPage()
-                let y = height - 50
+            // Clean text to remove characters that might cause issues (basic sanitization)
+            // jsPDF handles most things, but let's be safe against control chars
+            const cleanText = fullText.replace(/[\x00-\x09\x0B\x0C\x0E-\x1F]/g, "")
 
-                // Page header
-                const headerText = isBatch
-                    ? `Image ${i + 1}: ${page.imageName || 'Untitled'}`
-                    : `Page ${i + 1} of ${pages.length}`;
-                pdfPage.drawText(headerText, { x: 50, y, size: headerFontSize, font: boldFont, color: rgb(0.2, 0.2, 0.2) })
-                y -= headerFontSize + 10
+            const lines = doc.splitTextToSize(cleanText, maxLineWidth)
+            let cursorY = 20
 
-                // Page content
-                const lines = page.text.split('\n')
-                for (const line of lines) {
-                    if (y < 50) {
-                        pdfPage = pdfDoc.addPage()
-                        y = height - 50
-                    }
-                    pdfPage.drawText(line.substring(0, 100), { x: 50, y, size: fontSize, font: timesRomanFont, color: rgb(0, 0, 0) })
-                    y -= fontSize + 2
+            // Add content
+            lines.forEach((line: string) => {
+                if (cursorY > doc.internal.pageSize.getHeight() - margin) {
+                    doc.addPage()
+                    cursorY = 20
                 }
-            }
-        } else {
-            // Single page document
-            let pdfPage = pdfDoc.addPage()
-            let y = height - 50
-            const lines = text.split('\n')
+                doc.text(line, margin, cursorY)
+                cursorY += lineHeight
+            })
 
-            for (const line of lines) {
-                if (y < 50) {
-                    pdfPage = pdfDoc.addPage()
-                    y = height - 50
-                }
-                pdfPage.drawText(line.substring(0, 100), { x: 50, y, size: fontSize, font: timesRomanFont, color: rgb(0, 0, 0) })
-                y -= fontSize + 2
-            }
+            doc.save(`${fileName} ocr result.pdf`)
+        } catch (error) {
+            console.error("PDF generation failed:", error)
+            alert("Failed to generate PDF. Please try 'Word' or 'TXT' format if the issue persists.")
         }
-
-        const pdfBytes = await pdfDoc.save()
-        const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" })
-        saveAs(blob, `${fileName} ocr result.pdf`)
     }
 
     const handleDownloadXlsx = () => {
