@@ -94,7 +94,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                             <User className="w-4 h-4" />
                             {author}
                         </span>
-                        <ViewCounter slug={post.slug} />
+                        <ViewCounter slug={slug} />
                     </div>
 
                     <h1
@@ -122,9 +122,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                 {/* Engagement Section */}
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 py-8 border-t border-b border-gray-100 mb-12">
                     <div className="flex items-center gap-4">
-                        <LikeButton slug={post.slug} />
+                        <LikeButton slug={slug} />
                     </div>
-                    <ShareButtons slug={post.slug} title={post.title.rendered} />
+                    <ShareButtons slug={slug} title={post.title.rendered} />
                 </div>
 
                 {/* Comments */}

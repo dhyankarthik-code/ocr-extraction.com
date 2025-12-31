@@ -26,9 +26,9 @@ export default function CommentSection({ slug }: CommentSectionProps) {
 
     // Validation Functions matching Contact Form
     const validateEmail = (email: string) => {
-        // Enforce that email starts with a letter, not a number
-        const emailRegex = /^[a-zA-Z][a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]*@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
-        return email.length > 0 && email.length <= 254 && emailRegex.test(email)
+        // Standard simple email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return emailRegex.test(email)
     }
 
     const hasInvalidNameChars = (value: string) => {
@@ -125,7 +125,7 @@ export default function CommentSection({ slug }: CommentSectionProps) {
         if (!email.trim()) {
             newErrors.email = "Email is required"
         } else if (!validateEmail(email)) {
-            newErrors.email = "Please enter a valid email address (cannot start with a number)"
+            newErrors.email = "Please enter a valid email address"
         }
 
         // Content Validation
