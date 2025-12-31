@@ -158,8 +158,8 @@ export async function preprocessImageForOCR(
                     return;
                 }
 
-                // Optimized Dimensions for Mobile (2400px is a sweet spot for detail vs speed)
-                const MAX_DIMENSION = 2400;
+                // Optimized Dimensions for Mobile (1600px is safe and fast)
+                const MAX_DIMENSION = 1600;
                 if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
                     const ratio = Math.min(MAX_DIMENSION / img.width, MAX_DIMENSION / img.height);
                     canvas.width = Math.round(img.width * ratio);
@@ -174,11 +174,13 @@ export async function preprocessImageForOCR(
                     applyExifOrientation(ctx, canvas, img, orientation);
                 }
 
-                // --- HARDWARE ACCELERATED FILTERS (Fast Path) ---
+                // --- HARDWARE ACCELERATED FILTERS ONLY (No slow JS loops) ---
                 let filterString = '';
                 if (grayscale) filterString += 'grayscale(100%) ';
-                if (enhanceContrast) filterString += 'contrast(1.2) brightness(1.05) '; // Less aggressive contrast
-                if (reduceNoise) filterString += 'blur(0.15px) '; // Slightly sharper
+                if (enhanceContrast) filterString += 'contrast(1.25) brightness(1.05) '; // Moderate contrast
+
+                // Note: We skip 'sharpen' (JS loop) and 'blur' as they kill performance on mobile
+                // The contrast boost is usually enough for OCR.
 
                 if (filterString) {
                     ctx.filter = filterString.trim();
@@ -187,17 +189,8 @@ export async function preprocessImageForOCR(
                 // Draw image with filters applied (Fast!)
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                // Reset filter for subsequent operations
+                // Reset filter
                 ctx.filter = 'none';
-
-                // --- SHARPEN (Optional & Optimized) ---
-                if (sharpen) {
-                    // Only apply sharpening if image is not too large or on faster devices
-                    // For mobile, we might want to skip or use a very fast pass
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const sharpened = applyDocumentSharpen(imageData);
-                    ctx.putImageData(sharpened, 0, 0);
-                }
 
                 // Convert to blob
                 canvas.toBlob(
@@ -228,78 +221,8 @@ export async function preprocessImageForOCR(
     });
 }
 
-/**
- * Apply document-optimized sharpening filter
- */
-function applyDocumentSharpen(imageData: ImageData): ImageData {
-    const data = imageData.data;
-    const width = imageData.width;
-    const height = imageData.height;
-    const output = new ImageData(width, height);
-
-    // Stronger sharpening kernel for document text
-    const kernel = [
-        0, -1, 0,
-        -1, 5, -1,
-        0, -1, 0
-    ];
-
-    for (let y = 1; y < height - 1; y++) {
-        for (let x = 1; x < width - 1; x++) {
-            let r = 0;
-
-            for (let ky = -1; ky <= 1; ky++) {
-                for (let kx = -1; kx <= 1; kx++) {
-                    const idx = ((y + ky) * width + (x + kx)) * 4;
-                    const weight = kernel[(ky + 1) * 3 + (kx + 1)];
-                    r += data[idx] * weight;
-                }
-            }
-
-            const outIdx = (y * width + x) * 4;
-            const val = Math.max(0, Math.min(255, r));
-            output.data[outIdx] = val;
-            output.data[outIdx + 1] = val;
-            output.data[outIdx + 2] = val;
-            output.data[outIdx + 3] = 255; // Full alpha
-        }
-    }
-
-    // Copy edge pixels
-    for (let x = 0; x < width; x++) {
-        // Top row
-        const topIdx = x * 4;
-        output.data[topIdx] = data[topIdx];
-        output.data[topIdx + 1] = data[topIdx + 1];
-        output.data[topIdx + 2] = data[topIdx + 2];
-        output.data[topIdx + 3] = 255;
-
-        // Bottom row
-        const bottomIdx = ((height - 1) * width + x) * 4;
-        output.data[bottomIdx] = data[bottomIdx];
-        output.data[bottomIdx + 1] = data[bottomIdx + 1];
-        output.data[bottomIdx + 2] = data[bottomIdx + 2];
-        output.data[bottomIdx + 3] = 255;
-    }
-
-    for (let y = 0; y < height; y++) {
-        // Left column
-        const leftIdx = y * width * 4;
-        output.data[leftIdx] = data[leftIdx];
-        output.data[leftIdx + 1] = data[leftIdx + 1];
-        output.data[leftIdx + 2] = data[leftIdx + 2];
-        output.data[leftIdx + 3] = 255;
-
-        // Right column
-        const rightIdx = (y * width + width - 1) * 4;
-        output.data[rightIdx] = data[rightIdx];
-        output.data[rightIdx + 1] = data[rightIdx + 1];
-        output.data[rightIdx + 2] = data[rightIdx + 2];
-        output.data[rightIdx + 3] = 255;
-    }
-
-    return output;
-}
+// Helper removed as we no longer use the slow JS sharpening loop
+// function applyDocumentSharpen(...) {} 
 
 /**
  * Quick preprocessing with default settings optimized for documents
@@ -308,8 +231,8 @@ export async function quickPreprocess(file: File): Promise<Blob> {
     return preprocessImageForOCR(file, {
         grayscale: true,
         enhanceContrast: true,
-        reduceNoise: true,
-        sharpen: true,
+        reduceNoise: false, // Disabled for speed
+        sharpen: false,    // Disabled for speed (CRITICAL FIX)
         autoRotate: true,
         quality: 0.8,
     });

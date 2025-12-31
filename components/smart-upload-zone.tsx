@@ -68,16 +68,36 @@ export default function SmartUploadZone() {
                 setStatus("Uploading document...")
                 formData.append('file', file)
             } else {
+                // 1. Preprocess image (Client-side) with strict timeout
                 setProcessingSteps(prev => [...prev, "Optimizing image..."])
-                setStatus("Compressing image for faster upload...")
+                setStatus("Optimizing image for faster upload...")
 
                 const { quickPreprocess } = await import('@/lib/image-preprocessing')
-                const preprocessedBlob = await quickPreprocess(file)
-                console.log(`Optimized image size: ${(preprocessedBlob.size / 1024 / 1024).toFixed(2)} MB`)
+
+                // STRICT TIMEOUT: If optimization takes > 2.5s, skip it and use original file
+                const optimizationPromise = quickPreprocess(file)
+                const timeoutPromise = new Promise<Blob>((resolve) =>
+                    setTimeout(() => {
+                        console.warn('Optimization timed out - skipping to ensure speed')
+                        resolve(file)
+                    }, 2500)
+                )
+
+                let preprocessedBlob: Blob
+                try {
+                    preprocessedBlob = await Promise.race([optimizationPromise, timeoutPromise])
+                } catch (e) {
+                    console.error("Optimization failed, using original file:", e)
+                    preprocessedBlob = file
+                }
+
+                console.log(`Final image size: ${(preprocessedBlob.size / 1024 / 1024).toFixed(2)} MB`)
                 formData.append('file', preprocessedBlob, file.name)
             }
 
-            // Real Upload Progress using XMLHttpRequest
+            console.log('Sending to OCR API...')
+            setProcessingSteps(prev => [...prev, "Sending to AI OCR engine..."])
+            setStatus("Processing with AI...")
             const data = await new Promise<any>((resolve, reject) => {
                 const xhr = new XMLHttpRequest()
                 xhr.open('POST', '/api/ocr')
