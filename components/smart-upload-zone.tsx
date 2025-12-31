@@ -70,7 +70,7 @@ export default function SmartUploadZone() {
             } else {
                 // 1. Preprocess image (Client-side) with relaxed timeout
                 setProcessingSteps(prev => [...prev, "Optimizing image..."])
-                setStatus("Compressing to speed up upload...")
+                setStatus("Preparing high-res image...")
 
                 const { quickPreprocess } = await import('@/lib/image-preprocessing')
 
@@ -86,6 +86,7 @@ export default function SmartUploadZone() {
                 let preprocessedBlob: Blob
                 try {
                     preprocessedBlob = await Promise.race([optimizationPromise, timeoutPromise])
+                    setStatus("Compressing to speed up upload...")
                 } catch (e) {
                     console.error("Optimization failed, using original file:", e)
                     preprocessedBlob = file

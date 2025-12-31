@@ -229,18 +229,23 @@ export async function POST(request: NextRequest) {
             // Check quota for anonymous users based on IP address
             try {
                 const { default: prisma } = await import("@/lib/db")
+                const { checkAndResetUsage } = await import("@/lib/usage-limit")
 
-                // Find or create visitor record by IP
-                const visitor = await prisma.visitor.findFirst({
+                // Find or create visitor record by IP using upsert to ensure it exists
+                // We use first-time defaults for email and timezone
+                const visitor = await prisma.visitor.upsert({
                     where: { ipAddress: ipAddress },
-                    orderBy: { createdAt: 'desc' }
+                    update: {}, // No immediate update if exists
+                    create: {
+                        ipAddress: ipAddress,
+                        email: "anonymous@infygalaxy.com",
+                        timezone: "UTC",
+                        usageMB: 0.0
+                    }
                 })
 
                 if (visitor) {
                     const visitorTimezone = visitor.timezone || 'UTC'
-
-                    // Use the same timezone-aware reset logic as logged-in users
-                    const { checkAndResetUsage } = await import("@/lib/usage-limit")
 
                     // Adapt visitor to match User interface for the shared function
                     const visitorAsUser = {
@@ -487,19 +492,20 @@ export async function POST(request: NextRequest) {
                 // Update visitor usage
                 try {
                     const { default: prisma } = await import("@/lib/db")
-                    const visitor = await prisma.visitor.findFirst({
+                    // Use upsert to be safe, though record should exist from quota check
+                    await prisma.visitor.upsert({
                         where: { ipAddress: ipAddress },
-                        orderBy: { createdAt: 'desc' }
+                        update: {
+                            usageMB: { increment: fileSizeMB },
+                            lastUsageDate: new Date()
+                        },
+                        create: {
+                            ipAddress: ipAddress,
+                            email: "anonymous@infygalaxy.com",
+                            usageMB: fileSizeMB,
+                            lastUsageDate: new Date()
+                        }
                     })
-                    if (visitor) {
-                        await prisma.visitor.update({
-                            where: { id: visitor.id },
-                            data: {
-                                usageMB: { increment: fileSizeMB },
-                                lastUsageDate: new Date()
-                            }
-                        })
-                    }
                 } catch (e) {
                     console.error("Failed to update visitor usage stats", e)
                 }

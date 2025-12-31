@@ -177,7 +177,7 @@ export async function preprocessImageForOCR(
                 // --- HARDWARE ACCELERATED FILTERS ONLY (No slow JS loops) ---
                 let filterString = '';
                 if (grayscale) filterString += 'grayscale(100%) ';
-                if (enhanceContrast) filterString += 'contrast(1.25) brightness(1.05) '; // Moderate contrast
+                if (enhanceContrast) filterString += 'contrast(1.15) brightness(1.02) '; // Reduced contrast to avoid noise/hallucinations
 
                 // Note: We skip 'sharpen' (JS loop) and 'blur' as they kill performance on mobile
                 // The contrast boost is usually enough for OCR.
@@ -234,6 +234,6 @@ export async function quickPreprocess(file: File): Promise<Blob> {
         reduceNoise: false, // Disabled for speed
         sharpen: false,    // Disabled for speed
         autoRotate: true,
-        quality: 0.75,     // Higher compression for speed
+        quality: 0.7,      // Slightly higher compression for faster upload
     });
 }
