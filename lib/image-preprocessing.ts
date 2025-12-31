@@ -158,8 +158,8 @@ export async function preprocessImageForOCR(
                     return;
                 }
 
-                // Optimized Dimensions for Mobile (1600px is usually plenty for OCR)
-                const MAX_DIMENSION = 1600;
+                // Optimized Dimensions for Mobile (2400px is a sweet spot for detail vs speed)
+                const MAX_DIMENSION = 2400;
                 if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
                     const ratio = Math.min(MAX_DIMENSION / img.width, MAX_DIMENSION / img.height);
                     canvas.width = Math.round(img.width * ratio);
@@ -177,8 +177,8 @@ export async function preprocessImageForOCR(
                 // --- HARDWARE ACCELERATED FILTERS (Fast Path) ---
                 let filterString = '';
                 if (grayscale) filterString += 'grayscale(100%) ';
-                if (enhanceContrast) filterString += 'contrast(1.4) brightness(1.1) ';
-                if (reduceNoise) filterString += 'blur(0.2px) ';
+                if (enhanceContrast) filterString += 'contrast(1.2) brightness(1.05) '; // Less aggressive contrast
+                if (reduceNoise) filterString += 'blur(0.15px) '; // Slightly sharper
 
                 if (filterString) {
                     ctx.filter = filterString.trim();

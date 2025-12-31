@@ -29,8 +29,11 @@ function cleanOCROutput(text: string): string {
 function isValidOCROutput(text: string): boolean {
     if (!text || text.trim().length === 0) return false;
     const alphanumeric = (text.match(/[a-zA-Z0-9]/g) || []).length;
-    const special = (text.match(/[^\w\s]/g) || []).length;
-    if (alphanumeric < special) return false;
+    const total = text.replace(/\s/g, '').length; // characters minus whitespace
+
+    // For documents like brochures, alphanumeric ratio can be lower due to symbols/punctuation
+    // We allow it if at least 25% of the non-whitespace content is alphanumeric
+    if (total > 0 && (alphanumeric / total) < 0.25) return false;
     return true;
 }
 
@@ -460,6 +463,7 @@ export async function POST(request: NextRequest) {
             const cleanedText = cleanOCROutput(rawText);
 
             if (!isValidOCROutput(cleanedText) || cleanedText.length < 5) {
+                console.error(`[OCR Validation Failure] Cleaned text length: ${cleanedText.length}, Alphanumeric ratio below threshold. Sample: ${cleanedText.substring(0, 100)}`);
                 return NextResponse.json({
                     success: false,
                     error: 'Could not extract valid text. Image might be unclear.',
