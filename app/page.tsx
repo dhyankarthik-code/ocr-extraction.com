@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import dynamic from 'next/dynamic'
 import SmartUploadZone from "@/components/smart-upload-zone"
 import CtaSection from "@/components/cta-section"
@@ -11,13 +12,26 @@ const TypeAnimation = dynamic(
 )
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
-    <div className="flex flex-col items-center justify-center p-6 md:p-8 w-full">
+    <div className="flex flex-col items-center justify-center p-6 md:p-8 w-full" data-hydrated={mounted}>
       <div className="w-full max-w-2xl">
         <div className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 text-center text-balance min-h-[4rem] flex items-center justify-center">
           {/* SEO H1 (Visually Hidden but accessible to crawlers) */}
-          <h1 className="text-gray-900 text-center">
+          <h1 className="text-gray-900 text-center relative overflow-hidden w-full">
             <span className="sr-only">Free OCR Extraction Tool - Convert Images to Text, Excel & PDF</span>
+
+            {!mounted && (
+              <span className="absolute inset-0 flex items-center justify-center">
+                Free OCR Extraction tool
+              </span>
+            )}
+
             <TypeAnimation
               sequence={[
                 'Free OCR Extraction tool',
@@ -27,7 +41,7 @@ export default function Home() {
               ]}
               wrapper="span"
               speed={50}
-              style={{ display: 'inline-block' }}
+              style={{ display: mounted ? 'inline-block' : 'none' }}
               repeat={Infinity}
             />
           </h1>

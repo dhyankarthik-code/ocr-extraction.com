@@ -258,11 +258,15 @@ export default function CommentSection({ slug }: CommentSectionProps) {
                         </div>
                     </div>
 
-                    <div className="py-2">
-                        <ReCAPTCHA
-                            ref={recaptchaRef}
-                            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6Lc33R8sAAAAADprj7hnaPVxYBMGgzUEICm_TbBt"} // Fallback to provided key if env missing
-                        />
+                    <div className="py-2 min-h-[78px] flex items-center justify-start bg-gray-100/50 rounded-lg border border-dashed border-gray-200 px-4">
+                        {touched.content || touched.name || touched.email ? (
+                            <ReCAPTCHA
+                                ref={recaptchaRef}
+                                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6Lc33R8sAAAAADprj7hnaPVxYBMGgzUEICm_TbBt"}
+                            />
+                        ) : (
+                            <p className="text-xs text-gray-400 italic">Verify you are human (loads on interaction)</p>
+                        )}
                     </div>
 
                     <Button
