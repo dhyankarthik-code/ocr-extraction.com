@@ -26,7 +26,8 @@ export default function CommentSection({ slug }: CommentSectionProps) {
 
     // Validation Functions matching Contact Form
     const validateEmail = (email: string) => {
-        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
+        // Enforce that email starts with a letter, not a number
+        const emailRegex = /^[a-zA-Z][a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]*@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
         return email.length > 0 && email.length <= 254 && emailRegex.test(email)
     }
 
@@ -64,7 +65,7 @@ export default function CommentSection({ slug }: CommentSectionProps) {
         setTouched(prev => ({ ...prev, [field]: true }))
         // Trigger validation on blur
         if (field === 'email' && email && !validateEmail(email)) {
-            setErrors(prev => ({ ...prev, email: "Please enter a valid email address" }))
+            setErrors(prev => ({ ...prev, email: "Please enter a valid email address (cannot start with a number)" }))
         }
         if (field === 'name') {
             const cleanedName = name.replace(/[^a-zA-Z\s]/g, "").trim()
@@ -91,7 +92,7 @@ export default function CommentSection({ slug }: CommentSectionProps) {
         const value = e.target.value
         setEmail(value)
         if (value.includes('@') && !validateEmail(value)) {
-            setErrors(prev => ({ ...prev, email: "Please enter a valid email address" }))
+            setErrors(prev => ({ ...prev, email: "Please enter a valid email address (cannot start with a number)" }))
         } else {
             setErrors(prev => ({ ...prev, email: "" }))
         }
@@ -112,19 +113,19 @@ export default function CommentSection({ slug }: CommentSectionProps) {
         const cleanedName = name.replace(/[^a-zA-Z\s]/g, "").trim()
 
         // Name Validation
-        if (!cleanedName) {
+        if (!name.trim()) {
             newErrors.name = "Name is required"
-        } else if (cleanedName.length < 2) {
-            newErrors.name = "Name must be at least 2 characters"
         } else if (hasInvalidNameChars(name)) {
             newErrors.name = "Name should contain only letters"
+        } else if (cleanedName.length < 2) {
+            newErrors.name = "Name must be at least 2 characters"
         }
 
         // Email Validation
         if (!email.trim()) {
             newErrors.email = "Email is required"
         } else if (!validateEmail(email)) {
-            newErrors.email = "Please enter a valid email address"
+            newErrors.email = "Please enter a valid email address (cannot start with a number)"
         }
 
         // Content Validation

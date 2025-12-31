@@ -67,6 +67,7 @@ export default function LikeButton({ slug }: LikeButtonProps) {
             setLiked(data.liked)
 
         } catch (error) {
+            console.error("Like toggle failed:", error)
             // Revert on error
             setLiked(previousLiked)
             setLikes(previousLikes)
