@@ -57,7 +57,7 @@ export default function SmartUploadZone() {
 
         setUploading(true)
         setProgress(0)
-        setProcessingSteps(["Starting upload..."])
+        setProcessingSteps(["Starting..."])
 
         try {
             const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
@@ -65,82 +65,75 @@ export default function SmartUploadZone() {
             const formData = new FormData()
 
             if (isPDF || isExcel) {
-                console.log('Document detected, skipping client-side optimization...')
+                setStatus("Uploading document...")
                 formData.append('file', file)
             } else {
-                // 1. Preprocess image (Client-side)
-                setProcessingSteps(prev => [...prev, "Optimizing image quality (Grayscale, Contrast)..."])
-                setStatus("Optimizing image for better accuracy...")
-
-                await new Promise(r => setTimeout(r, 800))
+                setProcessingSteps(prev => [...prev, "Optimizing image..."])
+                setStatus("Compressing image for faster upload...")
 
                 const { quickPreprocess } = await import('@/lib/image-preprocessing')
                 const preprocessedBlob = await quickPreprocess(file)
-                console.log(`Preprocessed image size: ${(preprocessedBlob.size / 1024 / 1024).toFixed(2)} MB`)
+                console.log(`Optimized image size: ${(preprocessedBlob.size / 1024 / 1024).toFixed(2)} MB`)
                 formData.append('file', preprocessedBlob, file.name)
             }
 
-            console.log('Sending optimized image to OCR API...')
-            setProcessingSteps(prev => [...prev, "Sending to AI OCR engine..."])
-            setStatus("Processing with AI...")
+            // Real Upload Progress using XMLHttpRequest
+            const data = await new Promise<any>((resolve, reject) => {
+                const xhr = new XMLHttpRequest()
+                xhr.open('POST', '/api/ocr')
 
-            setProgress(30)
-            const response = await fetch('/api/ocr', {
-                method: 'POST',
-                body: formData,
-            })
-
-            console.log('API Response status:', response.status)
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}))
-                console.error('API Error:', errorData)
-
-                // Check for Quota Error from Backend
-                if (response.status === 403 && (errorData.error === 'Daily Quota exceeded' || (errorData.details && errorData.details.includes('quote')))) {
-                    setShowLimitWarning(true)
-                    setUploading(false)
-                    return
+                xhr.upload.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        const percentComplete = Math.round((event.loaded / event.total) * 90)
+                        setProgress(percentComplete)
+                        if (percentComplete < 90) {
+                            setStatus(`Uploading... ${Math.round((event.loaded / event.total) * 100)}%`)
+                        } else {
+                            setStatus("AI Processing... Please wait")
+                        }
+                    }
                 }
 
-                const specificError = errorData.details || errorData.error || `OCR API failed: ${response.statusText}`
-                throw new Error(specificError)
-            }
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resolve(JSON.parse(xhr.responseText))
+                    } else {
+                        const errorData = JSON.parse(xhr.responseText || '{}')
+                        reject({ status: xhr.status, data: errorData })
+                    }
+                }
+                xhr.onerror = () => reject(new Error('Network error during upload.'))
+                xhr.send(formData)
+            }).catch(err => {
+                if (err.status === 403 && (err.data?.error === 'Daily Quota exceeded' || (err.data?.details && err.data?.details.includes('quote')))) {
+                    setShowLimitWarning(true)
+                    setUploading(false)
+                    throw new Error('QUOTA_EXCEEDED')
+                }
+                throw new Error(err.data?.details || err.data?.error || err.message || 'Processing failed')
+            })
 
-            setProcessingSteps(prev => [...prev, "Extracting text from response..."])
-            const data = await response.json()
-            console.log('OCR Response:', data)
+            if (data === 'QUOTA_EXCEEDED') return
+
+            setProcessingSteps(prev => [...prev, "Extraction complete!"])
+            setProgress(100)
 
             if (data.isPDF && data.pages) {
-                console.log(`PDF processed: ${data.totalPages} pages`)
-                setProcessingSteps(prev => [...prev, "Finalizing PDF results..."])
-                setProgress(100)
                 sessionStorage.setItem("ocr_result", JSON.stringify({ ...data, fileName: file.name }))
-
-                await new Promise(r => setTimeout(r, 500))
-                console.log('Redirecting to results page...')
-                window.location.href = "/result/local"
-                return
+            } else {
+                const text = String(data?.text || "")
+                if (!text || text.trim().length === 0) {
+                    throw new Error('No text extracted from image')
+                }
+                sessionStorage.setItem("ocr_result", JSON.stringify({ text, fileName: file.name }))
             }
 
-            const text = String(data?.text || "")
-            console.log('Extracted text length:', text.length)
-
-            if (!text || text.trim().length === 0) {
-                throw new Error('No text extracted from image')
-            }
-
-            setProcessingSteps(prev => [...prev, "Finalizing results..."])
-            setProgress(100)
-            sessionStorage.setItem("ocr_result", JSON.stringify({ text, fileName: file.name }))
-
-            await new Promise(r => setTimeout(r, 500))
-            console.log('Redirecting to results page...')
             window.location.href = "/result/local"
 
-        } catch (error) {
+        } catch (error: any) {
+            if (error.message === 'QUOTA_EXCEEDED') return
             console.error("OCR Error:", error)
-            alert(`Failed to process image: ${error instanceof Error ? error.message : 'Unknown error'}`)
+            alert(`Failed: ${error.message}`)
             setUploading(false)
             setProgress(0)
             setProcessingSteps([])
@@ -174,65 +167,11 @@ export default function SmartUploadZone() {
                 return
             }
 
-            // Document size check (max 10MB) - SHOW WARNING MODAL
-            const docFile = pdfFiles[0] || excelFiles[0]
-            if (docFile && docFile.size > 10 * 1024 * 1024) {
-                setShowLimitWarning(true)
-                return
-            }
-
-            // Check remaining quota for Document
-            if (docFile && quota) {
-                const fileSizeMB = docFile.size / (1024 * 1024)
-                const usedMB = quota.used / (1024 * 1024)
-                const limitMB = quota.limit / (1024 * 1024) // likely 10
-
-                if (usedMB + fileSizeMB > limitMB) {
-                    setShowLimitWarning(true)
-                    return
-                }
-            }
-
-            // Individual file size check
+            // Total size check (max 10MB)
             const oversizedFile = acceptedFiles.find(file => file.size > 10 * 1024 * 1024)
             if (oversizedFile) {
                 setShowLimitWarning(true)
                 return
-            }
-
-            // Total batch size check
-            if (imageFiles.length > 1) {
-                const totalSize = imageFiles.reduce((sum, file) => sum + file.size, 0)
-
-                // Strict 10MB limit for batch
-                if (totalSize > 10 * 1024 * 1024) {
-                    setShowLimitWarning(true)
-                    return
-                }
-
-                // Check against Quota if available
-                if (quota) {
-                    const totalSizeMB = totalSize / (1024 * 1024)
-                    const usedMB = quota.used / (1024 * 1024)
-                    const limitMB = quota.limit / (1024 * 1024)
-
-                    if (usedMB + totalSizeMB > limitMB) {
-                        setShowLimitWarning(true)
-                        return
-                    }
-                }
-            }
-
-            // Single Image Check against Quota
-            if (imageFiles.length === 1 && quota) {
-                const fileSizeMB = imageFiles[0].size / (1024 * 1024)
-                const usedMB = quota.used / (1024 * 1024)
-                // 10MB is hardcoded in many places, assuming it matches quota.limit which is likely bytes
-
-                if (usedMB + fileSizeMB > 10) { // Safety check
-                    setShowLimitWarning(true)
-                    return
-                }
             }
 
             const file = acceptedFiles[0]
@@ -250,54 +189,48 @@ export default function SmartUploadZone() {
             // Batch Process
             setUploading(true)
             setProgress(0)
-            setProcessingSteps(["Starting batch upload..."])
+            setStatus("Starting batch process...")
 
             try {
                 const pageResults: Array<{ pageNumber: number; text: string; imageName: string }> = []
+                const { quickPreprocess } = await import('@/lib/image-preprocessing')
 
                 for (let i = 0; i < imageFiles.length; i++) {
                     const imageFile = imageFiles[i]
-                    setProcessingSteps(prev => [...prev, `Processing image ${i + 1} of ${imageFiles.length}: ${imageFile.name}...`])
+                    setStatus(`Processing ${i + 1}/${imageFiles.length}: ${imageFile.name}`)
 
-                    setProgress(Math.round(((i) / imageFiles.length) * 80))
+                    const stepProgressMultiplier = 1 / imageFiles.length
+                    const baseProgress = (i / imageFiles.length) * 100
 
-                    const { quickPreprocess } = await import('@/lib/image-preprocessing')
                     const preprocessedBlob = await quickPreprocess(imageFile)
-
                     const formData = new FormData()
                     formData.append('file', preprocessedBlob, imageFile.name)
 
-                    const response = await fetch('/api/ocr', {
-                        method: 'POST',
-                        body: formData,
-                    })
-
-                    if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({}))
-
-                        // QUOTA CHECK IN BATCH
-                        if (response.status === 403 && (errorData.error === 'Daily Quota exceeded' || (errorData.details && errorData.details.includes('quote')))) {
-                            setShowLimitWarning(true)
-                            setUploading(false)
-                            return
+                    const data = await new Promise<any>((resolve, reject) => {
+                        const xhr = new XMLHttpRequest()
+                        xhr.open('POST', '/api/ocr')
+                        xhr.upload.onprogress = (event) => {
+                            if (event.lengthComputable) {
+                                const chunkProgress = (event.loaded / event.total) * 90 * stepProgressMultiplier
+                                setProgress(Math.round(baseProgress + chunkProgress))
+                            }
                         }
-
-                        throw new Error(errorData.details || errorData.error || `Failed to process ${imageFile.name}`)
-                    }
-
-                    const data = await response.json()
-                    const extractedText = String(data?.text || "")
+                        xhr.onload = () => {
+                            if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText))
+                            else reject({ status: xhr.status, data: JSON.parse(xhr.responseText || '{}') })
+                        }
+                        xhr.onerror = () => reject(new Error('Network error'))
+                        xhr.send(formData)
+                    })
 
                     pageResults.push({
                         pageNumber: i + 1,
-                        text: extractedText,
+                        text: String(data?.text || ""),
                         imageName: imageFile.name
                     })
                 }
 
-                setProcessingSteps(prev => [...prev, "Finalizing batch results..."])
                 setProgress(100)
-
                 sessionStorage.setItem("ocr_result", JSON.stringify({
                     isPDF: false,
                     isBatch: true,
@@ -306,19 +239,18 @@ export default function SmartUploadZone() {
                     totalPages: pageResults.length
                 }))
 
-                await new Promise(r => setTimeout(r, 500))
                 window.location.href = "/result/local"
 
-            } catch (error) {
-                console.error("Batch OCR Error:", error)
-                setValidationError(`Failed to process images: ${error instanceof Error ? error.message : 'Unknown error'}`)
+            } catch (error: any) {
+                if (error.status === 403) setShowLimitWarning(true)
+                else alert(`Batch failed: ${error.message || 'Unknown error'}`)
                 setUploading(false)
                 setProgress(0)
-                setProcessingSteps([])
             }
         },
         [session, quota],
     )
+
 
     return (
         <>

@@ -158,15 +158,15 @@ export async function preprocessImageForOCR(
                     return;
                 }
 
-                canvas.width = img.width;
-                canvas.height = img.height;
-
-                // Resize if too large (Max 2000px) significantly reduces payload size
-                const MAX_DIMENSION = 2000;
-                if (canvas.width > MAX_DIMENSION || canvas.height > MAX_DIMENSION) {
-                    const ratio = Math.min(MAX_DIMENSION / canvas.width, MAX_DIMENSION / canvas.height);
-                    canvas.width = Math.round(canvas.width * ratio);
-                    canvas.height = Math.round(canvas.height * ratio);
+                // Optimized Dimensions for Mobile (1600px is usually plenty for OCR)
+                const MAX_DIMENSION = 1600;
+                if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
+                    const ratio = Math.min(MAX_DIMENSION / img.width, MAX_DIMENSION / img.height);
+                    canvas.width = Math.round(img.width * ratio);
+                    canvas.height = Math.round(img.height * ratio);
+                } else {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
                 }
 
                 // Apply EXIF orientation correction
@@ -174,70 +174,27 @@ export async function preprocessImageForOCR(
                     applyExifOrientation(ctx, canvas, img, orientation);
                 }
 
-                // Draw original image
-                ctx.drawImage(img, 0, 0);
+                // --- HARDWARE ACCELERATED FILTERS (Fast Path) ---
+                let filterString = '';
+                if (grayscale) filterString += 'grayscale(100%) ';
+                if (enhanceContrast) filterString += 'contrast(1.4) brightness(1.1) ';
+                if (reduceNoise) filterString += 'blur(0.2px) ';
 
-                // Get image data
-                let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data = imageData.data;
-
-                // 1. Convert to Grayscale
-                if (grayscale) {
-                    for (let i = 0; i < data.length; i += 4) {
-                        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                        data[i] = avg;     // R
-                        data[i + 1] = avg; // G
-                        data[i + 2] = avg; // B
-                    }
+                if (filterString) {
+                    ctx.filter = filterString.trim();
                 }
 
-                // 2. Enhanced Contrast using adaptive histogram equalization
-                if (enhanceContrast) {
-                    let min = 255, max = 0;
+                // Draw image with filters applied (Fast!)
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                    // Find min and max values (excluding extremes for robustness)
-                    const histogram = new Array(256).fill(0);
-                    for (let i = 0; i < data.length; i += 4) {
-                        histogram[Math.floor(data[i])]++;
-                    }
+                // Reset filter for subsequent operations
+                ctx.filter = 'none';
 
-                    // Find 1% and 99% percentiles for robust contrast
-                    const totalPixels = data.length / 4;
-                    let cumulative = 0;
-                    for (let i = 0; i < 256; i++) {
-                        cumulative += histogram[i];
-                        if (cumulative >= totalPixels * 0.01 && min === 255) min = i;
-                        if (cumulative >= totalPixels * 0.99) {
-                            max = i;
-                            break;
-                        }
-                    }
-
-                    // Stretch contrast
-                    const range = max - min;
-                    if (range > 10) {
-                        for (let i = 0; i < data.length; i += 4) {
-                            const stretched = Math.max(0, Math.min(255, ((data[i] - min) / range) * 255));
-                            data[i] = stretched;
-                            data[i + 1] = stretched;
-                            data[i + 2] = stretched;
-                        }
-                    }
-                }
-
-                // Put processed data back
-                ctx.putImageData(imageData, 0, 0);
-
-                // 3. Noise Reduction (bilateral-like filter approximation)
-                if (reduceNoise) {
-                    ctx.filter = 'blur(0.3px)';
-                    ctx.drawImage(canvas, 0, 0);
-                    ctx.filter = 'none';
-                }
-
-                // 4. Sharpen with enhanced kernel for document text
+                // --- SHARPEN (Optional & Optimized) ---
                 if (sharpen) {
-                    imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    // Only apply sharpening if image is not too large or on faster devices
+                    // For mobile, we might want to skip or use a very fast pass
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                     const sharpened = applyDocumentSharpen(imageData);
                     ctx.putImageData(sharpened, 0, 0);
                 }
