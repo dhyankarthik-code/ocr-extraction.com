@@ -120,7 +120,6 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
             <div className="block md:hidden">
               <input
                 type="file"
-                multiple
                 accept="image/*"
                 capture="environment"
                 onChange={(e) => {
