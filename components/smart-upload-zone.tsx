@@ -68,19 +68,19 @@ export default function SmartUploadZone() {
                 setStatus("Uploading document...")
                 formData.append('file', file)
             } else {
-                // 1. Preprocess image (Client-side) with strict timeout
+                // 1. Preprocess image (Client-side) with relaxed timeout
                 setProcessingSteps(prev => [...prev, "Optimizing image..."])
-                setStatus("Optimizing image for faster upload...")
+                setStatus("Compressing to speed up upload...")
 
                 const { quickPreprocess } = await import('@/lib/image-preprocessing')
 
-                // STRICT TIMEOUT: If optimization takes > 2.5s, skip it and use original file
+                // RELAXED TIMEOUT: We give it 8s because resizing saves massive upload time.
                 const optimizationPromise = quickPreprocess(file)
                 const timeoutPromise = new Promise<Blob>((resolve) =>
                     setTimeout(() => {
-                        console.warn('Optimization timed out - skipping to ensure speed')
+                        console.warn('Optimization timed out (8s) - skipping')
                         resolve(file)
-                    }, 2500)
+                    }, 8000)
                 )
 
                 let preprocessedBlob: Blob

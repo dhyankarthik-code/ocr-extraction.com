@@ -158,8 +158,8 @@ export async function preprocessImageForOCR(
                     return;
                 }
 
-                // Optimized Dimensions for Mobile (1600px is safe and fast)
-                const MAX_DIMENSION = 1600;
+                // Optimized Dimensions for Mobile (2200px: High detail for brochures, but manageable size)
+                const MAX_DIMENSION = 2200;
                 if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
                     const ratio = Math.min(MAX_DIMENSION / img.width, MAX_DIMENSION / img.height);
                     canvas.width = Math.round(img.width * ratio);
@@ -232,8 +232,8 @@ export async function quickPreprocess(file: File): Promise<Blob> {
         grayscale: true,
         enhanceContrast: true,
         reduceNoise: false, // Disabled for speed
-        sharpen: false,    // Disabled for speed (CRITICAL FIX)
+        sharpen: false,    // Disabled for speed
         autoRotate: true,
-        quality: 0.8,
+        quality: 0.75,     // Higher compression for speed
     });
 }
