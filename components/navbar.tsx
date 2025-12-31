@@ -31,6 +31,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
     { label: 'About Us', href: '/about' },
     { label: 'OCR', href: '/' },
     { label: 'Blog', href: '/blog' },
+    { label: 'Contact Us', href: '/contact' },
   ]
 
 
@@ -49,7 +50,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
 
         {/* Desktop Navigation - Centered */}
         <div className="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          {navLinks.filter(l => l.label !== 'Blog').map((link) => (
+          {navLinks.filter(l => l.label !== 'Blog' && l.label !== 'Contact Us').map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -94,6 +95,13 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
             className="text-lg font-medium text-gray-700 hover:text-red-500 transition-colors"
           >
             Blog
+          </Link>
+
+          <Link
+            href="/contact"
+            className="text-lg font-medium text-gray-700 hover:text-red-500 transition-colors"
+          >
+            Contact Us
           </Link>
         </div>
 

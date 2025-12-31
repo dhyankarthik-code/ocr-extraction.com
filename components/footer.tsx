@@ -38,7 +38,7 @@ export default function Footer() {
                 <div className="border-t border-gray-800 my-8"></div>
 
                 {/* Lower Section: Brand & Nav Links */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
                     {/* Brand */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
@@ -95,11 +95,6 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/services" className="hover:text-red-500 transition-colors">
-                                    Services
-                                </Link>
-                            </li>
-                            <li>
                                 <Link href="/company-profile" className="hover:text-red-500 transition-colors">
                                     Company Profile
                                 </Link>
@@ -112,6 +107,21 @@ export default function Footer() {
                             <li>
                                 <Link href="/faqs" className="hover:text-red-500 transition-colors">
                                     FAQs
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Services - NEW SECTION */}
+                    <div>
+                        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                            <Wrench className="w-4 h-4" />
+                            Services
+                        </h3>
+                        <ul className="space-y-2 text-sm">
+                            <li>
+                                <Link href="/services" className="hover:text-red-500 transition-colors">
+                                    Our Services
                                 </Link>
                             </li>
                         </ul>

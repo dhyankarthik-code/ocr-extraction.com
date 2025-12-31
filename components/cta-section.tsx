@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter, usePathname } from "next/navigation"
+import { useUploadStore } from "@/lib/store"
 
 interface CtaSectionProps {
     title?: string
@@ -19,13 +20,11 @@ export default function CtaSection({
 }: CtaSectionProps) {
     const router = useRouter()
     const pathname = usePathname()
+    const { isUploading, progress, status } = useUploadStore()
 
     const handleCtaClick = () => {
-        if (pathname === "/") {
-            window.scrollTo({ top: 0, behavior: "smooth" })
-        } else {
-            router.push("/")
-        }
+        // Dispatch custom event to trigger file upload in UploadZone
+        window.dispatchEvent(new CustomEvent('trigger-file-upload'))
     }
 
     return (
@@ -53,6 +52,20 @@ export default function CtaSection({
                 </svg>
                 Upload Your File
             </button>
+
+            {isUploading && (
+                <div className="w-full max-w-md mx-auto mt-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="w-full bg-gray-100 rounded-full h-2 mb-2 overflow-hidden border border-gray-200">
+                        <div
+                            className="bg-red-500 h-full rounded-full transition-all duration-300 ease-out"
+                            style={{ width: `${progress}%` }}
+                        />
+                    </div>
+                    <p className="text-sm text-gray-500 font-medium animate-pulse">
+                        {status || 'Processing file...'} {progress > 0 && `(${Math.round(progress)}%)`}
+                    </p>
+                </div>
+            )}
         </section>
     )
 }

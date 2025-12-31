@@ -53,12 +53,23 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
     "application/pdf": [".pdf"],
   }
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     accept: accept || defaultAccept,
     multiple: true,
     disabled: uploading,
+    noClick: false, // Ensure click works on dropzone
+    noKeyboard: false
   })
+
+  // Listen for custom trigger event from CTA button
+  useEffect(() => {
+    const handleTrigger = () => {
+      open()
+    }
+    window.addEventListener('trigger-file-upload', handleTrigger)
+    return () => window.removeEventListener('trigger-file-upload', handleTrigger)
+  }, [open])
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6">
@@ -109,7 +120,8 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
             <div className="block md:hidden">
               <input
                 type="file"
-                accept="image/*;capture=camera"
+                multiple
+                accept="image/*"
                 capture="environment"
                 onChange={(e) => {
                   const files = e.target.files

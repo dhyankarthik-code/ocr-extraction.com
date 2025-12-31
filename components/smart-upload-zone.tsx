@@ -6,6 +6,8 @@ import { useSession } from "@/hooks/use-session"
 import LimitWarningModal from "@/components/limit-warning-modal"
 import { useVisitorTracker } from "@/hooks/use-visitor-tracker"
 
+import { useUploadStore } from "@/lib/store"
+
 export default function SmartUploadZone() {
     const [uploading, setUploading] = useState(false)
     const [progress, setProgress] = useState(0)
@@ -14,6 +16,15 @@ export default function SmartUploadZone() {
     const [validationError, setValidationError] = useState<string | null>(null)
     const [showLimitWarning, setShowLimitWarning] = useState(false)
     const [quota, setQuota] = useState<{ used: number, limit: number } | null>(null)
+
+    // Sync with global store
+    const { setUploading: setGlobalUploading, setProgress: setGlobalProgress, setStatus: setGlobalStatus } = useUploadStore()
+
+    useEffect(() => {
+        setGlobalUploading(uploading)
+        setGlobalProgress(progress)
+        setGlobalStatus(status)
+    }, [uploading, progress, status, setGlobalUploading, setGlobalProgress, setGlobalStatus])
 
     const { session } = useSession()
     const { trackUsage } = useVisitorTracker()

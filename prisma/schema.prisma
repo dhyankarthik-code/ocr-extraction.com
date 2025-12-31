@@ -104,3 +104,41 @@ model Visitor {
   @@index([ipAddress])
   @@index([createdAt])
 }
+
+
+
+// Blog Interactions
+model BlogPost {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  viewCount Int      @default(0)
+  likes     BlogLike[]
+  comments  BlogComment[]
+  
+  updatedAt DateTime @updatedAt
+}
+
+model BlogLike {
+  id        String   @id @default(cuid())
+  postSlug  String
+  post      BlogPost @relation(fields: [postSlug], references: [slug])
+  sessionId String   // IP or Session ID
+  createdAt DateTime @default(now())
+
+  @@unique([postSlug, sessionId])
+  @@index([postSlug])
+}
+
+model BlogComment {
+  id        String   @id @default(cuid())
+  postSlug  String
+  post      BlogPost @relation(fields: [postSlug], references: [slug])
+  name      String
+  email     String
+  content   String
+  approved  Boolean  @default(true) // Auto-approve for now, or false if moderation needed
+  createdAt DateTime @default(now())
+  
+  @@index([postSlug])
+  @@index([createdAt])
+}

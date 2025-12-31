@@ -27,7 +27,13 @@ export default function LimitWarningModal({ onClose }: LimitWarningModalProps) {
                     <h3 className="text-lg font-bold text-gray-900">Usage Limit Exceeded</h3>
 
                     <p className="text-gray-600">
-                        It seems you are trying upload more than 10 mb. The usage limit is 10 mb per day. If you need more than 10 mb please fill the contact form.
+                        Dear User, please note that you have exceeded the 10 MB quota for the today only. We want to share this tool to as many users as possible. Kindly bear with us and continue using the tool. You can use the tool tomorrow again - for FREE as usual !!!
+                    </p>
+                    <p className="text-gray-600">
+                        Your feedback is valuable to us. Please share your feedback. We will "be all ears to you !!!"
+                    </p>
+                    <p className="text-gray-600">
+                        Contact <a href="mailto:admin@ocr-extraction.com" className="text-blue-600 hover:underline">admin@ocr-extraction.com</a> for any issues or recommendations.
                     </p>
 
                     <div className="pt-2">
