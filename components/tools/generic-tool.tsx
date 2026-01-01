@@ -141,6 +141,8 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
                 return type.includes('sheet') || type.includes('excel') || name.endsWith('.xls') || name.endsWith('.xlsx') || name.endsWith('.csv')
             case 'PPT':
                 return type.includes('presentation') || type.includes('powerpoint') || name.endsWith('.ppt') || name.endsWith('.pptx')
+            case 'SVG':
+                return type === 'image/svg+xml' || name.endsWith('.svg')
             default:
                 return true // Allow if format not recognized
         }

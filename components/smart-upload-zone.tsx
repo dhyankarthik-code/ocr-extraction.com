@@ -175,7 +175,9 @@ export default function SmartUploadZone() {
                 !f.name.toLowerCase().endsWith('.pdf') &&
                 !f.name.match(/\.xls(x)?$/i) &&
                 !f.type.includes('excel') &&
-                !f.type.includes('spreadsheet')
+                !f.type.includes('spreadsheet') ||
+                f.type === 'image/svg+xml' ||
+                f.name.toLowerCase().endsWith('.svg')
             )
 
             if (pdfFiles.length + excelFiles.length > 1) {

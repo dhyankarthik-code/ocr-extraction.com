@@ -231,23 +231,26 @@ export async function POST(request: NextRequest) {
                 const { default: prisma } = await import("@/lib/db")
                 const { checkAndResetUsage } = await import("@/lib/usage-limit")
 
-                // Find or create visitor record by IP using upsert to ensure it exists
-                // We use first-time defaults for email and timezone
-                const visitor = await prisma.visitor.upsert({
+                // Wrap DB call in timeout to prevent hanging
+                const dbTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('DB_TIMEOUT')), 5000));
+
+                // Find or create visitor record by IP using upsert
+                const visitorPromise = prisma.visitor.upsert({
                     where: { ipAddress: ipAddress },
                     update: {}, // No immediate update if exists
                     create: {
                         ipAddress: ipAddress,
-                        email: "anonymous@infygalaxy.com",
+                        email: null, // Allow null now
                         timezone: "UTC",
                         usageMB: 0.0
                     }
-                })
+                });
+
+                const visitor = await Promise.race([visitorPromise, dbTimeout]) as any;
 
                 if (visitor) {
                     const visitorTimezone = visitor.timezone || 'UTC'
 
-                    // Adapt visitor to match User interface for the shared function
                     const visitorAsUser = {
                         id: visitor.id,
                         usageMB: visitor.usageMB || 0.0,
@@ -255,7 +258,7 @@ export async function POST(request: NextRequest) {
                         timezone: visitorTimezone
                     }
 
-                    const currentUsageMB = await checkAndResetUsage(visitorAsUser as any, prisma as any, 'visitor')
+                    const currentUsageMB = await checkAndResetUsage(visitorAsUser, prisma, 'visitor')
 
                     if (currentUsageMB + fileSizeMB > FILE_SIZE_LIMIT_MB) {
                         return NextResponse.json({
@@ -264,15 +267,19 @@ export async function POST(request: NextRequest) {
                         }, { status: 403 });
                     }
                 }
-            } catch (dbError) {
-                console.error("Anonymous Quota Check Failed:", dbError)
+            } catch (dbError: any) { // Type explicitly as any to access message
+                console.error("Anonymous Quota Check Failed:", dbError);
+                // Fail open on DB error/timeout to allow usage
+                if (dbError.message === 'DB_TIMEOUT') {
+                    console.warn("Skipping quota check due to DB timeout");
+                }
             }
         }
 
         console.log(`Processing file: ${file.name}, type: ${file.type}, size: ${file.size} bytes`);
 
         const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
+        let buffer = Buffer.from(bytes);
 
         // Check if PDF
         const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
@@ -282,11 +289,28 @@ export async function POST(request: NextRequest) {
             file.type.includes('excel') ||
             file.type.includes('spreadsheet');
 
+        // Pre-process images (non-PDF/Excel) for better OCR results
+        if (!isPDF && !isExcel) {
+            try {
+                const { processImageForOCR } = await import('@/lib/image-processing');
+                const processed = await processImageForOCR(buffer as any);
+
+                // Use processed buffer if it was successful
+                if (processed.buffer) {
+                    console.log(`[Image Processing] Optimized image: ${processed.originalSize}b -> ${processed.processedSize}b`);
+                    buffer = processed.buffer;
+                }
+            } catch (procError) {
+                console.error("Image preprocessing warning:", procError);
+                // Continue with original buffer if processing fails
+            }
+        }
+
         if (isExcel) {
             console.log('📊 Excel file detected, parsing directly...');
             try {
                 const { read, utils } = await import('xlsx');
-                const wb = read(buffer, { type: 'buffer' });
+                const wb = read(buffer as any, { type: 'buffer' });
 
                 let extractedText = "";
                 const pageResults: any[] = [];
@@ -313,31 +337,34 @@ export async function POST(request: NextRequest) {
                     throw new Error("No text found in Excel file");
                 }
 
-                // Track Usage for Excel
+                // Track Usage for Excel (with timeout)
+                const dbTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('DB_TIMEOUT')), 3000));
+
                 if (userGoogleId) {
                     try {
                         const { default: prisma } = await import("@/lib/db")
-                        await prisma.user.update({
-                            where: { googleId: userGoogleId },
-                            data: { usageMB: { increment: fileSizeMB } }
-                        })
+                        await Promise.race([
+                            prisma.user.update({
+                                where: { googleId: userGoogleId },
+                                data: { usageMB: { increment: fileSizeMB } }
+                            }),
+                            dbTimeout
+                        ]);
                     } catch (e) { console.error("Failed to update usage stats", e) }
                 } else {
                     try {
                         const { default: prisma } = await import("@/lib/db")
-                        const visitor = await prisma.visitor.findFirst({
-                            where: { ipAddress: ipAddress },
-                            orderBy: { createdAt: 'desc' }
-                        })
-                        if (visitor) {
-                            await prisma.visitor.update({
-                                where: { id: visitor.id },
+                        // Optimistically update by IP directly (faster than findFirst + update)
+                        await Promise.race([
+                            prisma.visitor.update({
+                                where: { ipAddress: ipAddress },
                                 data: {
                                     usageMB: { increment: fileSizeMB },
                                     lastUsageDate: new Date()
                                 }
-                            })
-                        }
+                            }),
+                            dbTimeout
+                        ]);
                     } catch (e) { console.error("Failed to update visitor usage stats", e) }
                 }
 
@@ -413,13 +440,19 @@ export async function POST(request: NextRequest) {
                     };
                 });
 
+                // Track Usage for PDF (with timeout)
+                const dbTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('DB_TIMEOUT')), 3000));
+
                 if (userGoogleId) {
                     try {
                         const { default: prisma } = await import("@/lib/db")
-                        await prisma.user.update({
-                            where: { googleId: userGoogleId },
-                            data: { usageMB: { increment: fileSizeMB } }
-                        })
+                        await Promise.race([
+                            prisma.user.update({
+                                where: { googleId: userGoogleId },
+                                data: { usageMB: { increment: fileSizeMB } }
+                            }),
+                            dbTimeout
+                        ]);
                     } catch (e) {
                         console.error("Failed to update usage stats", e)
                     }
@@ -427,19 +460,16 @@ export async function POST(request: NextRequest) {
                     // Update visitor usage
                     try {
                         const { default: prisma } = await import("@/lib/db")
-                        const visitor = await prisma.visitor.findFirst({
-                            where: { ipAddress: ipAddress },
-                            orderBy: { createdAt: 'desc' }
-                        })
-                        if (visitor) {
-                            await prisma.visitor.update({
-                                where: { id: visitor.id },
+                        await Promise.race([
+                            prisma.visitor.update({
+                                where: { ipAddress: ipAddress },
                                 data: {
                                     usageMB: { increment: fileSizeMB },
                                     lastUsageDate: new Date()
                                 }
-                            })
-                        }
+                            }),
+                            dbTimeout
+                        ]);
                     } catch (e) {
                         console.error("Failed to update visitor usage stats", e)
                     }
@@ -478,13 +508,19 @@ export async function POST(request: NextRequest) {
             const { validateAndCorrectOCR } = await import('@/lib/ocr-validator');
             const { correctedText, warnings } = validateAndCorrectOCR(cleanedText);
 
+            // Track Usage for Image (with timeout)
+            const dbTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('DB_TIMEOUT')), 3000));
+
             if (userGoogleId) {
                 try {
                     const { default: prisma } = await import("@/lib/db")
-                    await prisma.user.update({
-                        where: { googleId: userGoogleId },
-                        data: { usageMB: { increment: fileSizeMB } }
-                    })
+                    await Promise.race([
+                        prisma.user.update({
+                            where: { googleId: userGoogleId },
+                            data: { usageMB: { increment: fileSizeMB } }
+                        }),
+                        dbTimeout
+                    ]);
                 } catch (e) {
                     console.error("Failed to update usage stats", e)
                 }
@@ -492,20 +528,16 @@ export async function POST(request: NextRequest) {
                 // Update visitor usage
                 try {
                     const { default: prisma } = await import("@/lib/db")
-                    // Use upsert to be safe, though record should exist from quota check
-                    await prisma.visitor.upsert({
-                        where: { ipAddress: ipAddress },
-                        update: {
-                            usageMB: { increment: fileSizeMB },
-                            lastUsageDate: new Date()
-                        },
-                        create: {
-                            ipAddress: ipAddress,
-                            email: "anonymous@infygalaxy.com",
-                            usageMB: fileSizeMB,
-                            lastUsageDate: new Date()
-                        }
-                    })
+                    await Promise.race([
+                        prisma.visitor.update({
+                            where: { ipAddress: ipAddress },
+                            data: {
+                                usageMB: { increment: fileSizeMB },
+                                lastUsageDate: new Date()
+                            }
+                        }),
+                        dbTimeout
+                    ]);
                 } catch (e) {
                     console.error("Failed to update visitor usage stats", e)
                 }

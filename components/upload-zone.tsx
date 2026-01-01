@@ -50,6 +50,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
     "image/webp": [".webp"],
     "image/gif": [".gif"],
     "image/bmp": [".bmp"],
+    "image/svg+xml": [".svg"],
     "application/pdf": [".pdf"],
   }
 

@@ -158,43 +158,54 @@ export async function preprocessImageForOCR(
                     return;
                 }
 
-                // Optimized Dimensions for Mobile (2200px: High detail for brochures, but manageable size)
-                const MAX_DIMENSION = 2200;
+                // Optimized Dimensions for Mobile (1900px: High detail for OCR, but significantly lighter for Mobile GPUs)
+                const MAX_DIMENSION = 1900;
+                let targetWidth = img.width;
+                let targetHeight = img.height;
+
                 if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
                     const ratio = Math.min(MAX_DIMENSION / img.width, MAX_DIMENSION / img.height);
-                    canvas.width = Math.round(img.width * ratio);
-                    canvas.height = Math.round(img.height * ratio);
-                } else {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
+                    targetWidth = Math.round(img.width * ratio);
+                    targetHeight = Math.round(img.height * ratio);
                 }
+
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
 
                 // Apply EXIF orientation correction
                 if (autoRotate && orientation !== 1) {
                     applyExifOrientation(ctx, canvas, img, orientation);
                 }
 
-                // --- HARDWARE ACCELERATED FILTERS ONLY (No slow JS loops) ---
-                let filterString = '';
-                if (grayscale) filterString += 'grayscale(100%) ';
-                if (enhanceContrast) filterString += 'contrast(1.15) brightness(1.02) '; // Reduced contrast to avoid noise/hallucinations
+                const isSVG = file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg');
 
-                // Note: We skip 'sharpen' (JS loop) and 'blur' as they kill performance on mobile
-                // The contrast boost is usually enough for OCR.
+                // --- HARDWARE ACCELERATED FILTERS ---
+                let filterString = '';
+
+                // SVGs are usually clean, we can skip heavy filtering unless explicitly requested or if we want grayscale
+                if (grayscale) filterString += 'grayscale(100%) ';
+
+                // Only apply contrast boost to raster images, SVGs usually don't need it
+                if (enhanceContrast && !isSVG) {
+                    filterString += 'contrast(1.15) brightness(1.02) ';
+                }
 
                 if (filterString) {
                     ctx.filter = filterString.trim();
                 }
 
                 // Draw image with filters applied (Fast!)
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
 
                 // Reset filter
                 ctx.filter = 'none';
 
+                const startTime = performance.now();
                 // Convert to blob
                 canvas.toBlob(
                     (blob) => {
+                        const endTime = performance.now();
+                        console.log(`[Preprocessing] Optimization took ${(endTime - startTime).toFixed(2)}ms. Result size: ${(blob?.size || 0) / 1024}KB`);
                         if (blob) {
                             resolve(blob);
                         } else {

@@ -77,7 +77,7 @@ model ContactSubmission {
 
 model Visitor {
   id            String   @id @default(cuid())
-  email         String
+  email         String?
   ipAddress     String?  @unique
   country       String?
   city          String?
