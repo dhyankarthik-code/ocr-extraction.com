@@ -16,6 +16,7 @@ export default function SmartUploadZone() {
     const [validationError, setValidationError] = useState<string | null>(null)
     const [showLimitWarning, setShowLimitWarning] = useState(false)
     const [quota, setQuota] = useState<{ used: number, limit: number } | null>(null)
+    const [lastUploadTime, setLastUploadTime] = useState<number>(0)
 
     // Sync with global store
     const { setUploading: setGlobalUploading, setProgress: setGlobalProgress, setStatus: setGlobalStatus } = useUploadStore()
@@ -84,8 +85,10 @@ export default function SmartUploadZone() {
                 )
 
                 let preprocessedBlob: Blob
+                let isOptimized = false
                 try {
                     preprocessedBlob = await Promise.race([optimizationPromise, timeoutPromise])
+                    isOptimized = preprocessedBlob !== file // If processed, it's optimized
                     setStatus("Compressing to speed up upload...")
                 } catch (e) {
                     console.error("Optimization failed, using original file:", e)
@@ -94,14 +97,22 @@ export default function SmartUploadZone() {
 
                 console.log(`Final image size: ${(preprocessedBlob.size / 1024 / 1024).toFixed(2)} MB`)
                 formData.append('file', preprocessedBlob, file.name)
+                if (isOptimized) {
+                    formData.append('preprocessed', 'true')
+                }
             }
 
             console.log('Sending to OCR API...')
-            setProcessingSteps(prev => [...prev, "Sending to AI OCR engine..."])
+            setProcessingSteps(prev => [...prev, "Uploading to secure server..."])
             setStatus("Processing with AI...")
+
             const data = await new Promise<any>((resolve, reject) => {
                 const xhr = new XMLHttpRequest()
                 xhr.open('POST', '/api/ocr')
+
+                // Simulation timer for "AI steps"
+                let simulationTimer: NodeJS.Timeout
+                let stepStage = 0
 
                 xhr.upload.onprogress = (event) => {
                     if (event.lengthComputable) {
@@ -111,11 +122,26 @@ export default function SmartUploadZone() {
                             setStatus(`Uploading... ${Math.round((event.loaded / event.total) * 100)}%`)
                         } else {
                             setStatus("AI Processing... Please wait")
+
+                            // Start simulating AI steps once upload is done
+                            if (!simulationTimer) {
+                                simulationTimer = setInterval(() => {
+                                    stepStage++
+                                    if (stepStage === 1) {
+                                        setProcessingSteps(prev => [...prev, "AI: Analyzing document layout..."])
+                                    } else if (stepStage === 2) {
+                                        setProcessingSteps(prev => [...prev, "AI: Recognizing text (OCR)..."])
+                                    } else if (stepStage === 3) {
+                                        setProcessingSteps(prev => [...prev, "AI: Correcting & Formatting..."])
+                                    }
+                                }, 2500) // Add a new step every 2.5 seconds
+                            }
                         }
                     }
                 }
 
                 xhr.onload = () => {
+                    if (simulationTimer) clearInterval(simulationTimer)
                     if (xhr.status >= 200 && xhr.status < 300) {
                         resolve(JSON.parse(xhr.responseText))
                     } else {
@@ -123,7 +149,10 @@ export default function SmartUploadZone() {
                         reject({ status: xhr.status, data: errorData })
                     }
                 }
-                xhr.onerror = () => reject(new Error('Network error during upload.'))
+                xhr.onerror = () => {
+                    if (simulationTimer) clearInterval(simulationTimer)
+                    reject(new Error('Network error during upload.'))
+                }
                 xhr.send(formData)
             }).catch(err => {
                 if (err.status === 403 && (err.data?.error === 'Daily Quota exceeded' || (err.data?.details && err.data?.details.includes('quote')))) {
@@ -138,6 +167,9 @@ export default function SmartUploadZone() {
 
             setProcessingSteps(prev => [...prev, "Extraction complete!"])
             setProgress(100)
+
+            // Trigger quota refresh in UploadZone
+            setLastUploadTime(Date.now())
 
             if (data.isPDF && data.pages) {
                 sessionStorage.setItem("ocr_result", JSON.stringify({ ...data, fileName: file.name }))
@@ -228,6 +260,8 @@ export default function SmartUploadZone() {
                     const preprocessedBlob = await quickPreprocess(imageFile)
                     const formData = new FormData()
                     formData.append('file', preprocessedBlob, imageFile.name)
+                    // Flag as preprocessed for server speedup
+                    formData.append('preprocessed', 'true')
 
                     const data = await new Promise<any>((resolve, reject) => {
                         const xhr = new XMLHttpRequest()
@@ -254,6 +288,8 @@ export default function SmartUploadZone() {
                 }
 
                 setProgress(100)
+                setLastUploadTime(Date.now()) // Refresh quota
+
                 sessionStorage.setItem("ocr_result", JSON.stringify({
                     isPDF: false,
                     isBatch: true,
@@ -282,6 +318,7 @@ export default function SmartUploadZone() {
                 uploading={uploading}
                 progress={progress}
                 processingSteps={processingSteps}
+                lastUploadTime={lastUploadTime}
             />
 
             {validationError && (

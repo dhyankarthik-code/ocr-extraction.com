@@ -16,7 +16,22 @@ export interface ProcessedImageResult {
  * 4. Normalization (Contrast enhancement)
  * 5. Sharpening (Edge enhancement)
  */
-export async function processImageForOCR(inputBuffer: Buffer): Promise<ProcessedImageResult> {
+// Options interface
+export interface ProcessOptions {
+    skipHeavyProcessing?: boolean;
+}
+
+export async function processImageForOCR(inputBuffer: Buffer, options: ProcessOptions = {}): Promise<ProcessedImageResult> {
+    // EXPONENTIAL SPEEDUP: If client already processed it, skip Sharp entirely!
+    if (options.skipHeavyProcessing) {
+        return {
+            buffer: inputBuffer,
+            info: { size: inputBuffer.length } as any,
+            originalSize: inputBuffer.length,
+            processedSize: inputBuffer.length
+        };
+    }
+
     try {
         const image = sharp(inputBuffer);
         const metadata = await image.metadata();

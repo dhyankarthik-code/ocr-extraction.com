@@ -10,6 +10,7 @@ interface UploadZoneProps {
   uploading: boolean
   progress: number
   processingSteps?: string[]
+  lastUploadTime?: number
 }
 
 // Helper to truncate middle of string
@@ -19,11 +20,11 @@ const truncateFilename = (name: string, maxLength: number = 20) => {
   return name.slice(0, half) + "..." + name.slice(-half)
 }
 
-export default function UploadZone({ onDrop, uploading, progress, processingSteps = [], accept, hideUsage = false }: UploadZoneProps & { accept?: Record<string, string[]>, hideUsage?: boolean }) {
+export default function UploadZone({ onDrop, uploading, progress, processingSteps = [], accept, hideUsage = false, lastUploadTime = 0 }: UploadZoneProps & { accept?: Record<string, string[]>, hideUsage?: boolean }) {
   const [isDragging, setIsDragging] = useState(false)
   const [quota, setQuota] = useState<{ used: number, limit: number } | null>(null)
 
-  // Fetch quota on mount
+  // Fetch quota on mount and when lastUploadTime changes
   useEffect(() => {
     if (hideUsage) return;
 
@@ -35,7 +36,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
         }
       })
       .catch(() => { }) // Ignore errors, just don't show bar
-  }, [hideUsage])
+  }, [hideUsage, lastUploadTime])
 
   // Calculate usage percentage
   const usagePercent = quota ? Math.min((quota.used / quota.limit) * 100, 100) : 0
