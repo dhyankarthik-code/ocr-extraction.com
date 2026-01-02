@@ -24,20 +24,7 @@ export default function CommentSection({ slug }: CommentSectionProps) {
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
 
-    // Validation Functions matching Contact Form
-    const validateEmail = (email: string) => {
-        // Standard simple email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        return emailRegex.test(email)
-    }
-
-    const hasInvalidNameChars = (value: string) => {
-        return /[0-9]/.test(value)
-    }
-
     // Form State
-    const [name, setName] = useState("")
-    const [email, setEmail] = useState("")
     const [content, setContent] = useState("")
     const [errors, setErrors] = useState<{ [key: string]: string }>({})
     const [touched, setTouched] = useState<{ [key: string]: boolean }>({})
@@ -63,39 +50,6 @@ export default function CommentSection({ slug }: CommentSectionProps) {
 
     const handleBlur = (field: string) => {
         setTouched(prev => ({ ...prev, [field]: true }))
-        // Trigger validation on blur
-        if (field === 'email' && email && !validateEmail(email)) {
-            setErrors(prev => ({ ...prev, email: "Please enter a valid email address (cannot start with a number)" }))
-        }
-        if (field === 'name') {
-            const cleanedName = name.replace(/[^a-zA-Z\s]/g, "").trim()
-            if (cleanedName.length < 2 && name.length > 0) {
-                setErrors(prev => ({ ...prev, name: "Name must be at least 2 characters" }))
-            }
-        }
-    }
-
-    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value
-        if (value && !/^[a-zA-Z\s]*$/.test(value)) {
-            return
-        }
-        setName(value)
-        if (value.trim().length > 0 && value.trim().length < 2) {
-            setErrors(prev => ({ ...prev, name: "Name must be at least 2 characters" }))
-        } else {
-            setErrors(prev => ({ ...prev, name: "" }))
-        }
-    }
-
-    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value
-        setEmail(value)
-        if (value.includes('@') && !validateEmail(value)) {
-            setErrors(prev => ({ ...prev, email: "Please enter a valid email address (cannot start with a number)" }))
-        } else {
-            setErrors(prev => ({ ...prev, email: "" }))
-        }
     }
 
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -110,23 +64,6 @@ export default function CommentSection({ slug }: CommentSectionProps) {
         e.preventDefault()
 
         const newErrors: { [key: string]: string } = {}
-        const cleanedName = name.replace(/[^a-zA-Z\s]/g, "").trim()
-
-        // Name Validation
-        if (!name.trim()) {
-            newErrors.name = "Name is required"
-        } else if (hasInvalidNameChars(name)) {
-            newErrors.name = "Name should contain only letters"
-        } else if (cleanedName.length < 2) {
-            newErrors.name = "Name must be at least 2 characters"
-        }
-
-        // Email Validation
-        if (!email.trim()) {
-            newErrors.email = "Email is required"
-        } else if (!validateEmail(email)) {
-            newErrors.email = "Please enter a valid email address"
-        }
 
         // Content Validation
         if (!content.trim()) {
@@ -137,7 +74,7 @@ export default function CommentSection({ slug }: CommentSectionProps) {
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
-            setTouched({ name: true, email: true, content: true })
+            setTouched({ content: true })
             return
         }
 
@@ -155,8 +92,8 @@ export default function CommentSection({ slug }: CommentSectionProps) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     slug,
-                    name: cleanedName,
-                    email,
+                    name: "Anonymous User", // Default name
+                    email: "anonymous@example.com", // Default email
                     content,
                     recaptchaToken: token
                 })
@@ -174,15 +111,13 @@ export default function CommentSection({ slug }: CommentSectionProps) {
             // Append new comment to list (optimistic or from response)
             const newComment = {
                 id: data.comment?.id || Date.now().toString(),
-                name: data.comment?.name || name,
+                name: "Anonymous User",
                 content: data.comment?.content || content,
                 createdAt: new Date().toISOString()
             }
             setComments(prev => [newComment, ...prev])
 
             // Reset form
-            setName("")
-            setEmail("")
             setContent("")
             setErrors({})
             setTouched({})
@@ -207,34 +142,23 @@ export default function CommentSection({ slug }: CommentSectionProps) {
             <div className="bg-gray-50 p-6 rounded-2xl mb-10 border border-gray-100">
                 <h4 className="font-semibold text-gray-900 mb-4">Leave a Reply</h4>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label htmlFor="name" className="text-sm font-medium text-gray-700">Name *</label>
-                            <Input
-                                id="name"
-                                value={name}
-                                onChange={handleNameChange}
-                                onBlur={() => handleBlur('name')}
-                                placeholder="Your Name"
-                                required
-                                className={`bg-white transition-all ${errors.name ? 'border-red-500 ring-red-500' : ''}`}
-                            />
-                            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="email" className="text-sm font-medium text-gray-700">Email *</label>
-                            <Input
-                                id="email"
-                                type="email"
-                                value={email}
-                                onChange={handleEmailChange}
-                                onBlur={() => handleBlur('email')}
-                                placeholder="name@example.com"
-                                required
-                                className={`bg-white transition-all ${errors.email ? 'border-red-500 ring-red-500' : ''}`}
-                            />
-                            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-                            <p className="text-xs text-gray-500">Your email will not be published.</p>
+                    <div className="space-y-2">
+                        <label htmlFor="comment" className="text-sm font-medium text-gray-700">Comment *</label>
+                        <Textarea
+                            id="comment"
+                            value={content}
+                            onChange={handleContentChange}
+                            onBlur={() => handleBlur('content')}
+                            placeholder="Share your thoughts..."
+                            required
+                            className={`bg-white min-h-[100px] transition-all ${errors.content ? 'border-red-500 ring-red-500' : ''}`}
+                            maxLength={200}
+                        />
+                        <div className="flex justify-between items-center mt-1">
+                            {errors.content ? (
+                                <p className="text-red-500 text-xs">{errors.content}</p>
+                            ) : <span></span>}
+                            <span className="text-xs text-gray-500">{content.length}/200</span>
                         </div>
                     </div>
 
