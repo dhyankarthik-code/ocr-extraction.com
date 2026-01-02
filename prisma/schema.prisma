@@ -99,6 +99,9 @@ model Visitor {
   usageExcelToPdf   Int @default(0)
   usagePdfToPpt     Int @default(0)
   usagePptToPdf     Int @default(0)
+  
+  // Relations
+  visitLogs         VisitLog[]
 
   @@index([email])
   @@index([ipAddress])
@@ -141,4 +144,26 @@ model BlogComment {
   
   @@index([postSlug])
   @@index([createdAt])
+}
+
+model VisitLog {
+  id        String   @id @default(cuid())
+  ipAddress String?
+  
+  country   String?
+  city      String?
+  region    String?
+  
+  userAgent String?
+  path      String   // The page visited
+  referrer  String?
+  
+  createdAt DateTime @default(now())
+  
+  // Link to aggregated Visitor (Optional)
+  visitorId String?
+  visitor   Visitor? @relation(fields: [visitorId], references: [id])
+
+  @@index([createdAt])
+  @@index([ipAddress])
 }
