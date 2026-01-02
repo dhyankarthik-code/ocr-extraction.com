@@ -1,0 +1,15 @@
+{
+    "defaults": {
+        "standard": "WCAG2AA",
+        "runners": [
+            "axe",
+            "htmlcs"
+        ],
+        "timeout": 60000,
+        "wait": 1000
+    },
+    "urls": [
+        "http://localhost:3000",
+        "http://localhost:3000/tools/pdf-to-word"
+    ]
+}

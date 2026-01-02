@@ -1,0 +1,60 @@
+
+name: Daily Deep Scan
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  daily-security-ai:
+    name: 🛡️ Security & AI Audit
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install Deps
+        run: npm ci
+
+      - name: Build & Start
+        run: |
+          npm run build
+          npm run start &
+          npx wait-on http://localhost:3000
+
+      - name: 🕷️ Run ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'http://localhost:3000'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+          continue_on_error: true
+
+      - name: ♿ Pa11y Accessibility Audit
+        run: npx pa11y-ci --config .pa11yci.json http://localhost:3000 || echo "Pa11y issues found"
+
+      - name: 🤖 Promptfoo Mistral Quality Check
+        env:
+          MISTRAL_KEY: ${{ secrets.MISTRAL_KEY }}
+        run: npx promptfoo eval -c promptfoo-mistral-config.yaml
+        continue_on_error: true
+
+      - name: 📊 Upload Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-reports
+          path: |
+            reports/
+            promptfoo-output/
+
+      - name: 🔔 Daily Telegram Report
+        if: always()
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d text="📅 Daily Sanity Check Complete. Check Artifacts."

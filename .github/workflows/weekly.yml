@@ -1,0 +1,44 @@
+
+name: Weekly Load & Full Audit
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  load-and-scale:
+    name: ⚖️ Load Test & Cost Guard
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        user-group: [1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cost Sentinel Check
+        run: node tests/cost-check.js
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Artillery
+        run: npm install -g artillery
+
+      - name: 🚀 Run Artillery Load Matrix
+        run: |
+          # Simulating distributed load
+          artillery run tests/load/load-config.yml --output reports/load-group-${{ matrix.user-group }}.json
+
+      - name: ⚡ WebPageTest Audit
+        run: |
+          echo "Triggering WebPageTest (Mock via Curl)"
+          # curl -X POST "https://www.webpagetest.org/runtest.php?k=${{ secrets.WPT_KEY }}&url=https://ocr-extraction.com&f=json" > reports/wpt.json
+
+      - name: 🔔 Weekly Report
+        if: always()
+        run: |
+           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d text="WEEKLY REPORT: Load Test Group ${{ matrix.user-group }} Finished."

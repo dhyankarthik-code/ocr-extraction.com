@@ -1,0 +1,28 @@
+
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 20
+      rampTo: 50
+      name: "Ramp up load"
+    - duration: 600
+      arrivalRate: 50
+      name: "Sustained load"
+  payload:
+    path: "users.csv"
+    fields:
+      - "username"
+      - "password"
+scenarios:
+  - name: "Visitor Flow"
+    flow:
+      - get:
+          url: "/"
+      - think: 1
+      - get:
+          url: "/tools/pdf-to-word"
+      - think: 2
