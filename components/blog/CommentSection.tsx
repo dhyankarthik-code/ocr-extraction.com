@@ -162,28 +162,10 @@ export default function CommentSection({ slug }: CommentSectionProps) {
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <label htmlFor="comment" className="text-sm font-medium text-gray-700">Comment *</label>
-                        <Textarea
-                            id="comment"
-                            value={content}
-                            onChange={handleContentChange}
-                            onBlur={() => handleBlur('content')}
-                            placeholder="Share your thoughts..."
-                            required
-                            className={`bg-white min-h-[100px] transition-all ${errors.content ? 'border-red-500 ring-red-500' : ''}`}
-                            maxLength={200}
-                        />
-                        <div className="flex justify-between items-center mt-1">
-                            {errors.content ? (
-                                <p className="text-red-500 text-xs">{errors.content}</p>
-                            ) : <span></span>}
-                            <span className="text-xs text-gray-500">{content.length}/200</span>
-                        </div>
-                    </div>
+
 
                     <div className="py-2 min-h-[78px] flex items-center justify-start bg-gray-100/50 rounded-lg border border-dashed border-gray-200 px-4">
-                        {touched.content || touched.name || touched.email ? (
+                        {touched.content ? (
                             <ReCAPTCHA
                                 ref={recaptchaRef}
                                 sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6Lc33R8sAAAAADprj7hnaPVxYBMGgzUEICm_TbBt"}
