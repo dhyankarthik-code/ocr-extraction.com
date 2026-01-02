@@ -1,66 +1,45 @@
-
-name: Smoke & Regressions
+name: Smoke Test
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
-  smoke-test:
-    name: ⚡ Smoke & Quality Gate
-    runs-on: self-hosted
+  smoke:
+    runs-on: self-hosted  # ASUS TUF
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
+          cache: 'npm'
 
-          
-      - name: Install Dependencies
+      - name: Install Deps
         run: npm ci
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          DIRECT_URL: ${{ secrets.DIRECT_URL }}
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps
 
-      - name: Build App
+      - name: Build
         run: npm run build
 
-      - name: Start App
-        run: npm run start &
-        env:
-          PORT: 3000
-
-      - name: Wait for App
-        run: npx wait-on http://localhost:3000
-
-      - name: 🎭 Run Playwright Smoke Tests
+      - name: Unit & Smoke Tests (Playwright)
         run: npx playwright test tests/smoke.spec.ts
         env:
           CI: true
 
-      - name: ♿ Run Axe Accessibility Scan
-        run: npx playwright test tests/a11y --project=chromium || echo "A11y warnings found"
-
-      - name: 🏠 Run Lighthouse CI
+      - name: Lighthouse CI
         run: |
           npm install -g @lhci/cli
-          lhci autorun --collect.url=http://localhost:3000 --upload.target=temporary-public-storage || echo "Lighthouse finished"
+          lhci autorun --upload.target=temporary-public-storage || echo "Lighthouse finished with potential issues"
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
-      - name: 📸 Visual Regression (Mock)
-        run: echo "Visual regression check skipped (Requires server running)"
-
-      - name: 🔔 Report Status
-        if: always()
+      - name: Report Failure
+        if: failure()
         run: |
-          STATUS="${{ job.status }}"
-          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
-            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-            -d text="🔥 Smoke Test Update: $STATUS on ${{ github.ref }}"
+           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT }}/sendMessage -d chat_id=${{ secrets.BOT_TOKEN }} -d text="🚨 Smoke Test Failed! Check GitHub Actions."

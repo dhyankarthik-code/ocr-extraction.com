@@ -1,0 +1,23 @@
+
+prompts: 
+  - "Extract items and prices from this text: {{receipt_text}}"
+
+providers:
+  - id: mistral:mistral-medium
+    config:
+      apiKey: env:MISTRAL_KEY
+
+tests:
+  - vars:
+      receipt_text: |
+        Burger King
+        Whopper $5.49
+        Fries $2.99
+        Total $8.48
+    assert:
+      - type: icontains
+        value: "Whopper"
+      - type: icontains
+        value: "5.49"
+      - type: javascript
+        value: "output.includes('Fries') && output.includes('2.99')"

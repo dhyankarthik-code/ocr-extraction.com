@@ -1,65 +1,51 @@
-
 import { test, expect } from '@playwright/test';
 
-test.describe('Critical User Journey: Upload to Split', () => {
+// Critical User Journey: Login -> OCR Upload -> Bill Split
+test.describe('Smoke Test: Critical Path', () => {
     test.beforeEach(async ({ page }) => {
-        // Mock the OCR API response to avoid costs and external dependency
-        await page.route('/api/process-ocr', async route => {
+        // Mock Mistral API to prevent costs during smoke tests
+        // URL checked from SmartUploadZone: /api/ocr
+        await page.route('**/api/ocr', async route => {
             await route.fulfill({
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify({
-                    text: "Steak $20.00\nBeer $5.00\nTax $2.50\nTotal $27.50",
+                    text: "Mocked OCR Result\nItem 1 10.00\nItem 2 20.00",
                     items: [
-                        { description: "Steak", amount: 20.00 },
-                        { description: "Beer", amount: 5.00 }
-                    ],
-                    total: 27.50
+                        { name: "Item 1", price: 10.00 },
+                        { name: "Item 2", price: 20.00 }
+                    ]
                 })
             });
         });
-
-        // Mock Supabase auth if needed, or bypass login UI for smoke
-        // For this smoke test, we assume the upload page is public or we perform a quick login
     });
 
-    test('User can upload receipt, view extracted items, and split bill', async ({ page }) => {
-        // 1. Visit Home / Tool Page
+    test('should complete full user journey', async ({ page }) => {
+        // 1. Login (or bypass if already authenticated)
+        // Assuming simple auth or public access for now as per "Login -> OCR -> Split"
+        // If auth is required, we use secrets. For now, visiting home.
         await page.goto('/');
+        await expect(page).toHaveTitle(/OCR/);
 
-        // Verify Title
-        await expect(page).toHaveTitle(/OCR/i);
+        // 2. OCR Upload
+        // Navigate to OCR tool (Image to Excel)
+        await page.goto('/tools/image-to-excel');
 
-        // Navigate to Splitter if it's a sub-page
-        // await page.click('text=Bill Splitter'); 
+        // Upload file
+        await page.setInputFiles('input[type="file"]', {
+            name: 'test-receipt.jpg',
+            mimeType: 'image/jpeg',
+            buffer: Buffer.from('mock-image-content')
+        });
 
-        // 2. Upload File
-        // Assuming there's an input[type=file]
-        // Create a dummy file buffer
-        const buffer = Buffer.from('dummy-image-content');
+        // 3. Verify Extraction (Mocked)
+        // Adjust assertion to match actual UI feedback (e.g., "Processing", "Download", or specific text)
+        // Since we don't know exact result UI, we wait for a generic success indicator or the mock response handling
+        // For now, assuming the page shows the result text from our mock
+        await expect(page.getByText('Mocked OCR Result')).toBeVisible({ timeout: 15000 });
 
-        // Check if input exists
-        const fileInput = page.locator('input[type="file"]');
-        if (await fileInput.count() > 0) {
-            await fileInput.setInputFiles({
-                name: 'receipt.jpg',
-                mimeType: 'image/jpeg',
-                buffer
-            });
-        } else {
-            console.log('File input not found, skipping upload step in smoke template');
-        }
-
-        // 3. Wait for OCR processing (mocked)
-        // Expect to see the mocked items
-        // await expect(page.locator('text=Steak')).toBeVisible();
-        // await expect(page.locator('text=$20.00')).toBeVisible();
-
-        // 4. Interaction: Split Item
-        // Click a checkbox or assign user (Simulated)
-        // await page.click('text=Steak');
-
-        // 5. Verify Export Options Visible
-        // await expect(page.locator('text=Export PDF')).toBeVisible();
+        // 4. Split Bill (Pending UI identification)
+        // await page.getByRole('button', { name: /Split/i }).click();
+        // await expect(page.getByText('Total')).toBeVisible();
     });
 });

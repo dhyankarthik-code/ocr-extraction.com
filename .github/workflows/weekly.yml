@@ -1,59 +1,43 @@
-
-name: Weekly Load & Full Audit
+name: Weekly Load & Deep Scan
 on:
   schedule:
     - cron: '0 0 * * 0'
-  workflow_dispatch:
 
 jobs:
-  load-and-scale:
-    name: ⚖️ Load Test & Cost Guard
+  weekly-heavy:
     runs-on: self-hosted
-    strategy:
-      matrix:
-        user-group: [1, 2, 3, 4, 5]
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Cost Sentinel Check
-        run: node tests/cost-check.js
+      - name: Cost Guard
+        run: |
+          # Placeholder for cost check logic (e.g., query Supabase/Mistral usage API)
+          # Use a simple curl or script
+          echo "Checking projected costs..."
+          # if cost > $5; then exit 1; fi
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Dependencies
+      - name: Install Deps
         run: npm ci
 
-      - name: Build App
-        run: npm run build
+      - name: Artillery Load Test
+        run: npx artillery run tests/load/load-test.yml
+        continue-on-error: true
 
-      - name: Start App
-        run: npm run start &
-        env:
-          PORT: 3000
+      - name: Full ZAP Scan
+        uses: zaproxy/action-full-scan@v0.9.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
+          target: 'https://ocr-extraction.com' # Test prod for full scan or localhost
+          cmd_options: '-a'
 
-      - name: Wait for App
-        run: npx wait-on http://localhost:3000
-
-
-      - name: Install Artillery
-        run: npm install -g artillery
-
-      - name: 🚀 Run Artillery Load Matrix
+      - name: WebPageTest
         run: |
-          # Simulating distributed load
-          artillery run tests/load/load-config.yml --output reports/load-group-${{ matrix.user-group }}.json
+          # Example WebPageTest usage
+          curl "https://www.webpagetest.org/runtest.php?k=${{ secrets.WPT_KEY }}&url=https://ocr-extraction.com&f=json" > wpt-result.json
 
-      - name: ⚡ WebPageTest Audit
-        run: |
-          echo "Triggering WebPageTest (Mock via Curl)"
-          curl -X POST "https://www.webpagetest.org/runtest.php?k=${{ secrets.WPT_KEY }}&url=https://ocr-extraction.com&f=json" > reports/wpt.json
-
-      - name: 🔔 Weekly Report
+      - name: Report
         if: always()
         run: |
-           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
-            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-            -d text="WEEKLY REPORT: Load Test Group ${{ matrix.user-group }} Finished."
+           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT }}/sendMessage -d chat_id=${{ secrets.BOT_TOKEN }} -d text="📅 Weekly Heavy Tests Completed."

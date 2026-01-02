@@ -1,0 +1,34 @@
+[
+    {
+        "resourceSizes": [
+            {
+                "resourceType": "script",
+                "budget": 150
+            },
+            {
+                "resourceType": "total",
+                "budget": 1000
+            }
+        ],
+        "resourceCounts": [
+            {
+                "resourceType": "third-party",
+                "budget": 10
+            }
+        ],
+        "timings": [
+            {
+                "metric": "interactive",
+                "budget": 3000
+            },
+            {
+                "metric": "first-contentful-paint",
+                "budget": 1500
+            },
+            {
+                "metric": "max-potential-fid",
+                "budget": 100
+            }
+        ]
+    }
+]
