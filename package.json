@@ -7,7 +7,8 @@
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test": "npx playwright test tests/"
   },
   "dependencies": {
     "@google-cloud/vision": "^5.3.4",
