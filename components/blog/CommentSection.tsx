@@ -92,8 +92,6 @@ export default function CommentSection({ slug }: CommentSectionProps) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     slug,
-                    name: "Anonymous User", // Default name
-                    email: "anonymous@example.com", // Default email
                     content,
                     recaptchaToken: token
                 })
@@ -111,7 +109,7 @@ export default function CommentSection({ slug }: CommentSectionProps) {
             // Append new comment to list (optimistic or from response)
             const newComment = {
                 id: data.comment?.id || Date.now().toString(),
-                name: "Anonymous User",
+                name: "Anonymous User", // UI fallback
                 content: data.comment?.content || content,
                 createdAt: new Date().toISOString()
             }

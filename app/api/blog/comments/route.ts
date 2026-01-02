@@ -3,9 +3,9 @@ import { prisma } from '@/lib/db'
 
 export async function POST(req: Request) {
     try {
-        const { slug, name, email, content, recaptchaToken } = await req.json()
+        const { slug, content, recaptchaToken } = await req.json()
 
-        if (!slug || !name || !email || !content) {
+        if (!slug || !content) {
             return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
         }
 
@@ -34,8 +34,6 @@ export async function POST(req: Request) {
         const comment = await prisma.blogComment.create({
             data: {
                 postSlug: slug,
-                name,
-                email,
                 content,
                 approved: true // Default auto-approve
             }

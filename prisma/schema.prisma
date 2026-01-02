@@ -136,8 +136,8 @@ model BlogComment {
   id        String   @id @default(cuid())
   postSlug  String
   post      BlogPost @relation(fields: [postSlug], references: [slug])
-  name      String
-  email     String
+  name      String?
+  email     String?
   content   String
   approved  Boolean  @default(true) // Auto-approve for now, or false if moderation needed
   createdAt DateTime @default(now())
