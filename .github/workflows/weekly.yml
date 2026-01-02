@@ -23,6 +23,21 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build App
+        run: npm run build
+
+      - name: Start App
+        run: npm run start &
+        env:
+          PORT: 3000
+
+      - name: Wait for App
+        run: npx wait-on http://localhost:3000
+
+
       - name: Install Artillery
         run: npm install -g artillery
 
@@ -34,7 +49,7 @@ jobs:
       - name: ⚡ WebPageTest Audit
         run: |
           echo "Triggering WebPageTest (Mock via Curl)"
-          # curl -X POST "https://www.webpagetest.org/runtest.php?k=${{ secrets.WPT_KEY }}&url=https://ocr-extraction.com&f=json" > reports/wpt.json
+          curl -X POST "https://www.webpagetest.org/runtest.php?k=${{ secrets.WPT_KEY }}&url=https://ocr-extraction.com&f=json" > reports/wpt.json
 
       - name: 🔔 Weekly Report
         if: always()
