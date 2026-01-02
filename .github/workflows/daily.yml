@@ -16,7 +16,7 @@ jobs:
           node-version: 20
 
       - name: Install Deps
-        run: npm ci
+        run: npm install
 
       - name: Build & Start
         run: |
@@ -44,6 +44,7 @@ jobs:
 
       - name: Report Status
         if: always()
+        shell: bash
         run: |
           STATUS="${{ job.status }}"
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d text="Daily QA Finished. Status: $STATUS"

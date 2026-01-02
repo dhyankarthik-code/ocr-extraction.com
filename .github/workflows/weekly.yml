@@ -18,7 +18,7 @@ jobs:
           # if cost > $5; then exit 1; fi
 
       - name: Install Deps
-        run: npm ci
+        run: npm install
 
       - name: Artillery Load Test
         run: npx artillery run tests/load/load-test.yml
@@ -39,5 +39,6 @@ jobs:
 
       - name: Report
         if: always()
+        shell: bash
         run: |
            curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d text="📅 Weekly Heavy Tests Completed."
