@@ -33,7 +33,7 @@ jobs:
           target: 'http://localhost:3000'
           rules_file_name: '.zap/rules.tsv'
           cmd_options: '-a'
-        continue_on_error: true
+        continue-on-error: true
 
       - name: ♿ Pa11y Accessibility Audit
         run: npx pa11y-ci --config .pa11yci.json http://localhost:3000 || echo "Pa11y issues found"
@@ -42,7 +42,7 @@ jobs:
         env:
           MISTRAL_KEY: ${{ secrets.MISTRAL_KEY }}
         run: npx promptfoo eval -c promptfoo-mistral-config.yaml
-        continue_on_error: true
+        continue-on-error: true
 
       - name: 📊 Upload Reports
         uses: actions/upload-artifact@v4

@@ -53,3 +53,6 @@ pnpm-lock.yaml
 # Environment
 .env.production
 .env.local
+
+# GitHub Actions Runner
+actions-runner/
