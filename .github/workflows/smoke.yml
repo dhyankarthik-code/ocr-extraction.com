@@ -21,6 +21,9 @@ jobs:
           
       - name: Install Dependencies
         run: npm ci
+        env:
+          DATABASE_URL: "postgresql://postgres.qngvfrlmcxldsfkewhzk:Supabase@123@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+          DIRECT_URL: "postgresql://postgres.qngvfrlmcxldsfkewhzk:Supabase@123@aws-0-ap-south-1.pooler.supabase.com:5432/postgres"
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
