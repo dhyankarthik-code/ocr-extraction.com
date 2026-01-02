@@ -16,7 +16,7 @@ jobs:
           node-version: 20
 
       - name: Install Deps
-        run: npm install
+        run: npm install --no-audit --no-fund --prefer-offline
 
       - name: Build & Start
         run: |
@@ -44,7 +44,11 @@ jobs:
 
       - name: Report Status
         if: always()
-        shell: bash
+        shell: powershell
         run: |
-          STATUS="${{ job.status }}"
-          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d text="Daily QA Finished. Status: $STATUS"
+          $token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          $chatId = "${{ secrets.TELEGRAM_CHAT_ID }}"
+          $status = "${{ job.status }}"
+          $url = "https://api.telegram.org/bot$token/sendMessage"
+          $body = @{ chat_id = $chatId; text = "Daily QA Finished. Status: $status" }
+          Invoke-RestMethod -Uri $url -Method Post -Body $body

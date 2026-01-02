@@ -19,7 +19,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Deps
-        run: npm install
+        run: npm install --no-audit --no-fund --prefer-offline
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -41,6 +41,10 @@ jobs:
 
       - name: Report Failure
         if: failure()
-        shell: bash
+        shell: powershell
         run: |
-           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d text="🚨 Smoke Test Failed! Check GitHub Actions."
+           $token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+           $chatId = "${{ secrets.TELEGRAM_CHAT_ID }}"
+           $url = "https://api.telegram.org/bot$token/sendMessage"
+           $body = @{ chat_id = $chatId; text = "🚨 Smoke Test Failed! Check GitHub Actions." }
+           Invoke-RestMethod -Uri $url -Method Post -Body $body
