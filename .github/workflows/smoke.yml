@@ -42,7 +42,7 @@ jobs:
           CI: true
 
       - name: ♿ Run Axe Accessibility Scan
-        run: npx playwight test tests/a11y --project=chromium || echo "A11y warnings found"
+        run: npx playwright test tests/a11y --project=chromium || echo "A11y warnings found"
 
       - name: 🏠 Run Lighthouse CI
         run: |

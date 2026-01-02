@@ -33,7 +33,7 @@ jobs:
           target: 'http://localhost:3000'
           rules_file_name: '.zap/rules.tsv'
           cmd_options: '-a'
-          continue_on_error: true
+        continue_on_error: true
 
       - name: ♿ Pa11y Accessibility Audit
         run: npx pa11y-ci --config .pa11yci.json http://localhost:3000 || echo "Pa11y issues found"
