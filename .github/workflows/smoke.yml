@@ -51,8 +51,11 @@ jobs:
 
       - name: Report Failure to Telegram
         if: failure()
-        shell: bash
+        shell: powershell
         run: |
-           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-           -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-           -d text="🚨 SMOKE TEST FAILED! Deploy blocked. Check GitHub Actions."
+           $token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+           $chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
+           $msg = "🚨 SMOKE TEST FAILED! Deploy blocked. Check GitHub Actions."
+           $url = "https://api.telegram.org/bot$token/sendMessage"
+           $body = @{ chat_id = $chat_id; text = $msg }
+           Invoke-RestMethod -Uri $url -Method Post -Body $body

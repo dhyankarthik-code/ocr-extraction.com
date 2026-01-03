@@ -24,6 +24,15 @@ test.describe('Smoke Test: Critical Path (Mocked)', () => {
                 })
             });
         });
+
+        // Mock Usage API to prevent DB calls (ECONNREFUSED)
+        await page.route('**/api/user/usage', async route => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ usageMB: 0, limit: 10 })
+            });
+        });
     });
 
     test('should load home page', async ({ page }) => {
@@ -52,7 +61,6 @@ test.describe('Smoke Test: Critical Path (Mocked)', () => {
 
         // Assertions: using a flexible locator to find the result text
         await expect(page.getByText('MOCKED RECEIPT')).toBeVisible({ timeout: 20000 });
-        await expect(page.getByText('Total')).toBeVisible();
-        await expect(page.getByText('$30.00')).toBeVisible();
+        await expect(page.getByText('Total   $30.00')).toBeVisible();
     });
 });
