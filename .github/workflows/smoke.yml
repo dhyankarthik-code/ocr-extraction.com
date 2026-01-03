@@ -1,4 +1,4 @@
-name: Smoke Test
+name: Smoke Test & Deployment Gate
 on:
   push:
     branches: [ main ]
@@ -6,10 +6,12 @@ on:
     branches: [ main ]
 
 jobs:
-  smoke:
-    runs-on: self-hosted  # ASUS TUF
+  smoke-and-audit:
+    runs-on: self-hosted
     env:
-      DATABASE_URL: "postgresql://postgres:password@localhost:5432/ocr_db" # Dummy for prisma generate
+      # Dummy Value for Build only - Tests are mocked
+      DATABASE_URL: "postgresql://postgres:password@localhost:5432/ocr_db"
+      CI: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,33 +22,38 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - name: Install Deps
-        run: npm install --no-audit --no-fund --prefer-offline
+      - name: Install Dependencies
+        run: npm ci
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - name: Build
+      - name: Build Next.js
         run: npm run build
 
-      - name: Unit & Smoke Tests (Playwright)
+      - name: Run Smoke Tests (Mocked)
         run: npx playwright test tests/smoke.spec.ts
-        env:
-          CI: true
 
-      - name: Lighthouse CI
-        run: |
-          npm install -g @lhci/cli
-          lhci autorun --upload.target=temporary-public-storage || echo "Lighthouse finished with potential issues"
+      - name: Lighthouse CI (Performance Check)
+        # Only run lighthouse if smoke tests pass
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          configPath: './.lighthouserc.json'
+          uploadArtifacts: true 
+          temporaryPublicStorage: true
+          runs: 3
+          budgetPath: './lighthouse-budget.json'
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+        continue-on-error: true # Don't block deploy on minor LH fluctuations, but report it
 
-      - name: Report Failure
+      - name: Report Failure to Telegram
         if: failure()
         shell: powershell
         run: |
            $token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
            $chatId = "${{ secrets.TELEGRAM_CHAT_ID }}"
            $url = "https://api.telegram.org/bot$token/sendMessage"
-           $body = @{ chat_id = $chatId; text = "🚨 Smoke Test Failed! Check GitHub Actions." }
+           $msg = "🚨 SMOKE TEST FAILED! Deploy blocked. Check GitHub Actions."
+           $body = @{ chat_id = $chatId; text = $msg }
            Invoke-RestMethod -Uri $url -Method Post -Body $body

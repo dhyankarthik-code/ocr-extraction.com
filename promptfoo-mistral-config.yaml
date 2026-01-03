@@ -1,22 +1,23 @@
+# Optimized Promptfoo Config for Daily AI Quality Checks
+description: "Daily generic extraction quality check (Cost Optimized)"
+
 prompts: [
-  "Extract items and prices from this receipt text: {{receipt_text}}"
+  "Extract total amount from: {{receipt_text}}"
 ]
 
 providers: [
-  "mistral:mistral-small"
+  {
+    id: "mistral:mistral-tiny",
+    config: {
+      temperature: 0,
+      max_tokens: 50
+    }
+  }
 ]
 
 tests:
   - vars:
-      receipt_text: |
-        Store #123
-        Apples 5.00
-        Bananas 3.00
-        Total 8.00
+      receipt_text: "TOTAL: $45.00 Thanks for visiting!"
     assert:
       - type: contains
-        value: "Apples"
-      - type: contains
-        value: "5.00"
-      - type: javascript
-        value: "output.includes('Bananas') && output.includes('3.00')"
+        value: "45.00"

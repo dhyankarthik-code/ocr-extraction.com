@@ -1,50 +1,70 @@
-name: Weekly Load & Deep Scan
+name: Weekly Heavy Load & Security
 on:
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: '0 0 * * 0' # Midnight Sunday
+  workflow_dispatch:
 
 jobs:
   weekly-heavy:
     runs-on: self-hosted
     env:
-      DATABASE_URL: "postgresql://postgres:password@localhost:5432/ocr_db" # Dummy for prisma generate
+      DATABASE_URL: ${{ secrets.DATABASE_URL }} # Needed for Cost Check
+      CI: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cost Guard
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: 💰 Cost Sentinel Check
+        run: npx tsx tests/guardrails/cost-check.ts
+
+      - name: Build & Start App
         run: |
-          # Placeholder for cost check logic (e.g., query Supabase/Mistral usage API)
-          # Use a simple curl or script
-          echo "Checking projected costs..."
-          # if cost > $5; then exit 1; fi
+          npm run build
+          npm start &
+          npx wait-on http://localhost:3000
 
-      - name: Install Deps
-        run: npm install --no-audit --no-fund --prefer-offline
+      - name: 🏋️ Artillery Load Test
+        run: |
+          mkdir -p reports/load
+          npx artillery run tests/load/load-test-config.yml --output reports/load/report.json
+          npx artillery report reports/load/report.json --output reports/load/report.html
 
-      - name: Artillery Load Test
-        run: npx artillery run tests/load/load-test.yml
-        continue-on-error: true
-
-      - name: Full ZAP Scan
-        uses: zaproxy/action-full-scan@v0.9.0
+      - name: 🛡️ ZAP Full Scan
+        uses: zaproxy/action-full-scan@v0.10.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
-          target: 'https://ocr-extraction.com' # Test prod for full scan or localhost
-          cmd_options: '-a'
+          target: 'http://localhost:3000'
+          allow_issue_writing: false
+          artifact_name: 'zap-full-scan-report'
 
-      - name: WebPageTest
-        run: |
-          # Example WebPageTest usage
-          curl "https://www.webpagetest.org/runtest.php?k=${{ secrets.WPT_KEY }}&url=https://ocr-extraction.com&f=json" > wpt-result.json
+      - name: Upload Load Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: artillery-report
+          path: reports/load/
 
-      - name: Report
+      - name: Report Status
         if: always()
         shell: powershell
         run: |
            $token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
            $chatId = "${{ secrets.TELEGRAM_CHAT_ID }}"
+           $status = "${{ job.status }}"
            $url = "https://api.telegram.org/bot$token/sendMessage"
-           $body = @{ chat_id = $chatId; text = "📅 Weekly Heavy Tests Completed." }
-           Invoke-RestMethod -Uri $url -Method Post -Body $body
+           $msg = "Weekly Heavy QA Finished. Status: $status. Check GitHub Artifacts for reports."
+           $body = @{ chat_id = $chatId; text = $msg }
+           try {
+             Invoke-RestMethod -Uri $url -Method Post -Body $body
+           } catch {
+             Write-Host "Failed to send Telegram notification"
+           }
