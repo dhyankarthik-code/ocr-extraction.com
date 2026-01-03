@@ -37,7 +37,7 @@ test.describe('Smoke Test: Critical Path (Mocked)', () => {
         // Ensure the upload area/button is visible
         // Adjust selector based on actual generic-tool.tsx or smart-upload-zone implementation
         // Usually input[type="file"] is hidden, but accessible via label or direct method
-        const fileInput = page.locator('input[type="file"]');
+        const fileInput = page.locator('input[type="file"]').first();
 
         // Create a mock file
         await fileInput.setInputFiles({
