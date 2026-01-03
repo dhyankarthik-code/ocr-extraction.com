@@ -49,15 +49,14 @@ jobs:
       - name: 🛡️ ZAP Baseline Scan (Direct Docker)
         shell: powershell
         run: |
-          # Create writable directory for reports
-          New-Item -ItemType Directory -Force -Path "reports"
-          
+          # Create empty report file to ensure path exists
+          New-Item -Path "zap_report.html" -ItemType File -Force
+
           # Run ZAP Docker container directly
-          # -v maps the current directory ($PWD) to /zap/wrk inside the container
-          # -t target URL
-          # -r report filename
-          # -c config file (default)
-          docker run --rm -v "${PWD}:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://host.docker.internal:3000 -r zap_report.html -I
+          # -u 0 : Run as root to avoid permission issues writing to Windows volume
+          # -v : Map current directory
+          docker run --rm -u 0 -v "$(Get-Location).Path:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://host.docker.internal:3000 -r zap_report.html -I
+          
           
       - name: Upload ZAP Report
         if: always()

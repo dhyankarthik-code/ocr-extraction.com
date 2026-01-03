@@ -50,12 +50,12 @@ jobs:
       - name: 🛡️ ZAP Full Scan (Direct Docker)
         shell: powershell
         run: |
-          # Create writable directory for reports
+          # Create directory and empty file
           New-Item -ItemType Directory -Force -Path "reports/zap"
+          New-Item -Path "reports/zap/zap_full_report.html" -ItemType File -Force
           
-          # Run ZAP Full Scan directly
-          # Using host.docker.internal to access host localhost from container
-          docker run --rm -v "${PWD}/reports/zap:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://host.docker.internal:3000 -r zap_full_report.html -I
+          # Run ZAP Full Scan directly running as root (-u 0) to fix volume permissions
+          docker run --rm -u 0 -v "$(Get-Location).Path/reports/zap:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://host.docker.internal:3000 -r zap_full_report.html -I
 
       - name: Upload ZAP Report
         if: always()
