@@ -30,6 +30,7 @@ jobs:
         run: npx tsx tests/guardrails/cost-check.ts
 
       - name: Build & Start App
+        shell: bash
         run: |
           npm run build
           npm start &
