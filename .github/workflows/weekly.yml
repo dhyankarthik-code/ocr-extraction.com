@@ -47,14 +47,22 @@ jobs:
           npx artillery run tests/load/load-test-config.yml --output reports/load/report.json
           npx artillery report reports/load/report.json --output reports/load/report.html
 
-      - name: 🛡️ ZAP Full Scan
-        uses: zaproxy/action-full-scan@v0.10.0
+      - name: 🛡️ ZAP Full Scan (Direct Docker)
+        shell: powershell
+        run: |
+          # Create writable directory for reports
+          New-Item -ItemType Directory -Force -Path "reports/zap"
+          
+          # Run ZAP Full Scan directly
+          # Using host.docker.internal to access host localhost from container
+          docker run --rm -v "${PWD}/reports/zap:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://host.docker.internal:3000 -r zap_full_report.html -I
+
+      - name: Upload ZAP Report
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
-          target: 'http://localhost:3000'
-          allow_issue_writing: false
-          artifact_name: 'zap-full-scan-report'
+          name: zap-full-report
+          path: reports/zap/zap_full_report.html
 
       - name: Upload Load Test Report
         uses: actions/upload-artifact@v4
