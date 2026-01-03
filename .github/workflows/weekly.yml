@@ -55,7 +55,8 @@ jobs:
           New-Item -Path "reports/zap/zap_full_report.html" -ItemType File -Force
           
           # Run ZAP Full Scan directly running as root (-u 0) to fix volume permissions
-          docker run --rm -u 0 -v "$(Get-Location).Path/reports/zap:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://host.docker.internal:3000 -r zap_full_report.html -I
+          # Using absolute path to docker.exe to avoid PATH issues
+          & "D:\Docker\resources\bin\docker.exe" run --rm -u 0 -v "$(Get-Location).Path/reports/zap:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://host.docker.internal:3000 -r zap_full_report.html -I
 
       - name: Upload ZAP Report
         if: always()
