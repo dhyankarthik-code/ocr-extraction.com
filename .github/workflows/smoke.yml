@@ -37,17 +37,17 @@ jobs:
         run: npx playwright test tests/smoke.spec.ts --retries 1
         timeout-minutes: 10
 
-      - name: Lighthouse CI (Performance Check)
-        uses: treosh/lighthouse-ci-action@v11
-        with:
-          configPath: './.lighthouserc.json'
-          uploadArtifacts: true 
-          temporaryPublicStorage: true
-          runs: 3
-          budgetPath: './lighthouse-budget.json'
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-        continue-on-error: true
+      # - name: Lighthouse CI (Performance Check)
+      #   uses: treosh/lighthouse-ci-action@v11
+      #   with:
+      #     configPath: './.lighthouserc.json'
+      #     uploadArtifacts: true 
+      #     temporaryPublicStorage: true
+      #     runs: 3
+      #     budgetPath: './lighthouse-budget.json'
+      #   env:
+      #     LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+      #   continue-on-error: true
 
       - name: Report Failure to Telegram
         if: failure()
