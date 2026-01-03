@@ -38,10 +38,12 @@ jobs:
         run: npx tsx tests/guardrails/cost-check.ts
 
       - name: Build & Start App
-        shell: bash
+        shell: powershell
         run: |
           npm run build
-          npm start &
+          # Start npm start in background using Start-Process
+          $process = Start-Process npm -ArgumentList "start" -PassThru
+          echo "Started process ID: $($process.Id)"
           npx wait-on http://localhost:3000 --timeout 60000
 
       - name: 🛡️ ZAP Baseline Scan
