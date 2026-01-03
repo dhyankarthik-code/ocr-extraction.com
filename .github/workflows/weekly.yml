@@ -26,6 +26,9 @@ jobs:
       - name: Add Docker to PATH
         run: echo "D:\Docker\resources\bin" >> $GITHUB_PATH
 
+      - name: Prisma Generate
+        run: npx prisma generate
+
       - name: 💰 Cost Sentinel Check
         run: npx tsx tests/guardrails/cost-check.ts
 
