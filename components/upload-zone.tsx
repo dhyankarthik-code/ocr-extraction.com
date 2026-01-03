@@ -90,7 +90,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
           onDragEnter={() => setIsDragging(true)}
           onDragLeave={() => setIsDragging(false)}
         >
-          <input {...getInputProps()} />
+          <input {...getInputProps()} aria-label="File upload dropzone" />
 
           {/* Icon & Text */}
           <div className={`
@@ -98,7 +98,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
           transition-transform duration-300 group-hover:scale-110
           ${isDragActive ? "bg-red-100" : ""}
         `}>
-            <Upload className={`w-10 h-10 text-red-500 ${isDragActive ? "animate-bounce" : ""}`} />
+            <Upload className={`w-10 h-10 text-red-700 ${isDragActive ? "animate-bounce" : ""}`} />
           </div>
 
           <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 text-center">
@@ -114,6 +114,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
             <div className="pointer-events-none">
               <InteractiveHoverButton
                 text="Browse Files"
+                aria-label="Browse Files"
                 className="pointer-events-auto w-48"
               />
             </div>
@@ -124,6 +125,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
                 type="file"
                 accept="image/*"
                 capture="environment"
+                aria-label="Take Photo"
                 onChange={(e) => {
                   const files = e.target.files
                   if (files && files.length > 0) {

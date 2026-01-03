@@ -237,7 +237,7 @@ export default function Home() {
                 <svg className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span className="text-gray-700">{item}</span>
+                <span className="text-gray-900">{item}</span>
               </li>
             ))}
           </ul>
@@ -246,13 +246,13 @@ export default function Home() {
 
       {/* Built by Experts */}
       <section className="w-full max-w-4xl mt-20 px-4">
-        <div className="bg-gradient-to-r from-red-500 to-red-600 p-8 md:p-12 rounded-2xl text-white text-center">
+        <div className="bg-red-700 bg-gradient-to-r from-red-600 to-red-700 p-8 md:p-12 rounded-2xl text-white text-center">
           <h3 className="text-2xl md:text-3xl font-bold mb-4">Built by Industry Experts</h3>
-          <p className="text-white/90 mb-4 max-w-2xl mx-auto">
+          <p className="text-white mb-4 max-w-2xl mx-auto">
             OCR-Extraction.com is developed by <strong>Infy Galaxy</strong>, a team of AI professionals
             dedicated to building reliable and user-centric tools.
           </p>
-          <p className="text-white/80 italic">
+          <p className="text-white italic">
             "Make digital text extraction fast, accurate, and accessible to everyone."
           </p>
         </div>

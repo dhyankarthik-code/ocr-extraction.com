@@ -47,7 +47,7 @@ export default function Footer() {
                         <p className="text-sm text-gray-400 font-medium">
                             Free OCR Extraction and Report Generation Tool
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-400">
                             The Necessary Tool For OCR Data Extraction – Go Beyond Extraction and Generate Reports, AI Summary, and Download in Various Formats
                         </p>
                     </div>

@@ -44,7 +44,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
     <nav className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-gray-100 shadow-sm h-16">
       <div className="container mx-auto px-4 h-full flex items-center justify-between relative">
         {/* Logo */}
-        <Link href="/" className="text-3xl font-bold text-red-500 hover:text-red-600 transition-colors z-10">
+        <Link href="/" className="text-3xl font-bold text-red-700 hover:text-red-800 transition-colors z-10">
           Infy Galaxy
         </Link>
 
@@ -54,14 +54,14 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
             <Link
               key={link.href}
               href={link.href}
-              className="text-lg font-medium text-gray-700 hover:text-red-500 transition-colors"
+              className="text-lg font-medium text-gray-700 hover:text-red-700 transition-colors"
             >
               {link.label}
             </Link>
           ))}
 
           <DropdownMenu open={isToolsOpen} onOpenChange={setIsToolsOpen}>
-            <DropdownMenuTrigger className="flex items-center gap-1 text-lg font-medium text-gray-700 hover:text-red-500 transition-colors outline-none data-[state=open]:text-red-500 group">
+            <DropdownMenuTrigger className="flex items-center gap-1 text-lg font-medium text-gray-700 hover:text-red-700 transition-colors outline-none data-[state=open]:text-red-700 group">
               Tools <ChevronDown className="w-4 h-4 transition-transform group-data-[state=open]:rotate-180" />
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -72,7 +72,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {toolCategories.map((category) => (
                   <div key={category.name} className="space-y-2">
-                    <div className="text-sm font-bold text-red-500 uppercase tracking-wider mb-2">
+                    <div className="text-sm font-bold text-red-700 uppercase tracking-wider mb-2">
                       {category.name}
                     </div>
                     <div className="space-y-1">
@@ -92,14 +92,14 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
 
           <Link
             href="/blog"
-            className="text-lg font-medium text-gray-700 hover:text-red-500 transition-colors"
+            className="text-lg font-medium text-gray-700 hover:text-red-700 transition-colors"
           >
             Blog
           </Link>
 
           <Link
             href="/contact"
-            className="text-lg font-medium text-gray-700 hover:text-red-500 transition-colors"
+            className="text-lg font-medium text-gray-700 hover:text-red-700 transition-colors"
           >
             Contact Us
           </Link>
@@ -119,7 +119,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
                   }}
                 />
               ) : (
-                <div className="w-8 h-8 rounded-full border-2 border-red-500 bg-red-500 flex items-center justify-center text-white text-sm font-bold">
+                <div className="w-8 h-8 rounded-full border-2 border-red-500 bg-red-600 flex items-center justify-center text-white text-sm font-bold">
                   {(session.name || 'U').charAt(0).toUpperCase()}
                 </div>
               )}
@@ -149,7 +149,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
         </div>
 
         {/* Mobile Menu Button */}
-        <button
+        <button aria-label="Open navigation menu"
           className="md:hidden p-2 text-gray-600"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
@@ -165,7 +165,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-lg font-medium text-gray-700 hover:text-red-500 py-2"
+                className="text-lg font-medium text-gray-700 hover:text-red-700 py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.label}
@@ -183,7 +183,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
                         onClick={() => toggleMobileCategory(category.name)}
                         className="w-full flex items-center justify-between py-3 px-2 text-left"
                       >
-                        <span className="text-sm font-bold text-red-500 uppercase tracking-wider">{category.name}</span>
+                        <span className="text-sm font-bold text-red-700 uppercase tracking-wider">{category.name}</span>
                         <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
                       </button>
 
@@ -193,7 +193,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
                             <Link
                               key={link.href}
                               href={link.href}
-                              className="block text-base font-medium text-gray-600 hover:text-red-500 py-2 pl-2 border-l-2 border-transparent hover:border-red-500 transition-colors"
+                              className="block text-base font-medium text-gray-600 hover:text-red-700 py-2 pl-2 border-l-2 border-transparent hover:border-red-700 transition-colors"
                               onClick={() => setMobileMenuOpen(false)}
                             >
                               {link.label}
