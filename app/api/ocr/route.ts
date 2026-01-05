@@ -49,7 +49,7 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
     // Try Mistral first
     if (mistralKey) {
         try {
-            console.log('Attempting Mistral OCR...');
+            console.log('Attempting Primary OCR...');
             const client = new Mistral({ apiKey: mistralKey });
 
             const response = await client.ocr.process({
@@ -62,13 +62,13 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
 
             if (response.pages && response.pages.length > 0) {
                 rawText = response.pages.map(p => p.markdown).join('\n\n');
-                usedMethod = 'mistral_ocr';
-                console.log('✅ Mistral OCR success!');
+                usedMethod = 'primary_ocr';
+                console.log('✅ Primary OCR success!');
             } else {
-                throw new Error("Mistral response contained no pages");
+                throw new Error("Primary provider response contained no pages");
             }
         } catch (error: any) {
-            console.error("⚠️ Mistral OCR failed:", error.message);
+            console.error("⚠️ Primary OCR failed:", error.message);
             mistralError = error;
             errors.push(`Mistral: ${error.message}`);
         }
@@ -81,7 +81,7 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
     if (!rawText) {
         if (googleKey) {
             try {
-                console.log('Falling back to Google Cloud Vision API...');
+                console.log('Falling back to Secondary Cloud Vision API...');
 
                 const visionResponse = await fetch(
                     `https://vision.googleapis.com/v1/images:annotate?key=${googleKey}`,
@@ -105,14 +105,14 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
 
                 if (visionData.responses?.[0]?.textAnnotations?.[0]?.description) {
                     rawText = visionData.responses[0].textAnnotations[0].description;
-                    usedMethod = 'google_vision';
-                    console.log('✅ Google Vision success!');
+                    usedMethod = 'secondary_ocr';
+                    console.log('✅ Secondary Vision success!');
                 } else {
                     throw new Error("Google Vision found no text");
                 }
 
             } catch (error: any) {
-                console.error("❌ Google Vision failed:", error.message);
+                console.error("❌ Secondary Vision failed:", error.message);
                 googleError = error;
                 errors.push(`Google: ${error.message}`);
             }
@@ -393,7 +393,7 @@ export async function POST(request: NextRequest) {
             if (!mistralApiKey) {
                 return NextResponse.json({
                     error: 'PDF processing requires Mistral API key',
-                    details: 'Mistral OCR is required for PDF processing'
+                    details: 'Advanced OCR is required for PDF processing'
                 }, { status: 500 });
             }
 
@@ -439,7 +439,7 @@ export async function POST(request: NextRequest) {
                         rawText: rawText,
                         characters: cleanedText.length,
                         warnings: [],
-                        method: 'mistral_ocr'
+                        method: 'primary_ocr'
                     };
                 });
 

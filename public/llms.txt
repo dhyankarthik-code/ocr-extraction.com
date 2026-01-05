@@ -10,5 +10,5 @@ Free, high-accuracy OCR for converting images and PDFs to text.
 ## Technical Details
 - **Max File Size**: 10MB total daily quota for users.
 - **Supported Formats**: PDF, PNG, JPG, JPEG, WEBP.
-- **Processing Engine**: Mistral AI (PDFs) and Google Cloud Vision (Images).
+- **Processing Engine**: Advanced AI Models (PDFs) and Cloud Vision (Images).
 - **Hosting**: Migrating to Hostinger for improved performance and scalability.

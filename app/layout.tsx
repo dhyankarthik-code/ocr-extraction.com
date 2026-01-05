@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.ocr-extraction.com'),
   openGraph: {
     title: "Free OCR to Text | Convert Image/PDF to Text & Excel",
-    description: "Convert images to text, PDF, and Excel for free. No limits, 100% accurate AI extraction (Mistral/VLM). Try the best OCR tool online today.",
+    description: "Convert images to text, PDF, and Excel for free. No limits, 100% accurate AI extraction. Try the best OCR tool online today.",
     type: 'website',
     url: 'https://www.ocr-extraction.com/',
     images: [
@@ -49,9 +49,6 @@ export const metadata: Metadata = {
       }
     ],
     siteName: 'Free OCR Extraction',
-  },
-  alternates: {
-    canonical: './',
   },
   twitter: {
     card: 'summary_large_image',
@@ -90,8 +87,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>Free OCR Extraction Tool</title>
         <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <GoogleAnalytics gaId="G-230FBSCTMJ" />
+        <GoogleTagManager gtmId="GTM-K9SH3TBW" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://blog.ocr-extraction.com" />
       </head>
@@ -103,8 +101,8 @@ export default function RootLayout({
         <AnalyticsTracker />
         <Analytics />
         <SpeedInsights />
-        <GoogleAnalytics gaId="G-230FBSCTMJ" />
-        <GoogleTagManager gtmId="GTM-K9SH3TBW" />
+        <SpeedInsights />
+
       </body>
     </html>
   )

@@ -14,7 +14,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  trailingSlash: true,
+  trailingSlash: false,
   async headers() {
     return [
       {
@@ -38,7 +38,7 @@ const nextConfig = {
           },
           {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
+            value: 'strict-origin-when-cross-origin'
           },
           // CSP - Relaxed for Google Analytics/GTM/Vercel/DoubleClick
           {
@@ -58,7 +58,12 @@ const nextConfig = {
               // Frames: reCAPTCHA
               "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/"
             ].join('; ')
-          }
+          },
+          // Anti-Indexing for Vercel Preview/Dev environments
+          ...(process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview' ? [{
+            key: 'X-Robots-Tag',
+            value: 'noindex'
+          }] : [])
         ]
       }
     ]

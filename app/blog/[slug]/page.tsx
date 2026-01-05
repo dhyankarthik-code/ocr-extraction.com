@@ -68,8 +68,18 @@ export default async function BlogPostPage({ params }: PageProps) {
     const author = post._embedded?.author?.[0]?.name || 'Team';
 
     // Fix mixed content issues by replacing http with https in content
-    const sanitizedContent = post.content.rendered.replace(/http:\/\/([^\s"']+)/g, 'https://$1');
+    // Fix mixed content issues and strip unwanted SEO tags/H1s from content
     const sanitizedTitle = post.title.rendered.replace(/http:\/\/([^\s"']+)/g, 'https://$1');
+
+    let sanitizedContent = post.content.rendered.replace(/http:\/\/([^\s"']+)/g, 'https://$1');
+
+    // Remove <title>, <meta>, <link> tags that might have been injected by WP plugins
+    sanitizedContent = sanitizedContent.replace(/<title>.*?<\/title>/gi, '');
+    sanitizedContent = sanitizedContent.replace(/<meta[^>]*>/gi, '');
+    sanitizedContent = sanitizedContent.replace(/<link[^>]*>/gi, '');
+
+    // Replace <h1> with <h2> in content to ensure single H1 (which is the post title)
+    sanitizedContent = sanitizedContent.replace(/<h1([^>]*)>(.*?)<\/h1>/gi, '<h2$1>$2</h2>');
 
     return (
         <div className="bg-white pt-24 pb-16">
