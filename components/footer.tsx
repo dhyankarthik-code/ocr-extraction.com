@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { toolCategories } from "@/lib/tools-data"
 import { Heart, FileText, Wrench, BookOpen, Info, Mail, Newspaper } from "lucide-react"
 
@@ -42,7 +43,26 @@ export default function Footer() {
                     {/* Brand */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
-                            <span className="text-xl font-bold text-white">Infy Galaxy</span>
+                            <div className="relative h-9 w-fit">
+                                <Image
+                                    src="/logo.png"
+                                    alt="Infy Galaxy Logo"
+                                    height={36}
+                                    width={0}
+                                    style={{ width: 'auto', height: '100%' }}
+                                    sizes="100vw"
+                                    className="object-contain"
+                                />
+                            </div>
+                            <div className="flex flex-col items-center leading-none mt-2">
+                                <span className="text-xl font-bold text-red-600">
+                                    InfyGalaxy
+                                </span>
+                                <div className="h-[1px] w-full bg-red-600 my-0.5" />
+                                <span className="text-[8px] font-light text-red-600 tracking-[0.3em] uppercase">
+                                    "Shaping AI Tools"
+                                </span>
+                            </div>
                         </div>
                         <p className="text-sm text-gray-400 font-medium">
                             Free OCR Extraction and Report Generation Tool

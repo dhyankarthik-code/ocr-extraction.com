@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import type { Session } from "@/types/auth"
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
 import { Menu, X } from "lucide-react"
@@ -41,11 +42,32 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
   }
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-gray-100 shadow-sm h-16">
+    <nav className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-gray-100 shadow-sm h-20">
       <div className="container mx-auto px-4 h-full flex items-center justify-between relative">
+
         {/* Logo */}
-        <Link href="/" className="text-3xl font-bold text-red-700 hover:text-red-800 transition-colors z-10">
-          Infy Galaxy
+        <Link href="/" className="flex items-center gap-3 z-10 group">
+          <div className="relative h-14 w-fit transition-transform group-hover:scale-105">
+            <Image
+              src="/logo.png"
+              alt="Infy Galaxy Logo"
+              height={56}
+              width={0}
+              style={{ width: 'auto', height: '100%' }}
+              sizes="100vw"
+              className="object-contain"
+              priority
+            />
+          </div>
+          <div className="flex flex-col items-center leading-none mt-3">
+            <span className="text-4xl font-bold text-red-600">
+              InfyGalaxy
+            </span>
+            <div className="h-[1px] w-full bg-red-600 my-1" />
+            <span className="text-[10px] font-light text-red-600 tracking-[0.3em] uppercase">
+              "Shaping AI Tools"
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Navigation - Centered */}
