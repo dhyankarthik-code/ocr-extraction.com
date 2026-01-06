@@ -126,23 +126,9 @@ export function middleware(request: NextRequest) {
     }
 
     // ============================================
-    // 3. Domain Redirect (Existing Logic)
+    // 3. Pass Through
     // ============================================
-    const isVercelProd = hostname === 'free-ocr-app.vercel.app' || hostname === 'freeocnpp.vercelapp'
-    const isRootDomain = hostname === 'ocr-extraction.com'
-
-    if (
-        process.env.NODE_ENV === 'production' &&
-        (isVercelProd || isRootDomain)
-    ) {
-        const url = request.nextUrl.clone()
-        url.hostname = 'www.ocr-extraction.com'
-        url.protocol = 'https'
-        url.port = ''
-
-        return NextResponse.redirect(url, 301)
-    }
-
+    // Domain redirects now handled by vercel.json
     return NextResponse.next()
 }
 

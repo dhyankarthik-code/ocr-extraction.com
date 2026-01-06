@@ -76,6 +76,9 @@ export const metadata: Metadata = {
       url: '/icon',
     },
   },
+  alternates: {
+    canonical: './',
+  },
 }
 
 export const viewport: Viewport = {

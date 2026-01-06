@@ -39,5 +39,18 @@
             ],
             "destination": "/bill-splitter/:path*"
         }
+    ],
+    "redirects": [
+        {
+            "source": "/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "ocr-extraction.com"
+                }
+            ],
+            "destination": "https://www.ocr-extraction.com/:path*",
+            "permanent": true
+        }
     ]
 }
