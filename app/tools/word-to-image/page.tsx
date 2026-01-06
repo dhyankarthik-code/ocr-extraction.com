@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'Word to Image Converter - Free Galaxy OCR',
     description: 'Convert Word documents (.docx, .doc) to images. Each page becomes a separate PNG file. Free and secure.',
     alternates: {
-        canonical: '/tools/word-to-image',
+        canonical: 'https://www.ocr-extraction.com/tools/word-to-image',
     },
     twitter: {
         card: 'summary_large_image',

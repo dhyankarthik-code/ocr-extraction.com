@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'PPT to Image Converter - Free Galaxy OCR',
     description: 'Convert PowerPoint presentations (.pptx, .ppt) to images. Extract every slide as a separate PNG image. Free online tool.',
     alternates: {
-        canonical: '/tools/ppt-to-image',
+        canonical: 'https://www.ocr-extraction.com/tools/ppt-to-image',
     },
     twitter: {
         card: 'summary_large_image',

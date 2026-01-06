@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'Image to Word Converter - Free Galaxy OCR',
     description: 'Convert images to Word documents using OCR. Extract text from photos and scans into editable Word files.',
     alternates: {
-        canonical: '/tools/image-to-word',
+        canonical: 'https://www.ocr-extraction.com/tools/image-to-word',
     },
 }
 

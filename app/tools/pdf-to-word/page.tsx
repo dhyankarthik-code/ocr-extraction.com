@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'PDF to Word Converter - Free Galaxy OCR',
     description: 'Convert PDF files to editable Word documents. Extract text and paragraphs. Client-side processing for privacy.',
     alternates: {
-        canonical: '/tools/pdf-to-word',
+        canonical: 'https://www.ocr-extraction.com/tools/pdf-to-word',
     },
 }
 

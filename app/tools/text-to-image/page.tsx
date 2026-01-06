@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'Text to Image Converter - Free Galaxy OCR',
     description: 'Convert plain text to images. Free online tool to transform your text files into PNG images.',
     alternates: {
-        canonical: '/tools/text-to-image',
+        canonical: 'https://www.ocr-extraction.com/tools/text-to-image',
     },
     twitter: {
         card: 'summary_large_image',

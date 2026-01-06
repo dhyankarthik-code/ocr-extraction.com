@@ -3,7 +3,10 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'PPT to Text Converter - Free Galaxy OCR',
-    description: 'Extract text from PowerPoint presentations instantly.',
+    description: 'Extract text from PowerPoint presentations (.pptx, .ppt) instantly. Free online tool converts slides to plain text. No signup required.',
+    alternates: {
+        canonical: 'https://www.ocr-extraction.com/tools/ppt-to-text',
+    },
 }
 
 const config: ToolConfig = {

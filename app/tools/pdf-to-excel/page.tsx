@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'PDF to Excel Converter - Free Galaxy OCR',
     description: 'Convert PDF files to editable Excel spreadsheets. Extract text and data into rows. Client-side processing for privacy.',
     alternates: {
-        canonical: '/tools/pdf-to-excel',
+        canonical: 'https://www.ocr-extraction.com/tools/pdf-to-excel',
     },
     twitter: {
         card: 'summary_large_image',

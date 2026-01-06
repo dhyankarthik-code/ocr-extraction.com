@@ -3,8 +3,10 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'Excel to PPT Converter - Free Galaxy OCR',
-    description: 'Convert Excel spreadsheets to PowerPoint presentations.',
-    alternates: { canonical: '/tools/excel-to-ppt' },
+    description: 'Convert Excel spreadsheets to PowerPoint presentations. Transform data into slides automatically. Free online tool with client-side processing.',
+    alternates: {
+        canonical: 'https://www.ocr-extraction.com/tools/excel-to-ppt',
+    },
 }
 
 const config: ToolConfig = {

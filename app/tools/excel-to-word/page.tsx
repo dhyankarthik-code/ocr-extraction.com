@@ -3,9 +3,9 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'Excel to Word Converter - Free Galaxy OCR',
-    description: 'Convert Excel spreadsheets to Word documents. Transform rows and cells into paragraphs.',
+    description: 'Convert Excel spreadsheets (.xlsx, .xls) to Word documents. Transform data tables into editable paragraphs. Free online tool, no signup.',
     alternates: {
-        canonical: '/tools/excel-to-word',
+        canonical: 'https://www.ocr-extraction.com/tools/excel-to-word',
     },
 }
 

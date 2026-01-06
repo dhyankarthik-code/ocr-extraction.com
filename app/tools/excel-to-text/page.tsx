@@ -3,7 +3,10 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'Excel to Text Converter - Free Galaxy OCR',
-    description: 'Extract text from Excel spreadsheets instantly.',
+    description: 'Extract text from Excel spreadsheets (.xlsx, .xls) instantly. Free online tool converts cells and data to plain text. No signup required.',
+    alternates: {
+        canonical: 'https://www.ocr-extraction.com/tools/excel-to-text',
+    },
 }
 
 const config: ToolConfig = {

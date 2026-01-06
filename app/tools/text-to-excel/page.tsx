@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'Text to Excel Converter - Free Galaxy OCR',
     description: 'Convert plain text to Excel spreadsheets. Free online tool to transform your text and CSV files into XLSX format.',
     alternates: {
-        canonical: '/tools/text-to-excel',
+        canonical: 'https://www.ocr-extraction.com/tools/text-to-excel',
     },
     twitter: {
         card: 'summary_large_image',

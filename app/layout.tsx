@@ -102,6 +102,41 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
         <SpeedInsights />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Free OCR Extraction",
+              "url": "https://www.ocr-extraction.com",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": "https://www.ocr-extraction.com/search?q={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Infy Galaxy",
+              "url": "https://www.ocr-extraction.com",
+              "logo": "https://www.ocr-extraction.com/logo.png",
+              "sameAs": [
+                "https://twitter.com/infygalaxy",
+                "https://facebook.com/infygalaxy"
+              ]
+            })
+          }}
+        />
 
       </body>
     </html>

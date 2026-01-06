@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'Image to Excel Converter - Free Galaxy OCR',
     description: 'Convert Images to Excel spreadsheets using OCR. Extract text from photos/scans into Excel rows. Free online tool.',
     alternates: {
-        canonical: '/tools/image-to-excel',
+        canonical: 'https://www.ocr-extraction.com/tools/image-to-excel',
     },
     twitter: {
         card: 'summary_large_image',
