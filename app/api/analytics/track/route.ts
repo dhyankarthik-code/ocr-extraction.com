@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
         });
 
         // 4. Create Log
-        await prisma.visitLog.create({
+        const visitLog = await prisma.visitLog.create({
             data: {
                 ipAddress,
                 country,
@@ -45,11 +45,18 @@ export async function POST(req: NextRequest) {
             }
         });
 
+        console.log(`[Analytics] ✅ Tracked visit: ${path} from ${ipAddress} (${country}) - Log ID: ${visitLog.id}`);
+
         return NextResponse.json({ success: true });
 
     } catch (error) {
-        console.error("Analytics Error:", error);
+        console.error("[Analytics] ❌ Error tracking visit:", error);
+        console.error("[Analytics] Error details:", {
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined,
+            name: error instanceof Error ? error.name : undefined
+        });
         // Fail silently to not impact client performance
-        return NextResponse.json({ success: false }, { status: 500 });
+        return NextResponse.json({ success: false, error: 'Internal error' }, { status: 500 });
     }
 }
