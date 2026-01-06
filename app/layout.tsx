@@ -67,6 +67,15 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  icons: {
+    icon: '/icon',
+    shortcut: '/icon',
+    apple: '/icon',
+    other: {
+      rel: 'apple-touch-icon-precomposed',
+      url: '/icon',
+    },
+  },
 }
 
 export const viewport: Viewport = {
