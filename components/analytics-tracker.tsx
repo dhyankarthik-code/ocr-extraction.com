@@ -15,7 +15,7 @@ export function AnalyticsTracker() {
         // Fire and forget
         const track = async () => {
             try {
-                await fetch('/api/analytics/track', {
+                await fetch('/api/analytics/track/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
