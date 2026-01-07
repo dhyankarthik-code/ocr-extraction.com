@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   publisher: "Infy Galaxy",
   metadataBase: new URL('https://www.ocr-extraction.com'),
   openGraph: {
-    title: "Free OCR to Text | Convert Image/PDF to Text & Excel",
+    title: "Free Image to Text | Convert Image and PDF to Text & Excel",
     description: "Convert images to text, PDF, and Excel for free. No limits, 100% accurate AI extraction (Mistral/VLM). Try the best OCR tool online today.",
     type: 'website',
     url: 'https://www.ocr-extraction.com/',
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
         url: 'https://www.ocr-extraction.com/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Free OCR Extraction Tool Interface',
+        alt: 'Free Image to Text OCR Extraction Tool Interface',
       }
     ],
     siteName: 'Free OCR Extraction',
