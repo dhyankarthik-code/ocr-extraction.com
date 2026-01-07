@@ -10,6 +10,7 @@ interface UploadZoneProps {
   uploading: boolean
   progress: number
   processingSteps?: string[]
+  lastUploadTime?: number
 }
 
 // Helper to truncate middle of string
@@ -19,11 +20,11 @@ const truncateFilename = (name: string, maxLength: number = 20) => {
   return name.slice(0, half) + "..." + name.slice(-half)
 }
 
-export default function UploadZone({ onDrop, uploading, progress, processingSteps = [], accept, hideUsage = false }: UploadZoneProps & { accept?: Record<string, string[]>, hideUsage?: boolean }) {
+export default function UploadZone({ onDrop, uploading, progress, processingSteps = [], accept, hideUsage = false, lastUploadTime = 0 }: UploadZoneProps & { accept?: Record<string, string[]>, hideUsage?: boolean }) {
   const [isDragging, setIsDragging] = useState(false)
   const [quota, setQuota] = useState<{ used: number, limit: number } | null>(null)
 
-  // Fetch quota on mount
+  // Fetch quota on mount and when lastUploadTime changes
   useEffect(() => {
     if (hideUsage) return;
 
@@ -35,7 +36,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
         }
       })
       .catch(() => { }) // Ignore errors, just don't show bar
-  }, [hideUsage])
+  }, [hideUsage, lastUploadTime])
 
   // Calculate usage percentage
   const usagePercent = quota ? Math.min((quota.used / quota.limit) * 100, 100) : 0
@@ -50,15 +51,27 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
     "image/webp": [".webp"],
     "image/gif": [".gif"],
     "image/bmp": [".bmp"],
+    "image/svg+xml": [".svg"],
     "application/pdf": [".pdf"],
   }
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     accept: accept || defaultAccept,
     multiple: true,
     disabled: uploading,
+    noClick: false, // Ensure click works on dropzone
+    noKeyboard: false
   })
+
+  // Listen for custom trigger event from CTA button
+  useEffect(() => {
+    const handleTrigger = () => {
+      open()
+    }
+    window.addEventListener('trigger-file-upload', handleTrigger)
+    return () => window.removeEventListener('trigger-file-upload', handleTrigger)
+  }, [open])
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6">
@@ -77,7 +90,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
           onDragEnter={() => setIsDragging(true)}
           onDragLeave={() => setIsDragging(false)}
         >
-          <input {...getInputProps()} />
+          <input {...getInputProps()} aria-label="File upload dropzone" />
 
           {/* Icon & Text */}
           <div className={`
@@ -85,7 +98,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
           transition-transform duration-300 group-hover:scale-110
           ${isDragActive ? "bg-red-100" : ""}
         `}>
-            <Upload className={`w-10 h-10 text-red-500 ${isDragActive ? "animate-bounce" : ""}`} />
+            <Upload className={`w-10 h-10 text-red-700 ${isDragActive ? "animate-bounce" : ""}`} />
           </div>
 
           <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 text-center">
@@ -101,6 +114,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
             <div className="pointer-events-none">
               <InteractiveHoverButton
                 text="Browse Files"
+                aria-label="Browse Files"
                 className="pointer-events-auto w-48"
               />
             </div>
@@ -109,8 +123,9 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
             <div className="block md:hidden">
               <input
                 type="file"
-                accept="image/*;capture=camera"
+                accept="image/*"
                 capture="environment"
+                aria-label="Take Photo"
                 onChange={(e) => {
                   const files = e.target.files
                   if (files && files.length > 0) {

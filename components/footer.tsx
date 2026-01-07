@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { toolCategories } from "@/lib/tools-data"
 import { Heart, FileText, Wrench, BookOpen, Info, Mail, Newspaper } from "lucide-react"
 
@@ -38,16 +39,35 @@ export default function Footer() {
                 <div className="border-t border-gray-800 my-8"></div>
 
                 {/* Lower Section: Brand & Nav Links */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
                     {/* Brand */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
-                            <span className="text-xl font-bold text-white">Infy Galaxy</span>
+                            <div className="relative h-9 w-fit">
+                                <Image
+                                    src="/logo.png"
+                                    alt="Infy Galaxy Logo"
+                                    height={36}
+                                    width={0}
+                                    style={{ width: 'auto', height: '100%' }}
+                                    sizes="100vw"
+                                    className="object-contain"
+                                />
+                            </div>
+                            <div className="flex flex-col items-center leading-none mt-2">
+                                <span className="text-xl font-bold text-red-600">
+                                    InfyGalaxy
+                                </span>
+                                <div className="h-[1px] w-full bg-red-600 my-0.5" />
+                                <span className="text-[8px] font-light text-red-600 tracking-[0.3em] uppercase">
+                                    "Shaping AI Tools"
+                                </span>
+                            </div>
                         </div>
                         <p className="text-sm text-gray-400 font-medium">
                             Free OCR Extraction and Report Generation Tool
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-400">
                             The Necessary Tool For OCR Data Extraction – Go Beyond Extraction and Generate Reports, AI Summary, and Download in Various Formats
                         </p>
                     </div>
@@ -95,11 +115,6 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/services" className="hover:text-red-500 transition-colors">
-                                    Services
-                                </Link>
-                            </li>
-                            <li>
                                 <Link href="/company-profile" className="hover:text-red-500 transition-colors">
                                     Company Profile
                                 </Link>
@@ -112,6 +127,21 @@ export default function Footer() {
                             <li>
                                 <Link href="/faqs" className="hover:text-red-500 transition-colors">
                                     FAQs
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Services - NEW SECTION */}
+                    <div>
+                        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                            <Wrench className="w-4 h-4" />
+                            Services
+                        </h3>
+                        <ul className="space-y-2 text-sm">
+                            <li>
+                                <Link href="/services" className="hover:text-red-500 transition-colors">
+                                    Our Services
                                 </Link>
                             </li>
                         </ul>

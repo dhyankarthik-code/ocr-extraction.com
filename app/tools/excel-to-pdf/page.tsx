@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'Excel to PDF Converter - Free Galaxy OCR',
     description: 'Convert Excel spreadsheets (.xlsx, .xls) to PDF documents. Free online tool with client-side processing for privacy.',
     alternates: {
-        canonical: '/tools/excel-to-pdf',
+        canonical: 'https://www.ocr-extraction.com/tools/excel-to-pdf',
     },
     twitter: {
         card: 'summary_large_image',

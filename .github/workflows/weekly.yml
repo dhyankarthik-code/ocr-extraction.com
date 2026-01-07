@@ -1,0 +1,88 @@
+name: Weekly Heavy Load & Security
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Midnight Sunday
+  workflow_dispatch:
+
+jobs:
+  weekly-heavy:
+    runs-on: self-hosted
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }} # Needed for Cost Check
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: Add Docker to PATH
+        run: echo "D:\Docker\resources\bin" >> $GITHUB_PATH
+
+      - name: Prisma Generate
+        run: npx prisma generate
+
+      - name: 💰 Cost Sentinel Check
+        run: npx tsx tests/guardrails/cost-check.ts
+
+      - name: Build & Start App
+        shell: powershell
+        run: |
+          npm run build
+          # Start npm start in background using Start-Process
+          $process = Start-Process npm -ArgumentList "start" -PassThru
+          echo "Started process ID: $($process.Id)"
+          npx wait-on http://localhost:3000
+
+      - name: 🏋️ Artillery Load Test
+        run: |
+          mkdir -p reports/load
+          npx artillery run tests/load/load-test-config.yml --output reports/load/report.json
+          npx artillery report reports/load/report.json --output reports/load/report.html
+
+      - name: 🛡️ ZAP Full Scan (Direct Docker)
+        shell: powershell
+        run: |
+          # Create directory and empty file
+          New-Item -ItemType Directory -Force -Path "reports/zap"
+          New-Item -Path "reports/zap/zap_full_report.html" -ItemType File -Force
+          
+          # Run ZAP Full Scan directly running as root (-u 0) to fix volume permissions
+          # Using absolute path to docker.exe to avoid PATH issues
+          & "D:\Docker\resources\bin\docker.exe" run --rm -u 0 -v "$(Get-Location).Path/reports/zap:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://host.docker.internal:3000 -r zap_full_report.html -I
+
+      - name: Upload ZAP Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-full-report
+          path: reports/zap/zap_full_report.html
+
+      - name: Upload Load Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: artillery-report
+          path: reports/load/
+
+      - name: Report Status
+        if: always()
+        shell: powershell
+        run: |
+           $token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+           $chatId = "${{ secrets.TELEGRAM_CHAT_ID }}"
+           $status = "${{ job.status }}"
+           $url = "https://api.telegram.org/bot$token/sendMessage"
+           $msg = "Weekly Heavy QA Finished. Status: $status. Check GitHub Artifacts for reports."
+           $body = @{ chat_id = $chatId; text = $msg }
+           try {
+             Invoke-RestMethod -Uri $url -Method Post -Body $body
+           } catch {
+             Write-Host "Failed to send Telegram notification"
+           }

@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'PPT to PDF Converter - Free Galaxy OCR',
     description: 'Convert PowerPoint presentations (.pptx, .ppt) to PDF format. Free online tool with client-side processing for privacy.',
     alternates: {
-        canonical: '/tools/ppt-to-pdf',
+        canonical: 'https://www.ocr-extraction.com/tools/ppt-to-pdf',
     },
     twitter: {
         card: 'summary_large_image',

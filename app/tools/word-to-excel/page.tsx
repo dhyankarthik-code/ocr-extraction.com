@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'Word to Excel Converter - Free Galaxy OCR',
     description: 'Convert Word documents (.docx) to Excel spreadsheets. Extract text content into rows. Free and secure.',
     alternates: {
-        canonical: '/tools/word-to-excel',
+        canonical: 'https://www.ocr-extraction.com/tools/word-to-excel',
     },
     twitter: {
         card: 'summary_large_image',

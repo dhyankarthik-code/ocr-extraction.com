@@ -1,0 +1,60 @@
+name: Smoke Test & Deployment Gate
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  smoke-and-audit:
+    runs-on: self-hosted
+    env:
+      DATABASE_URL: "file:./dev.db" # Use SQLite for build/test (no real DB needed)
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: Prisma Generate
+        run: npx prisma generate
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Run Smoke Tests (Mocked)
+        run: npx playwright test tests/smoke.spec.ts --retries 1
+        timeout-minutes: 10
+
+      # - name: Lighthouse CI (Performance Check)
+      #   uses: treosh/lighthouse-ci-action@v11
+      #   with:
+      #     configPath: './.lighthouserc.json'
+      #     uploadArtifacts: true 
+      #     temporaryPublicStorage: true
+      #     runs: 3
+      #     budgetPath: './lighthouse-budget.json'
+      #   env:
+      #     LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+      #   continue-on-error: true
+
+      - name: Report Failure to Telegram
+        if: failure()
+        shell: powershell
+        run: |
+           $token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+           $chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
+           $msg = "🚨 SMOKE TEST FAILED! Deploy blocked. Check GitHub Actions."
+           $url = "https://api.telegram.org/bot$token/sendMessage"
+           $body = @{ chat_id = $chat_id; text = $msg }
+           Invoke-RestMethod -Uri $url -Method Post -Body $body

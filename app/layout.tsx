@@ -7,6 +7,7 @@ import "./globals.css"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import ClientConsentWrapper from "@/components/client-consent-wrapper"
+import { AnalyticsTracker } from "@/components/analytics-tracker"
 
 const geist = Geist({ subsets: ["latin"] })
 
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
   publisher: "Infy Galaxy",
   metadataBase: new URL('https://www.ocr-extraction.com'),
   openGraph: {
-    title: "Free Image to Text | Convert Image and PDF to Text & Excel",
+    title: "Free OCR to Text | Convert Image/PDF to Text & Excel",
     description: "Convert images to text, PDF, and Excel for free. No limits, 100% accurate AI extraction (Mistral/VLM). Try the best OCR tool online today.",
     type: 'website',
     url: 'https://www.ocr-extraction.com/',
@@ -48,9 +49,6 @@ export const metadata: Metadata = {
       }
     ],
     siteName: 'Free OCR Extraction',
-  },
-  alternates: {
-    canonical: './',
   },
   twitter: {
     card: 'summary_large_image',
@@ -68,6 +66,9 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+  },
+  alternates: {
+    canonical: './',
   },
 }
 
@@ -88,15 +89,58 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <GoogleAnalytics gaId="G-230FBSCTMJ" />
+        <GoogleTagManager gtmId="GTM-K9SH3TBW" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="preconnect" href="https://blog.ocr-extraction.com" />
+      </head>
       <body className={`${geist.className} font-sans antialiased bg-white text-gray-900`} suppressHydrationWarning>
         <MainLayout>
           {children}
         </MainLayout>
         <ClientConsentWrapper />
+        <AnalyticsTracker />
         <Analytics />
         <SpeedInsights />
-        <GoogleAnalytics gaId="G-230FBSCTMJ" />
-        <GoogleTagManager gtmId="GTM-K9SH3TBW" />
+        <SpeedInsights />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Free OCR Extraction",
+              "url": "https://www.ocr-extraction.com",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": "https://www.ocr-extraction.com/search?q={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Infy Galaxy",
+              "url": "https://www.ocr-extraction.com",
+              "logo": "https://www.ocr-extraction.com/logo.png",
+              "sameAs": [
+                "https://twitter.com/infygalaxy",
+                "https://facebook.com/infygalaxy"
+              ]
+            })
+          }}
+        />
+
       </body>
     </html>
   )

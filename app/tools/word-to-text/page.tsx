@@ -3,7 +3,10 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'Word to Text Converter - Free Galaxy OCR',
-    description: 'Extract text from Word documents instantly.',
+    description: 'Extract plain text from Word documents (.docx, .doc) instantly. Free online converter with client-side processing. No upload to servers.',
+    alternates: {
+        canonical: 'https://www.ocr-extraction.com/tools/word-to-text',
+    },
 }
 
 const config: ToolConfig = {

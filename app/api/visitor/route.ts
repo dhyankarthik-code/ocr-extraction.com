@@ -6,8 +6,8 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { email, tool } = body;
 
-        if (!email || typeof email !== 'string') {
-            return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+        if (email && typeof email !== 'string') {
+            return NextResponse.json({ error: 'Email must be a string' }, { status: 400 });
         }
 
         // Get IP address from headers

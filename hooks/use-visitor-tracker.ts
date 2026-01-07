@@ -18,7 +18,7 @@ export function useVisitorTracker() {
             //     return
             // }
 
-            await fetch('/api/visitor', {
+            await fetch('/api/visitor/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

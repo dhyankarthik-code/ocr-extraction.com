@@ -1,10 +1,13 @@
-
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getPostBySlug } from '@/lib/wordpress';
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar, User, Tag } from 'lucide-react';
 import type { Metadata } from 'next';
+import ShareButtons from '@/components/blog/ShareButtons';
+import LikeButton from '@/components/blog/LikeButton';
+import ViewCounter from '@/components/blog/ViewCounter';
+import CommentSection from '@/components/blog/CommentSection';
 
 interface PageProps {
     params: Promise<{
@@ -65,14 +68,24 @@ export default async function BlogPostPage({ params }: PageProps) {
     const author = post._embedded?.author?.[0]?.name || 'Team';
 
     // Fix mixed content issues by replacing http with https in content
-    const sanitizedContent = post.content.rendered.replace(/http:\/\/([^\s"']+)/g, 'https://$1');
+    // Fix mixed content issues and strip unwanted SEO tags/H1s from content
     const sanitizedTitle = post.title.rendered.replace(/http:\/\/([^\s"']+)/g, 'https://$1');
+
+    let sanitizedContent = post.content.rendered.replace(/http:\/\/([^\s"']+)/g, 'https://$1');
+
+    // Remove <title>, <meta>, <link> tags that might have been injected by WP plugins
+    sanitizedContent = sanitizedContent.replace(/<title>.*?<\/title>/gi, '');
+    sanitizedContent = sanitizedContent.replace(/<meta[^>]*>/gi, '');
+    sanitizedContent = sanitizedContent.replace(/<link[^>]*>/gi, '');
+
+    // Replace <h1> with <h2> in content to ensure single H1 (which is the post title)
+    sanitizedContent = sanitizedContent.replace(/<h1([^>]*)>(.*?)<\/h1>/gi, '<h2$1>$2</h2>');
 
     return (
         <div className="bg-white pt-24 pb-16">
             <article className="container mx-auto px-4 max-w-4xl">
                 {/* Back Link */}
-                <div className="mb-8">
+                <div className="mb-8 flex justify-between items-center">
                     <Link href="/blog">
                         <Button variant="ghost" size="sm" className="bg-gray-50 hover:bg-gray-100 text-gray-600 gap-2">
                             <ArrowLeft className="w-4 h-4" /> Back to Blog
@@ -91,6 +104,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                             <User className="w-4 h-4" />
                             {author}
                         </span>
+                        <ViewCounter slug={slug} />
                     </div>
 
                     <h1
@@ -111,11 +125,20 @@ export default async function BlogPostPage({ params }: PageProps) {
 
                 {/* Content */}
                 <div
-                    className="prose prose-lg md:prose-xl max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-red-600 hover:prose-a:text-red-700 prose-img:rounded-xl prose-img:shadow-md"
+                    className="prose prose-lg md:prose-xl max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-red-600 hover:prose-a:text-red-700 prose-img:rounded-xl prose-img:shadow-md mb-12"
                     dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                 />
 
-                {/* Original Source Link */}
+                {/* Engagement Section */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6 py-8 border-t border-b border-gray-100 mb-12">
+                    <div className="flex items-center gap-4">
+                        <LikeButton slug={slug} />
+                    </div>
+                    <ShareButtons slug={slug} title={post.title.rendered} />
+                </div>
+
+                {/* Comments */}
+                <CommentSection slug={post.slug} />
 
             </article>
         </div>

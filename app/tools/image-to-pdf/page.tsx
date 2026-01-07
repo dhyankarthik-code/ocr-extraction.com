@@ -3,9 +3,9 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'Image to PDF Converter - Free Galaxy OCR',
-    description: 'Convert images to PDF documents. Free online tool to merge multiple images into a single PDF file.',
+    description: 'Convert images (JPG, PNG, WebP) to PDF documents instantly. Free online tool with high quality output. Combine multiple images into one PDF.',
     alternates: {
-        canonical: '/tools/image-to-pdf',
+        canonical: 'https://www.ocr-extraction.com/tools/image-to-pdf',
     },
     twitter: {
         card: 'summary_large_image',

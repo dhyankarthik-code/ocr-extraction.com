@@ -3,9 +3,9 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'Excel to Image Converter - Free Galaxy OCR',
-    description: 'Convert Excel spreadsheets (.xlsx, .xls) to images. Each sheet is saved as a separate PNG image. Free online tool.',
+    description: 'Convert Excel spreadsheets (.xlsx, .xls) to high-quality PNG images. Each sheet becomes a separate image. Free online tool, no signup.',
     alternates: {
-        canonical: '/tools/excel-to-image',
+        canonical: 'https://www.ocr-extraction.com/tools/excel-to-image',
     },
     twitter: {
         card: 'summary_large_image',

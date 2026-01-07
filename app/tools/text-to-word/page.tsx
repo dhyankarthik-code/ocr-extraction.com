@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'Text to Word Converter - Free Galaxy OCR',
     description: 'Convert plain text to Word documents. Free online tool to transform your text files into editable DOCX format.',
     alternates: {
-        canonical: '/tools/text-to-word',
+        canonical: 'https://www.ocr-extraction.com/tools/text-to-word',
     },
     twitter: {
         card: 'summary_large_image',

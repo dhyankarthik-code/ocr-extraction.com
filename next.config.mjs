@@ -38,7 +38,7 @@ const nextConfig = {
           },
           {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
+            value: 'strict-origin-when-cross-origin'
           },
           // CSP - Relaxed for Google Analytics/GTM/Vercel/DoubleClick
           {
@@ -58,27 +58,29 @@ const nextConfig = {
               // Frames: reCAPTCHA
               "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/"
             ].join('; ')
-          }
+          },
+          // Anti-Indexing for Vercel Preview/Dev environments
+          ...(process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview' ? [{
+            key: 'X-Robots-Tag',
+            value: 'noindex'
+          }] : [])
         ]
       }
     ]
   },
   async redirects() {
     return [
-      // Add your 301 redirects here after checking Google Search Console
-      // Example format:
-      // {
-      //   source: '/old-blog-post-url',
-      //   destination: '/blog/new-blog-post-url',
-      //   permanent: true, // 301 redirect
-      // },
-
-      // Common old WordPress patterns (if applicable)
-      // {
-      //   source: '/blog/:year/:month/:day/:slug',
-      //   destination: '/blog/:slug',
-      //   permanent: true,
-      // },
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'ocr-extraction.com',
+          },
+        ],
+        destination: 'https://www.ocr-extraction.com/:path*',
+        permanent: true,
+      },
     ]
   },
 }

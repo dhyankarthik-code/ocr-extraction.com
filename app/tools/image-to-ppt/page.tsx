@@ -3,8 +3,10 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'Image to PPT Converter - Free Galaxy OCR',
-    description: 'Convert Images to PowerPoint using OCR text extraction.',
-    alternates: { canonical: '/tools/image-to-ppt' },
+    description: 'Convert images to PowerPoint presentations using OCR. Extract text from photos and create editable slides. Free online tool, no signup.',
+    alternates: {
+        canonical: 'https://www.ocr-extraction.com/tools/image-to-ppt',
+    },
 }
 
 const config: ToolConfig = {

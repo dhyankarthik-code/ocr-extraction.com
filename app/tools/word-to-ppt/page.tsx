@@ -3,8 +3,10 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'Word to PPT Converter - Free Galaxy OCR',
-    description: 'Convert Word documents to PowerPoint presentations.',
-    alternates: { canonical: '/tools/word-to-ppt' },
+    description: 'Convert Word documents to PowerPoint presentations. Transform paragraphs into slides automatically. Free online tool, no signup required.',
+    alternates: {
+        canonical: 'https://www.ocr-extraction.com/tools/word-to-ppt',
+    },
 }
 
 const config: ToolConfig = {

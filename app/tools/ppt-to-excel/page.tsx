@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'PPT to Excel Converter - Free Galaxy OCR',
     description: 'Convert PowerPoint presentations (.pptx) to Excel spreadsheets. Extract text from slides into rows. Free online tool.',
     alternates: {
-        canonical: '/tools/ppt-to-excel',
+        canonical: 'https://www.ocr-extraction.com/tools/ppt-to-excel',
     },
     twitter: {
         card: 'summary_large_image',

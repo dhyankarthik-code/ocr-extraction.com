@@ -12,7 +12,7 @@ export default function BlogBanner() {
                 <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-48 h-48 bg-black/5 rounded-full blur-2xl" />
 
                 <div className="relative z-10 max-w-4xl mx-auto space-y-4">
-                    <h2 className="text-2xl md:text-3xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight min-h-[3rem] md:min-h-[4rem] flex items-center justify-center whitespace-nowrap">
+                    <h2 className="text-2xl md:text-3xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight min-h-[3rem] md:min-h-[4rem] flex items-center justify-center text-center">
                         Welcome to AI Technologies and Tech Blog
                     </h2>
 

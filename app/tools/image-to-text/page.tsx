@@ -2,8 +2,11 @@ import GenericTool, { ToolConfig } from "@/components/tools/generic-tool"
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-    title: 'Image to Text Converter - Free Galaxy OCR',
-    description: 'Extract Text from Images.',
+    title: 'Free Image to Text Converter - OCR Extraction',
+    description: 'Convert images (JPG, PNG, WebP) to editable text instantly with AI-powered OCR. Free online tool with 99% accuracy. No signup required.',
+    alternates: {
+        canonical: 'https://www.ocr-extraction.com/tools/image-to-text',
+    },
 }
 
 const config: ToolConfig = {

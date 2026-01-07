@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'PDF to Image Converter - Free Galaxy OCR',
     description: 'Convert PDF files to high-quality images (PNG). Extract every page as a separate image. Client-side processing for privacy.',
     alternates: {
-        canonical: '/tools/pdf-to-image',
+        canonical: 'https://www.ocr-extraction.com/tools/pdf-to-image',
     },
     twitter: {
         card: 'summary_large_image',

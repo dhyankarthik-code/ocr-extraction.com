@@ -28,9 +28,12 @@ function cleanOCROutput(text: string): string {
 
 function isValidOCROutput(text: string): boolean {
     if (!text || text.trim().length === 0) return false;
-    const alphanumeric = (text.match(/[a-zA-Z0-9]/g) || []).length;
-    const special = (text.match(/[^\w\s]/g) || []).length;
-    if (alphanumeric < special) return false;
+    const alphanumeric = (text.match(/[\p{L}\p{N}]/gu) || []).length;
+    const total = text.replace(/\s/g, '').length; // characters minus whitespace
+
+    // For documents like brochures, alphanumeric ratio can be lower due to symbols/punctuation
+    // We allow it if at least 25% of the non-whitespace content is alphanumeric
+    if (total > 0 && (alphanumeric / total) < 0.25) return false;
     return true;
 }
 
@@ -46,7 +49,7 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
     // Try Mistral first
     if (mistralKey) {
         try {
-            console.log('Attempting Mistral OCR...');
+            console.log('Attempting Primary OCR...');
             const client = new Mistral({ apiKey: mistralKey });
 
             const response = await client.ocr.process({
@@ -59,13 +62,13 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
 
             if (response.pages && response.pages.length > 0) {
                 rawText = response.pages.map(p => p.markdown).join('\n\n');
-                usedMethod = 'mistral_ocr';
-                console.log('✅ Mistral OCR success!');
+                usedMethod = 'primary_ocr';
+                console.log('✅ Primary OCR success!');
             } else {
-                throw new Error("Mistral response contained no pages");
+                throw new Error("Primary provider response contained no pages");
             }
         } catch (error: any) {
-            console.error("⚠️ Mistral OCR failed:", error.message);
+            console.error("⚠️ Primary OCR failed:", error.message);
             mistralError = error;
             errors.push(`Mistral: ${error.message}`);
         }
@@ -78,7 +81,7 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
     if (!rawText) {
         if (googleKey) {
             try {
-                console.log('Falling back to Google Cloud Vision API...');
+                console.log('Falling back to Secondary Cloud Vision API...');
 
                 const visionResponse = await fetch(
                     `https://vision.googleapis.com/v1/images:annotate?key=${googleKey}`,
@@ -88,7 +91,7 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
                         body: JSON.stringify({
                             requests: [{
                                 image: { content: base64Image },
-                                features: [{ type: 'TEXT_DETECTION' }]
+                                features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
                             }]
                         })
                     }
@@ -100,16 +103,23 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
                     throw new Error(`Google Vision API Error: ${visionData.error.message}`);
                 }
 
-                if (visionData.responses?.[0]?.textAnnotations?.[0]?.description) {
+                // DOCUMENT_TEXT_DETECTION returns fullTextAnnotation
+                if (visionData.responses?.[0]?.fullTextAnnotation?.text) {
+                    rawText = visionData.responses[0].fullTextAnnotation.text;
+                    usedMethod = 'secondary_ocr';
+                    console.log('✅ Secondary Vision success!');
+                }
+                // Fallback to regular textAnnotations if fullTextAnnotation is missing (rare)
+                else if (visionData.responses?.[0]?.textAnnotations?.[0]?.description) {
                     rawText = visionData.responses[0].textAnnotations[0].description;
-                    usedMethod = 'google_vision';
-                    console.log('✅ Google Vision success!');
+                    usedMethod = 'secondary_ocr';
+                    console.log('✅ Secondary Vision success (Standard)!');
                 } else {
                     throw new Error("Google Vision found no text");
                 }
 
             } catch (error: any) {
-                console.error("❌ Google Vision failed:", error.message);
+                console.error("❌ Secondary Vision failed:", error.message);
                 googleError = error;
                 errors.push(`Google: ${error.message}`);
             }
@@ -226,20 +236,28 @@ export async function POST(request: NextRequest) {
             // Check quota for anonymous users based on IP address
             try {
                 const { default: prisma } = await import("@/lib/db")
+                const { checkAndResetUsage } = await import("@/lib/usage-limit")
 
-                // Find or create visitor record by IP
-                const visitor = await prisma.visitor.findFirst({
+                // Wrap DB call in timeout to prevent hanging
+                const dbTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('DB_TIMEOUT')), 5000));
+
+                // Find or create visitor record by IP using upsert
+                const visitorPromise = prisma.visitor.upsert({
                     where: { ipAddress: ipAddress },
-                    orderBy: { createdAt: 'desc' }
-                })
+                    update: {}, // No immediate update if exists
+                    create: {
+                        ipAddress: ipAddress,
+                        email: null, // Allow null now
+                        timezone: "UTC",
+                        usageMB: 0.0
+                    }
+                });
+
+                const visitor = await Promise.race([visitorPromise, dbTimeout]) as any;
 
                 if (visitor) {
                     const visitorTimezone = visitor.timezone || 'UTC'
 
-                    // Use the same timezone-aware reset logic as logged-in users
-                    const { checkAndResetUsage } = await import("@/lib/usage-limit")
-
-                    // Adapt visitor to match User interface for the shared function
                     const visitorAsUser = {
                         id: visitor.id,
                         usageMB: visitor.usageMB || 0.0,
@@ -247,7 +265,7 @@ export async function POST(request: NextRequest) {
                         timezone: visitorTimezone
                     }
 
-                    const currentUsageMB = await checkAndResetUsage(visitorAsUser as any, prisma as any, 'visitor')
+                    const currentUsageMB = await checkAndResetUsage(visitorAsUser, prisma, 'visitor')
 
                     if (currentUsageMB + fileSizeMB > FILE_SIZE_LIMIT_MB) {
                         return NextResponse.json({
@@ -256,15 +274,19 @@ export async function POST(request: NextRequest) {
                         }, { status: 403 });
                     }
                 }
-            } catch (dbError) {
-                console.error("Anonymous Quota Check Failed:", dbError)
+            } catch (dbError: any) { // Type explicitly as any to access message
+                console.error("Anonymous Quota Check Failed:", dbError);
+                // Fail open on DB error/timeout to allow usage
+                if (dbError.message === 'DB_TIMEOUT') {
+                    console.warn("Skipping quota check due to DB timeout");
+                }
             }
         }
 
         console.log(`Processing file: ${file.name}, type: ${file.type}, size: ${file.size} bytes`);
 
         const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
+        let buffer = Buffer.from(bytes);
 
         // Check if PDF
         const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
@@ -274,11 +296,31 @@ export async function POST(request: NextRequest) {
             file.type.includes('excel') ||
             file.type.includes('spreadsheet');
 
+        // Check if preprocessed
+        const isPreprocessed = formData.get("preprocessed") === 'true';
+
+        // Pre-process images (non-PDF/Excel) for better OCR results
+        if (!isPDF && !isExcel) {
+            try {
+                const { processImageForOCR } = await import('@/lib/image-processing');
+                const processed = await processImageForOCR(buffer as any, { skipHeavyProcessing: isPreprocessed });
+
+                // Use processed buffer if it was successful
+                if (processed.buffer) {
+                    console.log(`[Image Processing] Optimized image: ${processed.originalSize}b -> ${processed.processedSize}b`);
+                    buffer = processed.buffer;
+                }
+            } catch (procError) {
+                console.error("Image preprocessing warning:", procError);
+                // Continue with original buffer if processing fails
+            }
+        }
+
         if (isExcel) {
             console.log('📊 Excel file detected, parsing directly...');
             try {
                 const { read, utils } = await import('xlsx');
-                const wb = read(buffer, { type: 'buffer' });
+                const wb = read(buffer as any, { type: 'buffer' });
 
                 let extractedText = "";
                 const pageResults: any[] = [];
@@ -305,31 +347,34 @@ export async function POST(request: NextRequest) {
                     throw new Error("No text found in Excel file");
                 }
 
-                // Track Usage for Excel
+                // Track Usage for Excel (with timeout)
+                const dbTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('DB_TIMEOUT')), 3000));
+
                 if (userGoogleId) {
                     try {
                         const { default: prisma } = await import("@/lib/db")
-                        await prisma.user.update({
-                            where: { googleId: userGoogleId },
-                            data: { usageMB: { increment: fileSizeMB } }
-                        })
+                        await Promise.race([
+                            prisma.user.update({
+                                where: { googleId: userGoogleId },
+                                data: { usageMB: { increment: fileSizeMB } }
+                            }),
+                            dbTimeout
+                        ]);
                     } catch (e) { console.error("Failed to update usage stats", e) }
                 } else {
                     try {
                         const { default: prisma } = await import("@/lib/db")
-                        const visitor = await prisma.visitor.findFirst({
-                            where: { ipAddress: ipAddress },
-                            orderBy: { createdAt: 'desc' }
-                        })
-                        if (visitor) {
-                            await prisma.visitor.update({
-                                where: { id: visitor.id },
+                        // Optimistically update by IP directly (faster than findFirst + update)
+                        await Promise.race([
+                            prisma.visitor.update({
+                                where: { ipAddress: ipAddress },
                                 data: {
                                     usageMB: { increment: fileSizeMB },
                                     lastUsageDate: new Date()
                                 }
-                            })
-                        }
+                            }),
+                            dbTimeout
+                        ]);
                     } catch (e) { console.error("Failed to update visitor usage stats", e) }
                 }
 
@@ -355,7 +400,7 @@ export async function POST(request: NextRequest) {
             if (!mistralApiKey) {
                 return NextResponse.json({
                     error: 'PDF processing requires Mistral API key',
-                    details: 'Mistral OCR is required for PDF processing'
+                    details: 'Advanced OCR is required for PDF processing'
                 }, { status: 500 });
             }
 
@@ -401,17 +446,23 @@ export async function POST(request: NextRequest) {
                         rawText: rawText,
                         characters: cleanedText.length,
                         warnings: [],
-                        method: 'mistral_ocr'
+                        method: 'primary_ocr'
                     };
                 });
+
+                // Track Usage for PDF (with timeout)
+                const dbTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('DB_TIMEOUT')), 3000));
 
                 if (userGoogleId) {
                     try {
                         const { default: prisma } = await import("@/lib/db")
-                        await prisma.user.update({
-                            where: { googleId: userGoogleId },
-                            data: { usageMB: { increment: fileSizeMB } }
-                        })
+                        await Promise.race([
+                            prisma.user.update({
+                                where: { googleId: userGoogleId },
+                                data: { usageMB: { increment: fileSizeMB } }
+                            }),
+                            dbTimeout
+                        ]);
                     } catch (e) {
                         console.error("Failed to update usage stats", e)
                     }
@@ -419,19 +470,16 @@ export async function POST(request: NextRequest) {
                     // Update visitor usage
                     try {
                         const { default: prisma } = await import("@/lib/db")
-                        const visitor = await prisma.visitor.findFirst({
-                            where: { ipAddress: ipAddress },
-                            orderBy: { createdAt: 'desc' }
-                        })
-                        if (visitor) {
-                            await prisma.visitor.update({
-                                where: { id: visitor.id },
+                        await Promise.race([
+                            prisma.visitor.update({
+                                where: { ipAddress: ipAddress },
                                 data: {
                                     usageMB: { increment: fileSizeMB },
                                     lastUsageDate: new Date()
                                 }
-                            })
-                        }
+                            }),
+                            dbTimeout
+                        ]);
                     } catch (e) {
                         console.error("Failed to update visitor usage stats", e)
                     }
@@ -460,6 +508,7 @@ export async function POST(request: NextRequest) {
             const cleanedText = cleanOCROutput(rawText);
 
             if (!isValidOCROutput(cleanedText) || cleanedText.length < 5) {
+                console.error(`[OCR Validation Failure] Cleaned text length: ${cleanedText.length}, Alphanumeric ratio below threshold. Sample: ${cleanedText.substring(0, 100)}`);
                 return NextResponse.json({
                     success: false,
                     error: 'Could not extract valid text. Image might be unclear.',
@@ -469,13 +518,19 @@ export async function POST(request: NextRequest) {
             const { validateAndCorrectOCR } = await import('@/lib/ocr-validator');
             const { correctedText, warnings } = validateAndCorrectOCR(cleanedText);
 
+            // Track Usage for Image (with timeout)
+            const dbTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('DB_TIMEOUT')), 3000));
+
             if (userGoogleId) {
                 try {
                     const { default: prisma } = await import("@/lib/db")
-                    await prisma.user.update({
-                        where: { googleId: userGoogleId },
-                        data: { usageMB: { increment: fileSizeMB } }
-                    })
+                    await Promise.race([
+                        prisma.user.update({
+                            where: { googleId: userGoogleId },
+                            data: { usageMB: { increment: fileSizeMB } }
+                        }),
+                        dbTimeout
+                    ]);
                 } catch (e) {
                     console.error("Failed to update usage stats", e)
                 }
@@ -483,19 +538,16 @@ export async function POST(request: NextRequest) {
                 // Update visitor usage
                 try {
                     const { default: prisma } = await import("@/lib/db")
-                    const visitor = await prisma.visitor.findFirst({
-                        where: { ipAddress: ipAddress },
-                        orderBy: { createdAt: 'desc' }
-                    })
-                    if (visitor) {
-                        await prisma.visitor.update({
-                            where: { id: visitor.id },
+                    await Promise.race([
+                        prisma.visitor.update({
+                            where: { ipAddress: ipAddress },
                             data: {
                                 usageMB: { increment: fileSizeMB },
                                 lastUsageDate: new Date()
                             }
-                        })
-                    }
+                        }),
+                        dbTimeout
+                    ]);
                 } catch (e) {
                     console.error("Failed to update visitor usage stats", e)
                 }

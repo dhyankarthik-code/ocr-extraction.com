@@ -1,0 +1,23 @@
+# Optimized Promptfoo Config for Daily AI Quality Checks
+description: "Daily generic extraction quality check (Cost Optimized)"
+
+prompts: [
+  "Extract total amount from: {{receipt_text}}"
+]
+
+providers: [
+  {
+    id: "mistral:mistral-tiny",
+    config: {
+      temperature: 0,
+      max_tokens: 50
+    }
+  }
+]
+
+tests:
+  - vars:
+      receipt_text: "TOTAL: $45.00 Thanks for visiting!"
+    assert:
+      - type: contains
+        value: "45.00"

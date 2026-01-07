@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: 'Word to PDF Converter - Free Galaxy OCR',
     description: 'Convert Word documents (.docx, .doc) to PDF format. Free online tool with client-side processing for privacy.',
     alternates: {
-        canonical: '/tools/word-to-pdf',
+        canonical: 'https://www.ocr-extraction.com/tools/word-to-pdf',
     },
     twitter: {
         card: 'summary_large_image',

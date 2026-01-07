@@ -60,8 +60,7 @@ export async function GET(request: NextRequest) {
             }
         })
 
-        let currentUsage = visitor?.usageMB || 0
-
+        let currentUsage: number = 0;
         if (visitor) {
             // Adapt visitor to User interface for checkAndResetUsage
             const visitorAsUser = {
@@ -71,6 +70,10 @@ export async function GET(request: NextRequest) {
                 usageMB: visitor.usageMB || 0
             }
             currentUsage = await checkAndResetUsage(visitorAsUser, prisma as any, 'visitor')
+        } else {
+            // If no visitor record exists yet, usage is 0. 
+            // The record will be created via upsert on the first upload.
+            currentUsage = 0
         }
 
         return NextResponse.json({

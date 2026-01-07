@@ -3,9 +3,9 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
     title: 'PPT to Word Converter - Free Galaxy OCR',
-    description: 'Convert PowerPoint presentations to Word documents. Extract slide text into paragraphs.',
+    description: 'Convert PowerPoint presentations to Word documents. Extract slide text into paragraphs. Free online tool with client-side processing.',
     alternates: {
-        canonical: '/tools/ppt-to-word',
+        canonical: 'https://www.ocr-extraction.com/tools/ppt-to-word',
     },
 }
 

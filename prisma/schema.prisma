@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
 }
 
 model User {
@@ -77,7 +77,7 @@ model ContactSubmission {
 
 model Visitor {
   id            String   @id @default(cuid())
-  email         String
+  email         String?
   ipAddress     String?  @unique
   country       String?
   city          String?
@@ -99,8 +99,71 @@ model Visitor {
   usageExcelToPdf   Int @default(0)
   usagePdfToPpt     Int @default(0)
   usagePptToPdf     Int @default(0)
+  
+  // Relations
+  visitLogs         VisitLog[]
 
   @@index([email])
   @@index([ipAddress])
   @@index([createdAt])
+}
+
+
+
+// Blog Interactions
+model BlogPost {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  viewCount Int      @default(0)
+  likes     BlogLike[]
+  comments  BlogComment[]
+  
+  updatedAt DateTime @updatedAt
+}
+
+model BlogLike {
+  id        String   @id @default(cuid())
+  postSlug  String
+  post      BlogPost @relation(fields: [postSlug], references: [slug])
+  sessionId String   // IP or Session ID
+  createdAt DateTime @default(now())
+
+  @@unique([postSlug, sessionId])
+  @@index([postSlug])
+}
+
+model BlogComment {
+  id        String   @id @default(cuid())
+  postSlug  String
+  post      BlogPost @relation(fields: [postSlug], references: [slug])
+  name      String?
+  email     String?
+  content   String
+  approved  Boolean  @default(true) // Auto-approve for now, or false if moderation needed
+  createdAt DateTime @default(now())
+  
+  @@index([postSlug])
+  @@index([createdAt])
+}
+
+model VisitLog {
+  id        String   @id @default(cuid())
+  ipAddress String?
+  
+  country   String?
+  city      String?
+  region    String?
+  
+  userAgent String?
+  path      String   // The page visited
+  referrer  String?
+  
+  createdAt DateTime @default(now())
+  
+  // Link to aggregated Visitor (Optional)
+  visitorId String?
+  visitor   Visitor? @relation(fields: [visitorId], references: [id])
+
+  @@index([createdAt])
+  @@index([ipAddress])
 }

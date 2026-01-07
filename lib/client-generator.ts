@@ -111,7 +111,8 @@ export const generatePPT = async (text: string): Promise<Blob> => {
 }
 
 export const generateMergedPPT = async (fileStates: Array<{ file: File, result: any }>): Promise<Blob> => {
-    const pres = new PptxGenJS();
+    const PptxGenModule = await getPptxGen();
+    const pres = new PptxGenModule();
 
     for (const fs of fileStates) {
         const text = fs.result?.text || "";
@@ -156,13 +157,15 @@ export const generatePDFFromImage = async (imageFile: File): Promise<Blob> => {
 
     const url = URL.createObjectURL(imageFile);
     const img = new Image();
+    img.crossOrigin = 'anonymous';
+
     await new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
         img.src = url;
     });
 
-    // Calculate dimensions based on aspect ratio, ensuring it fits on the page
+    // Calculate dimensions based on aspect ratio
     let pdfWidth = pageWidth;
     let pdfHeight = (img.height * pdfWidth) / img.width;
 
@@ -171,7 +174,6 @@ export const generatePDFFromImage = async (imageFile: File): Promise<Blob> => {
         pdfWidth = (img.width * pdfHeight) / img.height;
     }
 
-    // Center the image
     const x = (pageWidth - pdfWidth) / 2;
     const y = (pageHeight - pdfHeight) / 2;
 
@@ -179,7 +181,16 @@ export const generatePDFFromImage = async (imageFile: File): Promise<Blob> => {
     if (imageFile.type.includes('png')) format = 'PNG';
     else if (imageFile.type.includes('webp')) format = 'WEBP';
 
-    doc.addImage(img, format, x, y, pdfWidth, pdfHeight);
+    // Use canvas to get dataURL for more reliable addImage call
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        const dataUrl = canvas.toDataURL(imageFile.type);
+        doc.addImage(dataUrl, format, x, y, pdfWidth, pdfHeight);
+    }
 
     URL.revokeObjectURL(url);
     return doc.output('blob');
@@ -208,6 +219,8 @@ export const generateMergedPDFFromImages = async (imageFiles: File[]): Promise<B
 
         const url = URL.createObjectURL(imageFile);
         const img = new Image();
+        img.crossOrigin = 'anonymous';
+
         await new Promise((resolve, reject) => {
             img.onload = resolve;
             img.onerror = reject;
@@ -229,7 +242,15 @@ export const generateMergedPDFFromImages = async (imageFiles: File[]): Promise<B
         if (imageFile.type.includes('png')) format = 'PNG';
         else if (imageFile.type.includes('webp')) format = 'WEBP';
 
-        doc.addImage(img, format, x, y, pdfWidth, pdfHeight);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+            ctx.drawImage(img, 0, 0);
+            const dataUrl = canvas.toDataURL(imageFile.type);
+            doc.addImage(dataUrl, format, x, y, pdfWidth, pdfHeight);
+        }
         URL.revokeObjectURL(url);
     }
 

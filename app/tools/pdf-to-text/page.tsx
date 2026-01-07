@@ -2,8 +2,11 @@ import GenericTool, { ToolConfig } from "@/components/tools/generic-tool"
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-    title: 'PDF to Text Converter - Free Galaxy OCR',
-    description: 'Extract text from PDF files instantly.',
+    title: 'Free PDF to Text Converter - OCR Extraction',
+    description: 'Extract text from PDF documents instantly. Free online OCR tool for scanned PDFs and digital files. No signup or download required.',
+    alternates: {
+        canonical: 'https://www.ocr-extraction.com/tools/pdf-to-text',
+    },
 }
 
 const config: ToolConfig = {

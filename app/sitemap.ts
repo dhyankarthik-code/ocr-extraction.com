@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next'
 import { getPosts } from '@/lib/wordpress'
+import fs from 'fs'
+import path from 'path'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,8 +23,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/services',
     ]
 
-    const staticPages = staticRoutes.map((route) => ({
-        url: `${baseUrl}${route}`,
+    // Dynamically get tool routes from app/tools directory
+    const toolsDirectory = path.join(process.cwd(), 'app', 'tools')
+    let toolRoutes: string[] = []
+
+    try {
+        const toolFolders = fs.readdirSync(toolsDirectory)
+        toolRoutes = toolFolders
+            .filter(folder => {
+                const fullPath = path.join(toolsDirectory, folder)
+                return fs.statSync(fullPath).isDirectory() && !folder.startsWith('.')
+            })
+            .map(folder => `/tools/${folder}`)
+    } catch (error) {
+        console.error('Failed to read tools directory for sitemap:', error)
+    }
+
+    const allStaticRoutes = [...staticRoutes, ...toolRoutes]
+
+    const staticPages = allStaticRoutes.map((route) => ({
+        url: `${baseUrl}${route}${route === '' ? '' : '/'}`, // Ensure trailing slash for all except root
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
         priority: route === '' ? 1 : 0.8,
@@ -32,7 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     try {
         const posts = await getPosts()
         const blogPages = posts.map((post) => ({
-            url: `${baseUrl}/blog/${post.slug}`,
+            url: `${baseUrl}/blog/${post.slug}/`, // Ensure trailing slash
             lastModified: new Date(post.date),
             changeFrequency: 'monthly' as const,
             priority: 0.7,
