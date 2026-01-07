@@ -38,7 +38,7 @@ export default function EmailCaptureModal({ onSubmit, onClose }: EmailCaptureMod
 
         try {
             // Call visitor API to store the data
-            const response = await fetch('/api/visitor', {
+            const response = await fetch('/api/visitor/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email }),
