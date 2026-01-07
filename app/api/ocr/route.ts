@@ -28,7 +28,7 @@ function cleanOCROutput(text: string): string {
 
 function isValidOCROutput(text: string): boolean {
     if (!text || text.trim().length === 0) return false;
-    const alphanumeric = (text.match(/[a-zA-Z0-9]/g) || []).length;
+    const alphanumeric = (text.match(/[\p{L}\p{N}]/gu) || []).length;
     const total = text.replace(/\s/g, '').length; // characters minus whitespace
 
     // For documents like brochures, alphanumeric ratio can be lower due to symbols/punctuation
@@ -91,7 +91,7 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
                         body: JSON.stringify({
                             requests: [{
                                 image: { content: base64Image },
-                                features: [{ type: 'TEXT_DETECTION' }]
+                                features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
                             }]
                         })
                     }
@@ -103,10 +103,17 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
                     throw new Error(`Google Vision API Error: ${visionData.error.message}`);
                 }
 
-                if (visionData.responses?.[0]?.textAnnotations?.[0]?.description) {
-                    rawText = visionData.responses[0].textAnnotations[0].description;
+                // DOCUMENT_TEXT_DETECTION returns fullTextAnnotation
+                if (visionData.responses?.[0]?.fullTextAnnotation?.text) {
+                    rawText = visionData.responses[0].fullTextAnnotation.text;
                     usedMethod = 'secondary_ocr';
                     console.log('✅ Secondary Vision success!');
+                }
+                // Fallback to regular textAnnotations if fullTextAnnotation is missing (rare)
+                else if (visionData.responses?.[0]?.textAnnotations?.[0]?.description) {
+                    rawText = visionData.responses[0].textAnnotations[0].description;
+                    usedMethod = 'secondary_ocr';
+                    console.log('✅ Secondary Vision success (Standard)!');
                 } else {
                     throw new Error("Google Vision found no text");
                 }

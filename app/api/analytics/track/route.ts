@@ -37,14 +37,30 @@ export async function POST(req: NextRequest) {
             ipAddress.startsWith('10.') ||
             ipAddress === 'unknown';
 
-        const isBot = /bot|crawl|spider|pa11y|lighthouse|pingdom|uptimerobot|headless/i.test(userAgentString);
+        // FIXED: More specific bot detection - only block known bad bots, not legitimate browsers
+        // Removed overly broad patterns like "bot", "crawl", "spider", "headless" that catch real users
+        const isBot = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|sogou|exabot|facebot|ia_archiver|pa11y|lighthouse|pingdom|uptimerobot|ahrefsbot|semrushbot|dotbot|mj12bot|screaming frog/i.test(userAgentString);
 
         if (isLocalhost || isBot) {
             console.log(`[Analytics] ⏭️ Skipped: ${isLocalhost ? 'localhost' : 'bot'} - ${ipAddress} - ${userAgentString.slice(0, 50)}`);
             return NextResponse.json({ success: true, skipped: true, reason: isLocalhost ? 'localhost' : 'bot' });
         }
 
+        // Enhanced logging for debugging
+        console.log(`[Analytics] 📊 Processing visit: ${path}`);
+        console.log(`[Analytics] 🌍 IP: ${ipAddress} | Location: ${city}, ${region}, ${country}`);
+        console.log(`[Analytics] 🖥️ User Agent: ${userAgentString.slice(0, 100)}`);
+
         const { default: prisma } = await import("@/lib/db");
+
+        // Validate database connection before proceeding
+        try {
+            await prisma.$queryRaw`SELECT 1`;
+            console.log(`[Analytics] ✅ Database connection verified`);
+        } catch (dbError) {
+            console.error('[Analytics] ❌ Database connection failed:', dbError);
+            return NextResponse.json({ success: false, error: 'Database unavailable' }, { status: 503 });
+        }
 
         // 4. Find existing Visitor to link (Optional)
         const visitor = await prisma.visitor.findFirst({
@@ -52,13 +68,15 @@ export async function POST(req: NextRequest) {
             orderBy: { createdAt: 'desc' }
         });
 
+        console.log(`[Analytics] 🔗 Visitor lookup: ${visitor ? `Found ID ${visitor.id}` : 'New visitor'}`);
+
         // 5. Create Log
         const visitLog = await prisma.visitLog.create({
             data: {
                 ipAddress,
-                country,
-                city,
-                region,
+                country: country || 'Unknown',
+                city: city || 'Unknown',
+                region: region || 'Unknown',
                 userAgent: userAgentString,
                 path: path || '/',
                 referrer: referrer || null,
@@ -68,7 +86,7 @@ export async function POST(req: NextRequest) {
 
         console.log(`[Analytics] ✅ Tracked visit: ${path} from ${ipAddress} (${city}, ${country}) - Log ID: ${visitLog.id}`);
 
-        return NextResponse.json({ success: true });
+        return NextResponse.json({ success: true, logId: visitLog.id });
 
     } catch (error) {
         console.error("[Analytics] ❌ Error tracking visit:", error);
