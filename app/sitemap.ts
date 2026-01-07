@@ -42,7 +42,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const allStaticRoutes = [...staticRoutes, ...toolRoutes]
 
     const staticPages = allStaticRoutes.map((route) => ({
-        url: `${baseUrl}${route}`, // Ensure no trailing slash
+        url: `${baseUrl}${route}${route === '' ? '' : '/'}`, // Ensure trailing slash for all except root
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
         priority: route === '' ? 1 : 0.8,
@@ -52,7 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     try {
         const posts = await getPosts()
         const blogPages = posts.map((post) => ({
-            url: `${baseUrl}/blog/${post.slug}`, // Ensure no trailing slash
+            url: `${baseUrl}/blog/${post.slug}/`, // Ensure trailing slash
             lastModified: new Date(post.date),
             changeFrequency: 'monthly' as const,
             priority: 0.7,
