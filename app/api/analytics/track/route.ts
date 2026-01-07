@@ -53,6 +53,17 @@ export async function POST(req: NextRequest) {
 
         const { default: prisma } = await import("@/lib/db");
 
+        // DEBUG: Log the database host to identify which Supabase project we are connected to
+        // We only log the host, not the password
+        try {
+            // @ts-ignore
+            const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL_NON_POOLING || '';
+            const dbHost = dbUrl.split('@')[1]?.split('/')[0] || 'unknown-host';
+            console.log(`[Analytics] 🔌 Connected to DB Host: ${dbHost}`);
+        } catch (e) {
+            console.log('[Analytics] ⚠️ Could not parse DB Host');
+        }
+
         // Validate database connection before proceeding
         try {
             await prisma.$queryRaw`SELECT 1`;
