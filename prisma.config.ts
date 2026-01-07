@@ -10,6 +10,7 @@ export default defineConfig({
   },
   datasource: {
     url: env("DATABASE_URL"),
-    directUrl: env("DIRECT_URL"),
+    // Only include directUrl if defined (prevents build error if missing)
+    ...(process.env.DIRECT_URL ? { directUrl: process.env.DIRECT_URL } : {}),
   },
 });
