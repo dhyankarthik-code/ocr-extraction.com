@@ -244,6 +244,178 @@ export default function HomePage() {
                 </div>
             </section>
 
+            {/* We Are Available in Other Languages */}
+            <section className="w-full max-w-5xl mt-24 px-4">
+                <h3 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-8">
+                    We Are Available in Other Languages
+                </h3>
+                <div className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/50 hover:shadow-2xl hover:shadow-gray-200/50 transition-all duration-300 relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                    <p className="text-gray-600 leading-relaxed text-left mb-8 text-lg">
+                        www.ocr-extraction.com OCR service offers image to text recognition and conversion for a variety of languages including:
+                    </p>
+
+                    <div className="flex flex-wrap gap-2">
+                        {[
+                            { name: "Afrikaans", flag: "🇿🇦" }, { name: "Amharic", flag: "🇪🇹" }, { name: "Arabic", flag: "🇸🇦" },
+                            { name: "Assamese", flag: "🇮🇳" }, { name: "Azerbaijani", flag: "🇦🇿" }, { name: "Belarusian", flag: "🇧🇾" },
+                            { name: "Bengali", flag: "🇧🇩" }, { name: "Tibetan", flag: "🏔️" }, { name: "Bosnian", flag: "🇧🇦" },
+                            { name: "Breton", flag: "🇫🇷" }, { name: "Bulgarian", flag: "🇧🇬" }, { name: "Catalan", flag: "🇪🇸" },
+                            { name: "Valencian", flag: "🇪🇸" }, { name: "Cebuano", flag: "🇵🇭" }, { name: "Czech", flag: "🇨🇿" },
+                            { name: "Chinese (Simplified)", flag: "🇨🇳" }, { name: "Chinese (Traditional)", flag: "🇹🇼" },
+                            { name: "Cherokee", flag: "🇺🇸" }, { name: "Welsh", flag: "󠁧󠁢󠁷󠁬󠁳󠁿" }, { name: "Danish", flag: "🇩🇰" },
+                            { name: "German", flag: "🇩🇪" }, { name: "Dzongkha", flag: "🇧🇹" }, { name: "Greek (Modern)", flag: "🇬🇷" },
+                            { name: "Greek (Ancient)", flag: "🏛️" }, { name: "English", flag: "🇺🇸" }, { name: "Esperanto", flag: "🌍" },
+                            { name: "Estonian", flag: "🇪🇪" }, { name: "Basque", flag: "🇪🇸" }, { name: "Persian", flag: "🇮🇷" },
+                            { name: "Finnish", flag: "🇫🇮" }, { name: "French", flag: "🇫🇷" }, { name: "Frankish", flag: "⚔️" },
+                            { name: "Irish", flag: "🇮🇪" }, { name: "Galician", flag: "🇪🇸" }, { name: "Gujarati", flag: "🇮🇳" },
+                            { name: "Haitian Creole", flag: "🇭🇹" }, { name: "Hebrew", flag: "🇮🇱" }, { name: "Hindi", flag: "🇮🇳" },
+                            { name: "Croatian", flag: "🇭🇷" }, { name: "Hungarian", flag: "🇭🇺" }, { name: "Inuktitut", flag: "🇨🇦" },
+                            { name: "Indonesian", flag: "🇮🇩" }, { name: "Icelandic", flag: "🇮🇸" }, { name: "Italian", flag: "🇮🇹" },
+                            { name: "Javanese", flag: "🇮🇩" }, { name: "Japanese", flag: "🇯🇵" }, { name: "Kannada", flag: "🇮🇳" },
+                            { name: "Georgian", flag: "🇬🇪" }, { name: "Kazakh", flag: "🇰🇿" }, { name: "Central Khmer", flag: "🇰🇭" },
+                            { name: "Kirghiz", flag: "🇰🇬" }, { name: "Korean", flag: "🇰🇷" }, { name: "Kurdish", flag: "🟢" },
+                            { name: "Lao", flag: "🇱🇦" }, { name: "Latin", flag: "🇻🇦" }, { name: "Latvian", flag: "🇱🇻" },
+                            { name: "Lithuanian", flag: "🇱🇹" }, { name: "Luxembourgish", flag: "🇱🇺" }, { name: "Malayalam", flag: "🇮🇳" },
+                            { name: "Marathi", flag: "🇮🇳" }, { name: "Macedonian", flag: "🇲🇰" }, { name: "Maltese", flag: "🇲🇹" },
+                            { name: "Mongolian", flag: "🇲🇳" }, { name: "Maori", flag: "🇳🇿" }, { name: "Malay", flag: "🇲🇾" },
+                            { name: "Burmese", flag: "🇲🇲" }, { name: "Nepali", flag: "🇳🇵" }, { name: "Dutch", flag: "🇳🇱" },
+                            { name: "Norwegian", flag: "🇳🇴" }, { name: "Occitan", flag: "🇫🇷" }, { name: "Oriya", flag: "🇮🇳" },
+                            { name: "Panjabi", flag: "🇮🇳" }, { name: "Polish", flag: "🇵🇱" }, { name: "Portuguese", flag: "🇵🇹" },
+                            { name: "Pushto", flag: "🇦🇫" }, { name: "Quechua", flag: "🇵🇪" }, { name: "Romanian", flag: "🇷🇴" },
+                            { name: "Russian", flag: "🇷🇺" }, { name: "Sanskrit", flag: "🕉️" }, { name: "Sinhala", flag: "🇱🇰" },
+                            { name: "Slovak", flag: "🇸🇰" }, { name: "Slovenian", flag: "🇸🇮" }, { name: "Sindhi", flag: "🇵🇰" },
+                            { name: "Spanish", flag: "🇪🇸" }, { name: "Albanian", flag: "🇦🇱" }, { name: "Serbian", flag: "🇷🇸" },
+                            { name: "Sundanese", flag: "🇮🇩" }, { name: "Swahili", flag: "🇰🇪" }, { name: "Swedish", flag: "🇸🇪" },
+                            { name: "Syriac", flag: "🇸🇾" }, { name: "Tamil", flag: "🇮🇳" }, { name: "Tatar", flag: "🇷🇺" },
+                            { name: "Telugu", flag: "🇮🇳" }, { name: "Tajik", flag: "🇹🇯" }, { name: "Tagalog", flag: "🇵🇭" },
+                            { name: "Thai", flag: "🇹🇭" }, { name: "Tigrinya", flag: "🇪🇷" }, { name: "Tonga", flag: "🇹🇴" },
+                            { name: "Turkish", flag: "🇹🇷" }, { name: "Uighur", flag: "🕌" }, { name: "Ukrainian", flag: "🇺🇦" },
+                            { name: "Urdu", flag: "🇵🇰" }, { name: "Uzbek", flag: "🇺🇿" }, { name: "Vietnamese", flag: "🇻🇳" },
+                            { name: "Yiddish", flag: "✡️" }, { name: "Yoruba", flag: "🇳🇬" }
+                        ].map((lang, idx) => (
+                            <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200 hover:border-red-200 hover:bg-red-50 transition-colors cursor-default">
+                                <span className="text-lg">{lang.flag}</span>
+                                {lang.name}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Input & Output Formats - Symmetrical & Visual */}
+            <section className="w-full max-w-6xl mt-16 px-4 mb-20">
+                <div className="grid md:grid-cols-2 gap-8 items-stretch">
+                    {/* Input Formats Card */}
+                    <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-blue-50/50 hover:shadow-2xl hover:shadow-blue-100/50 transition-all duration-300 flex flex-col relative overflow-hidden group h-full">
+                        <div className="absolute top-0 w-full h-1.5 bg-gradient-to-r from-blue-500 to-cyan-400"></div>
+                        <div className="p-8 md:p-10 flex flex-col h-full">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="p-3 bg-blue-50 rounded-2xl group-hover:bg-blue-100 transition-colors">
+                                    <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900">Input Formats</h3>
+                            </div>
+
+                            <p className="text-gray-600 mb-8 leading-relaxed">
+                                Our engine handles a massive variety of formats, from standard images to compressed archives and multi-page documents.
+                            </p>
+
+                            <div className="space-y-6 flex-grow">
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Images & Scans</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {['JPEG', 'PNG', 'TIFF', 'BMP', 'WEBP', 'GIF', 'HEIC', 'AVIF'].map(fmt => (
+                                            <span key={fmt} className="px-2.5 py-1 bg-gray-50 border border-gray-100 text-gray-600 text-xs font-semibold rounded-md">
+                                                {fmt}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Documents & Archives</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {['PDF Multi-page', 'DOCX', 'DJVU', 'GZIP', 'BZIP2', 'UNIX Compress'].map(fmt => (
+                                            <span key={fmt} className="px-2.5 py-1 bg-blue-50 border border-blue-100 text-blue-700 text-xs font-semibold rounded-md">
+                                                {fmt}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 mt-4">
+                                    <p className="text-sm text-gray-600 italic">
+                                        "We also process compressed screenshots from WhatsApp, Instagram, and other social platforms automatically."
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Output Formats Card */}
+                    <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-green-50/50 hover:shadow-2xl hover:shadow-green-100/50 transition-all duration-300 flex flex-col relative overflow-hidden group h-full">
+                        <div className="absolute top-0 w-full h-1.5 bg-gradient-to-r from-green-500 to-emerald-400"></div>
+                        <div className="p-8 md:p-10 flex flex-col h-full">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="p-3 bg-green-50 rounded-2xl group-hover:bg-green-100 transition-colors">
+                                    <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900">Output Formats</h3>
+                            </div>
+
+                            <p className="text-gray-600 mb-8 leading-relaxed">
+                                Get your data exactly how you need it. From simple text to fully formatted reports, we deliver 99% accuracy.
+                            </p>
+
+                            <div className="space-y-6 flex-grow">
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Editable Formats</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {['Microsoft Word (DOC)', 'Excel (XLS)', 'Plain Text (TXT)', 'Searchable PDF', 'JSON'].map(fmt => (
+                                            <span key={fmt} className="px-2.5 py-1 bg-green-50 border border-green-100 text-green-700 text-xs font-semibold rounded-md">
+                                                {fmt}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">AI & Specialized Reports</h4>
+                                    <ul className="space-y-2">
+                                        {[
+                                            'Legal & Healthcare Documentation',
+                                            'Manufacturing & Logistics Reports',
+                                            'Financial & Banking Summaries'
+                                        ].map((item, i) => (
+                                            <li key={i} className="flex items-center text-sm text-gray-600 gap-2">
+                                                <svg className="w-4 h-4 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                {item}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100 mt-4 flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                    <p className="text-sm text-gray-700 font-medium">
+                                        Includes automatic AI Summaries & Smart Formatting
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Built by Experts */}
             <section className="w-full max-w-4xl mt-20 px-4">
                 <div className="bg-red-700 bg-gradient-to-r from-red-600 to-red-700 p-8 md:p-12 rounded-2xl text-white text-center">
