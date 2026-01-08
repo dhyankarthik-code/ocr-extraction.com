@@ -444,7 +444,7 @@ export default function LocalResultPage() {
                     <div className="space-y-6">
                         {/* AI Document Chat */}
                         <div className="h-[600px]">
-                            <DocumentChat documentText={text} />
+                            <DocumentChat documentText={getFullText()} />
                         </div>
                     </div>
                 </div>

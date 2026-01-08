@@ -16,24 +16,56 @@ function logError(error: any, context: string = '') {
 
 function cleanOCROutput(text: string): string {
     if (!text) return '';
+
+    // Log original text for debugging (first 200 chars)
+    console.log('[OCR Clean] Original text sample:', text.substring(0, 200));
+
     let cleaned = text;
+
+    // Remove excessive newlines (3+ consecutive)
     cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
+
+    // Normalize spaces and tabs (but preserve Unicode characters)
     cleaned = cleaned.replace(/[ \t]+/g, ' ');
+
+    // Clean up lines while preserving all Unicode content
     cleaned = cleaned.split('\n')
         .map(line => line.trim())
         .filter(line => line.length > 0)
         .join('\n');
-    return cleaned.trim();
+
+    const result = cleaned.trim();
+    console.log('[OCR Clean] Cleaned text sample:', result.substring(0, 200));
+    console.log('[OCR Clean] Character count - Original:', text.length, 'Cleaned:', result.length);
+
+    return result;
 }
 
 function isValidOCROutput(text: string): boolean {
     if (!text || text.trim().length === 0) return false;
+
+    // Count Unicode letters and numbers (supports all languages: Latin, Arabic, Khmer, etc.)
     const alphanumeric = (text.match(/[\p{L}\p{N}]/gu) || []).length;
     const total = text.replace(/\s/g, '').length; // characters minus whitespace
 
-    // For documents like brochures, alphanumeric ratio can be lower due to symbols/punctuation
-    // We allow it if at least 25% of the non-whitespace content is alphanumeric
-    if (total > 0 && (alphanumeric / total) < 0.25) return false;
+    console.log('[OCR Validation] Alphanumeric chars:', alphanumeric, 'Total non-whitespace:', total);
+
+    // CRITICAL: Lower threshold from 25% to 15% to support:
+    // - Symbol-heavy documents (tables, charts)
+    // - Non-Latin scripts with complex characters (Khmer, Arabic)
+    // - Documents with significant punctuation
+    if (total > 0 && (alphanumeric / total) < 0.15) {
+        console.warn('[OCR Validation] Failed - Alphanumeric ratio too low:', (alphanumeric / total).toFixed(2));
+        return false;
+    }
+
+    // Additional check: Ensure we have at least some meaningful content
+    if (alphanumeric < 3) {
+        console.warn('[OCR Validation] Failed - Too few alphanumeric characters:', alphanumeric);
+        return false;
+    }
+
+    console.log('[OCR Validation] ✓ Passed validation');
     return true;
 }
 
@@ -63,7 +95,12 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
             if (response.pages && response.pages.length > 0) {
                 rawText = response.pages.map(p => p.markdown).join('\n\n');
                 usedMethod = 'primary_ocr';
+
+                // CRITICAL: Log raw OCR output to diagnose Unicode/encoding issues
                 console.log('✅ Primary OCR success!');
+                console.log('[OCR Debug] Raw Mistral response (first 300 chars):', rawText.substring(0, 300));
+                console.log('[OCR Debug] Character encoding check - First 10 char codes:',
+                    rawText.substring(0, 10).split('').map(c => c.charCodeAt(0)).join(', '));
             } else {
                 throw new Error("Primary provider response contained no pages");
             }

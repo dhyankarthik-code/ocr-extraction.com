@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import {
     Stethoscope,
     ShoppingBag,
@@ -24,6 +25,8 @@ export const metadata = {
 interface ServiceSection {
     title: string;
     icon: React.ReactNode;
+    image: string;
+    altText: string;
     items: {
         title: string;
         description: string;
@@ -35,6 +38,8 @@ const services: ServiceSection[] = [
     {
         title: "Manufacturing",
         icon: <Briefcase className="w-6 h-6 text-blue-600" />,
+        image: "/services-images/OCR Extraction Website Archs/Manufacturing.png",
+        altText: "Manufacturing OCR automation workflow diagram showing Inventory Labeling, Quality Assurance testing, IoT Data Capture, and Technical Documentation digitization processes.",
         items: [
             {
                 title: "Inventory Labeling",
@@ -57,6 +62,8 @@ const services: ServiceSection[] = [
     {
         title: "Healthcare",
         icon: <Stethoscope className="w-6 h-6 text-blue-500" />,
+        image: "/services-images/OCR Extraction Website Archs/Health Care.png",
+        altText: "Healthcare document processing OCR system illustrating Medical Record Digitization, EMR System Integration, Clinical Summaries, and specific Data Security measures.",
         items: [
             {
                 title: "Medical Record Digitization",
@@ -79,6 +86,8 @@ const services: ServiceSection[] = [
     {
         title: "Retail",
         icon: <ShoppingBag className="w-6 h-6 text-green-500" />,
+        image: "/services-images/OCR Extraction Website Archs/Retail.png",
+        altText: "Retail industry OCR workflow diagram demonstrating Invoice & Receipt Capture, Inventory Label Extraction, Sales Analytics, and Real-Time Data Processing.",
         items: [
             {
                 title: "Invoice & Receipt Capture",
@@ -103,6 +112,8 @@ const services: ServiceSection[] = [
     {
         title: "Banking & Financial Services",
         icon: <Landmark className="w-6 h-6 text-emerald-700" />,
+        image: "/services-images/OCR Extraction Website Archs/Banking & Financial Services.png",
+        altText: "Banking and Financial Services OCR automation diagram depicting KYC & Onboarding Capture, Loan & Statement Processing, and Audit Compliance workflows.",
         items: [
             {
                 title: "KYC & Onboarding Capture",
@@ -125,6 +136,8 @@ const services: ServiceSection[] = [
     {
         title: "Automobile",
         icon: <Car className="w-6 h-6 text-slate-600" />,
+        image: "/services-images/OCR Extraction Website Archs/Automobile.png",
+        altText: "Automobile industry OCR process flow showing Service & Inspection Records digitization, Warranty & Invoice Capture, and Supply Chain Documentation management.",
         items: [
             {
                 title: "Service & Inspection Records",
@@ -147,6 +160,8 @@ const services: ServiceSection[] = [
     {
         title: "Telecom",
         icon: <Radio className="w-6 h-6 text-violet-500" />,
+        image: "/services-images/OCR Extraction Website Archs/Telecom.png",
+        altText: "Telecom sector OCR solutions diagram illustrating Subscriber ID Verification, Bill Processing, Installation Logs digitization, and Customer Service analytics.",
         items: [
             {
                 title: "Customer Onboarding Documents",
@@ -171,6 +186,8 @@ const services: ServiceSection[] = [
     {
         title: "Oil & Gas",
         icon: <Fuel className="w-6 h-6 text-orange-600" />,
+        image: "/services-images/OCR Extraction Website Archs/Oil & Gas.png",
+        altText: "Oil & Gas industry OCR workflow for Inspection Safety Data, Operational Document Processing, Compliance Reporting, and Operational Analytics.",
         items: [
             {
                 title: "Inspection & Safety Data Capture",
@@ -193,6 +210,8 @@ const services: ServiceSection[] = [
     {
         title: "Travel",
         icon: <Plane className="w-6 h-6 text-sky-500" />,
+        image: "/services-images/OCR Extraction Website Archs/Travel.png",
+        altText: "Travel industry OCR automation for Ticket & Itinerary Digitization, Invoice Processing, Booking Data Analytics, and Customer Servicing acceleration.",
         items: [
             {
                 title: "Ticket & Itinerary Digitization",
@@ -215,6 +234,8 @@ const services: ServiceSection[] = [
     {
         title: "Hospitality",
         icon: <Hotel className="w-6 h-6 text-indigo-500" />,
+        image: "/services-images/OCR Extraction Website Archs/Hospitality.png",
+        altText: "Hospitality sector OCR systems showing Guest Document Capture, Procurement Processing, Centralized Data Management, and Operational Analytics.",
         items: [
             {
                 title: "Guest & Vendor Document Capture",
@@ -239,6 +260,8 @@ const services: ServiceSection[] = [
     {
         title: "Food & Beverages",
         icon: <Utensils className="w-6 h-6 text-red-500" />,
+        image: "/services-images/OCR Extraction Website Archs/Food & Beverages.png",
+        altText: "Food & Beverages industry OCR for Quality Control Documentation, Label Data Capture, Inventory Analysis, and Regulatory Reporting.",
         items: [
             {
                 title: "Quality Control Documentation",
@@ -261,6 +284,8 @@ const services: ServiceSection[] = [
     {
         title: "Legal",
         icon: <Scale className="w-6 h-6 text-purple-600" />,
+        image: "/services-images/OCR Extraction Website Archs/Legal.png",
+        altText: "Legal industry OCR document management flow: Contract Analysis, Case File Digitization, Compliance Discovery, and Archival Search implementation.",
         items: [
             {
                 title: "Contract & Case File Digitization",
@@ -283,6 +308,8 @@ const services: ServiceSection[] = [
     {
         title: "Documentation & Records",
         icon: <FileText className="w-6 h-6 text-gray-500" />,
+        image: "/services-images/OCR Extraction Website Archs/Documentation & Records.png",
+        altText: "General Documentation & Records OCR process showing Document Digitization, Automated Indexing, Data Summarization, and Compliance Storage.",
         items: [
             {
                 title: "Document Digitization",
@@ -305,6 +332,8 @@ const services: ServiceSection[] = [
     {
         title: "Logistics & Supply Chain",
         icon: <Truck className="w-6 h-6 text-yellow-600" />,
+        image: "/services-images/OCR Extraction Website Archs/Logistics & Supply Chain.png",
+        altText: "Logistics & Supply Chain OCR diagram illustrating Shipping Document Digitization, Inventory Records, Automated Data Routing, and Logistics Analytics.",
         items: [
             {
                 title: "Shipping Document Digitization",
@@ -327,6 +356,8 @@ const services: ServiceSection[] = [
     {
         title: "Finance",
         icon: <DollarSign className="w-6 h-6 text-emerald-600" />,
+        image: "/services-images/OCR Extraction Website Archs/Finance.png",
+        altText: "Finance sector OCR automation workflow for Financial Document Extraction, Data Validation, Automated Reporting, and Compliance Support.",
         items: [
             {
                 title: "Financial Document Extraction",
@@ -367,28 +398,46 @@ export default function ServicesPage() {
                 </div>
 
                 {/* Industry Grid */}
-                <div className="flex flex-wrap justify-center gap-8">
+                <div className="flex flex-col gap-8">
                     {services.map((service, index) => (
                         <div
                             key={index}
-                            className="w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.34rem)] bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col h-full"
+                            className="w-full bg-white shadow-lg overflow-hidden transition-shadow duration-300 border border-gray-100 flex flex-col md:flex-row group hover:shadow-2xl"
                         >
-                            <div className="p-6">
-                                <div className="bg-gray-50 w-14 h-14 rounded-full flex items-center justify-center mb-4">
-                                    {service.icon}
+                            {/* Content Section - Left Side */}
+                            <div className="p-8 md:w-1/2 flex flex-col justify-center order-2 md:order-1">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:bg-red-50">
+                                        {React.cloneElement(service.icon as any, { className: "w-6 h-6 text-blue-600 group-hover:text-red-600 transition-colors" })}
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-red-600 transition-colors duration-300">{service.title}</h3>
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
-                                <div className="space-y-4">
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     {service.items.map((item, i) => (
                                         <div key={i} className="group">
-                                            <h4 className="font-semibold text-gray-800 text-sm mb-1 group-hover:text-blue-600 transition-colors">
+                                            <h4 className="font-semibold text-gray-800 text-base mb-2 group-hover:text-blue-600 transition-colors flex items-center gap-2">
+                                                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full inline-block group-hover:bg-red-500 transition-colors"></span>
                                                 {item.title}
                                             </h4>
-                                            <p className="text-sm text-gray-600 leading-relaxed">
+                                            <p className="text-sm text-gray-600 leading-relaxed pl-3.5">
                                                 {item.description}
                                             </p>
                                         </div>
                                     ))}
+                                </div>
+                            </div>
+
+                            {/* Image Section - Right Side */}
+                            <div className="md:w-1/2 relative bg-white order-1 md:order-2 min-h-[300px] md:min-h-full p-3 flex items-center justify-center">
+                                <div className="relative w-full h-full min-h-[300px] md:min-h-[400px] overflow-hidden shadow-sm transition-all duration-500 ease-out group-hover:shadow-[0_0_60px_-15px_rgba(220,38,38,0.7)]">
+                                    <Image
+                                        src={service.image}
+                                        alt={service.altText}
+                                        fill
+                                        className="object-cover transition-transform duration-700"
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -398,3 +447,4 @@ export default function ServicesPage() {
         </div>
     );
 }
+

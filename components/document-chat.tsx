@@ -185,17 +185,17 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
     return (
         <Card className="h-full flex flex-col shadow-none border-0 bg-transparent">
             {/* Header */}
-            <CardHeader className="sticky top-0 z-10 flex flex-row items-center justify-between gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3 rounded-t-lg">
+            <CardHeader className="sticky top-0 z-10 flex flex-row items-center justify-between gap-2 border-b bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3 rounded-t-lg">
                 <div className="flex items-center gap-3">
                     <div className="relative">
-                        <Avatar className="border-2 border-blue-100">
+                        <Avatar className="border-2 border-blue-200">
                             <AvatarImage src="https://api.dicebear.com/9.x/bottts/svg?seed=AI" alt="AI Assistant" />
                             <AvatarFallback><Bot className="w-5 h-5" /></AvatarFallback>
                         </Avatar>
                         <span className="absolute bottom-0 right-0 block size-2.5 rounded-full bg-green-500 ring-2 ring-white" />
                     </div>
                     <div className="flex flex-col">
-                        <div className="font-semibold text-sm">AI Document Assistant</div>
+                        <div className="font-semibold text-base text-gray-900">AI Document Assistant</div>
                         <div className="flex items-center gap-1 text-muted-foreground text-xs">
                             <StatusBadge status="online" /> Online
                         </div>
@@ -215,11 +215,11 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
                     <div className="flex flex-col gap-6 py-4">
                         {messages.length === 0 && (
                             <div className="text-center text-gray-400 py-12 flex flex-col items-center">
-                                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-                                    <Bot className="w-8 h-8 text-blue-500 opacity-80" />
+                                <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mb-4">
+                                    <Bot className="w-8 h-8 text-blue-600" />
                                 </div>
-                                <p className="text-sm font-medium text-gray-600">No messages yet</p>
-                                <p className="text-xs text-gray-400 mt-1">Ask a question about your document to get started</p>
+                                <p className="text-sm font-semibold text-gray-700">No messages yet</p>
+                                <p className="text-xs text-gray-500 mt-1">Ask a question about your document to get started</p>
                             </div>
                         )}
 
@@ -278,19 +278,19 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
                                         <div>
                                             <div
                                                 className={cn(
-                                                    "rounded-2xl px-4 py-2.5 text-xs shadow-sm",
+                                                    "rounded-2xl px-4 py-2.5 shadow-sm",
                                                     isMe
-                                                        ? "bg-primary text-primary-foreground rounded-tr-sm"
-                                                        : "bg-white border text-foreground rounded-tl-sm font-sans"
+                                                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-sm"
+                                                        : "bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-foreground rounded-tl-sm"
                                                 )}
                                             >
                                                 {!isMe ? (
                                                     <div
-                                                        className="prose prose-sm max-w-none text-xs prose-p:my-1 prose-ul:my-1 prose-li:my-0.5"
+                                                        className="prose prose-sm max-w-none text-sm prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-strong:text-gray-900"
                                                         dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }}
                                                     />
                                                 ) : (
-                                                    <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                                                    <p className="whitespace-pre-wrap leading-relaxed text-sm">{msg.content}</p>
                                                 )}
                                             </div>
                                             <div className={cn(
@@ -341,7 +341,7 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
                             onKeyPress={handleKeyPress}
                             placeholder="Type your message..."
                             disabled={loading}
-                            className="pr-12 py-3 rounded-full bg-muted/50 border-muted-foreground/20 focus-visible:ring-1 focus-visible:ring-primary/30 text-xs"
+                            className="pr-12 py-3 rounded-full bg-muted/50 border-muted-foreground/20 focus-visible:ring-2 focus-visible:ring-blue-500/30 text-sm"
                         />
                         <Button
                             onClick={handleSend}
@@ -349,7 +349,9 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
                             size="icon"
                             className={cn(
                                 "absolute right-1.5 h-9 w-9 rounded-full transition-all",
-                                input.trim() ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted"
+                                input.trim()
+                                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md"
+                                    : "bg-muted text-muted-foreground hover:bg-muted"
                             )}
                         >
                             {loading ? (
