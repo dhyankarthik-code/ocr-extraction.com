@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import dynamic from 'next/dynamic'
+import Flag from 'react-world-flags'
 import SmartUploadZone from "@/components/smart-upload-zone"
 import CtaSection from "@/components/cta-section"
 
@@ -257,45 +258,49 @@ export default function HomePage() {
 
                     <div className="flex flex-wrap gap-2">
                         {[
-                            { name: "Afrikaans", flag: "🇿🇦" }, { name: "Amharic", flag: "🇪🇹" }, { name: "Arabic", flag: "🇸🇦" },
-                            { name: "Assamese", flag: "🇮🇳" }, { name: "Azerbaijani", flag: "🇦🇿" }, { name: "Belarusian", flag: "🇧🇾" },
-                            { name: "Bengali", flag: "🇧🇩" }, { name: "Tibetan", flag: "🏔️" }, { name: "Bosnian", flag: "🇧🇦" },
-                            { name: "Breton", flag: "🇫🇷" }, { name: "Bulgarian", flag: "🇧🇬" }, { name: "Catalan", flag: "🇪🇸" },
-                            { name: "Valencian", flag: "🇪🇸" }, { name: "Cebuano", flag: "🇵🇭" }, { name: "Czech", flag: "🇨🇿" },
-                            { name: "Chinese (Simplified)", flag: "🇨🇳" }, { name: "Chinese (Traditional)", flag: "🇹🇼" },
-                            { name: "Cherokee", flag: "🇺🇸" }, { name: "Welsh", flag: "󠁧󠁢󠁷󠁬󠁳󠁿" }, { name: "Danish", flag: "🇩🇰" },
-                            { name: "German", flag: "🇩🇪" }, { name: "Dzongkha", flag: "🇧🇹" }, { name: "Greek (Modern)", flag: "🇬🇷" },
-                            { name: "Greek (Ancient)", flag: "🏛️" }, { name: "English", flag: "🇺🇸" }, { name: "Esperanto", flag: "🌍" },
-                            { name: "Estonian", flag: "🇪🇪" }, { name: "Basque", flag: "🇪🇸" }, { name: "Persian", flag: "🇮🇷" },
-                            { name: "Finnish", flag: "🇫🇮" }, { name: "French", flag: "🇫🇷" }, { name: "Frankish", flag: "⚔️" },
-                            { name: "Irish", flag: "🇮🇪" }, { name: "Galician", flag: "🇪🇸" }, { name: "Gujarati", flag: "🇮🇳" },
-                            { name: "Haitian Creole", flag: "🇭🇹" }, { name: "Hebrew", flag: "🇮🇱" }, { name: "Hindi", flag: "🇮🇳" },
-                            { name: "Croatian", flag: "🇭🇷" }, { name: "Hungarian", flag: "🇭🇺" }, { name: "Inuktitut", flag: "🇨🇦" },
-                            { name: "Indonesian", flag: "🇮🇩" }, { name: "Icelandic", flag: "🇮🇸" }, { name: "Italian", flag: "🇮🇹" },
-                            { name: "Javanese", flag: "🇮🇩" }, { name: "Japanese", flag: "🇯🇵" }, { name: "Kannada", flag: "🇮🇳" },
-                            { name: "Georgian", flag: "🇬🇪" }, { name: "Kazakh", flag: "🇰🇿" }, { name: "Central Khmer", flag: "🇰🇭" },
-                            { name: "Kirghiz", flag: "🇰🇬" }, { name: "Korean", flag: "🇰🇷" }, { name: "Kurdish", flag: "🟢" },
-                            { name: "Lao", flag: "🇱🇦" }, { name: "Latin", flag: "🇻🇦" }, { name: "Latvian", flag: "🇱🇻" },
-                            { name: "Lithuanian", flag: "🇱🇹" }, { name: "Luxembourgish", flag: "🇱🇺" }, { name: "Malayalam", flag: "🇮🇳" },
-                            { name: "Marathi", flag: "🇮🇳" }, { name: "Macedonian", flag: "🇲🇰" }, { name: "Maltese", flag: "🇲🇹" },
-                            { name: "Mongolian", flag: "🇲🇳" }, { name: "Maori", flag: "🇳🇿" }, { name: "Malay", flag: "🇲🇾" },
-                            { name: "Burmese", flag: "🇲🇲" }, { name: "Nepali", flag: "🇳🇵" }, { name: "Dutch", flag: "🇳🇱" },
-                            { name: "Norwegian", flag: "🇳🇴" }, { name: "Occitan", flag: "🇫🇷" }, { name: "Oriya", flag: "🇮🇳" },
-                            { name: "Panjabi", flag: "🇮🇳" }, { name: "Polish", flag: "🇵🇱" }, { name: "Portuguese", flag: "🇵🇹" },
-                            { name: "Pushto", flag: "🇦🇫" }, { name: "Quechua", flag: "🇵🇪" }, { name: "Romanian", flag: "🇷🇴" },
-                            { name: "Russian", flag: "🇷🇺" }, { name: "Sanskrit", flag: "🕉️" }, { name: "Sinhala", flag: "🇱🇰" },
-                            { name: "Slovak", flag: "🇸🇰" }, { name: "Slovenian", flag: "🇸🇮" }, { name: "Sindhi", flag: "🇵🇰" },
-                            { name: "Spanish", flag: "🇪🇸" }, { name: "Albanian", flag: "🇦🇱" }, { name: "Serbian", flag: "🇷🇸" },
-                            { name: "Sundanese", flag: "🇮🇩" }, { name: "Swahili", flag: "🇰🇪" }, { name: "Swedish", flag: "🇸🇪" },
-                            { name: "Syriac", flag: "🇸🇾" }, { name: "Tamil", flag: "🇮🇳" }, { name: "Tatar", flag: "🇷🇺" },
-                            { name: "Telugu", flag: "🇮🇳" }, { name: "Tajik", flag: "🇹🇯" }, { name: "Tagalog", flag: "🇵🇭" },
-                            { name: "Thai", flag: "🇹🇭" }, { name: "Tigrinya", flag: "🇪🇷" }, { name: "Tonga", flag: "🇹🇴" },
-                            { name: "Turkish", flag: "🇹🇷" }, { name: "Uighur", flag: "🕌" }, { name: "Ukrainian", flag: "🇺🇦" },
-                            { name: "Urdu", flag: "🇵🇰" }, { name: "Uzbek", flag: "🇺🇿" }, { name: "Vietnamese", flag: "🇻🇳" },
-                            { name: "Yiddish", flag: "✡️" }, { name: "Yoruba", flag: "🇳🇬" }
+                            { name: "Afrikaans", code: "ZA" }, { name: "Amharic", code: "ET" }, { name: "Arabic", code: "SA" },
+                            { name: "Assamese", code: "IN" }, { name: "Azerbaijani", code: "AZ" }, { name: "Belarusian", code: "BY" },
+                            { name: "Bengali", code: "BD" }, { name: "Tibetan", code: "CN" }, { name: "Bosnian", code: "BA" },
+                            { name: "Breton", code: "FR" }, { name: "Bulgarian", code: "BG" }, { name: "Catalan", code: "ES" },
+                            { name: "Valencian", code: "ES" }, { name: "Cebuano", code: "PH" }, { name: "Czech", code: "CZ" },
+                            { name: "Chinese (Simplified)", code: "CN" }, { name: "Chinese (Traditional)", code: "TW" },
+                            { name: "Cherokee", code: "US" }, { name: "Welsh", code: "GB-WLS" }, { name: "Danish", code: "DK" },
+                            { name: "German", code: "DE" }, { name: "Dzongkha", code: "BT" }, { name: "Greek (Modern)", code: "GR" },
+                            { name: "Greek (Ancient)", code: "GR" }, { name: "English", code: "US" }, { name: "Esperanto", code: "EU" },
+                            { name: "Estonian", code: "EE" }, { name: "Basque", code: "ES" }, { name: "Persian", code: "IR" },
+                            { name: "Finnish", code: "FI" }, { name: "French", code: "FR" }, { name: "Frankish", code: "FR" },
+                            { name: "Irish", code: "IE" }, { name: "Galician", code: "ES" }, { name: "Gujarati", code: "IN" },
+                            { name: "Haitian Creole", code: "HT" }, { name: "Hebrew", code: "IL" }, { name: "Hindi", code: "IN" },
+                            { name: "Croatian", code: "HR" }, { name: "Hungarian", code: "HU" }, { name: "Inuktitut", code: "CA" },
+                            { name: "Indonesian", code: "ID" }, { name: "Icelandic", code: "IS" }, { name: "Italian", code: "IT" },
+                            { name: "Javanese", code: "ID" }, { name: "Japanese", code: "JP" }, { name: "Kannada", code: "IN" },
+                            { name: "Georgian", code: "GE" }, { name: "Kazakh", code: "KZ" }, { name: "Central Khmer", code: "KH" },
+                            { name: "Kirghiz", code: "KG" }, { name: "Korean", code: "KR" }, { name: "Kurdish", code: "TR" },
+                            { name: "Lao", code: "LA" }, { name: "Latin", code: "VA" }, { name: "Latvian", code: "LV" },
+                            { name: "Lithuanian", code: "LT" }, { name: "Luxembourgish", code: "LU" }, { name: "Malayalam", code: "IN" },
+                            { name: "Marathi", code: "IN" }, { name: "Macedonian", code: "MK" }, { name: "Maltese", code: "MT" },
+                            { name: "Mongolian", code: "MN" }, { name: "Maori", code: "NZ" }, { name: "Malay", code: "MY" },
+                            { name: "Burmese", code: "MM" }, { name: "Nepali", code: "NP" }, { name: "Dutch", code: "NL" },
+                            { name: "Norwegian", code: "NO" }, { name: "Occitan", code: "FR" }, { name: "Oriya", code: "IN" },
+                            { name: "Panjabi", code: "IN" }, { name: "Polish", code: "PL" }, { name: "Portuguese", code: "PT" },
+                            { name: "Pushto", code: "AF" }, { name: "Quechua", code: "PE" }, { name: "Romanian", code: "RO" },
+                            { name: "Russian", code: "RU" }, { name: "Sanskrit", code: "IN" }, { name: "Sinhala", code: "LK" },
+                            { name: "Slovak", code: "SK" }, { name: "Slovenian", code: "SI" }, { name: "Sindhi", code: "PK" },
+                            { name: "Spanish", code: "ES" }, { name: "Albanian", code: "AL" }, { name: "Serbian", code: "RS" },
+                            { name: "Sundanese", code: "ID" }, { name: "Swahili", code: "KE" }, { name: "Swedish", code: "SE" },
+                            { name: "Syriac", code: "SY" }, { name: "Tamil", code: "IN" }, { name: "Tatar", code: "RU" },
+                            { name: "Telugu", code: "IN" }, { name: "Tajik", code: "TJ" }, { name: "Tagalog", code: "PH" },
+                            { name: "Thai", code: "TH" }, { name: "Tigrinya", code: "ER" }, { name: "Tonga", code: "TO" },
+                            { name: "Turkish", code: "TR" }, { name: "Uighur", code: "CN" }, { name: "Ukrainian", code: "UA" },
+                            { name: "Urdu", code: "PK" }, { name: "Uzbek", code: "UZ" }, { name: "Vietnamese", code: "VN" },
+                            { name: "Yiddish", code: "IL" }, { name: "Yoruba", code: "NG" }
                         ].map((lang, idx) => (
-                            <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200 hover:border-red-200 hover:bg-red-50 transition-colors cursor-default">
-                                <span className="text-lg">{lang.flag}</span>
+                            <span key={idx} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200 hover:border-red-200 hover:bg-red-50 transition-colors cursor-default">
+                                <Flag
+                                    code={lang.code}
+                                    style={{ width: '20px', height: '15px', objectFit: 'cover', borderRadius: '2px' }}
+                                    fallback={<span className="inline-block w-5 h-4 bg-gray-300 rounded-sm"></span>}
+                                />
                                 {lang.name}
                             </span>
                         ))}
