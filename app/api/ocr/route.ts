@@ -5,6 +5,15 @@ import { Mistral } from '@mistralai/mistralai';
 // Configure Vercel Serverless Function timeout (seconds)
 export const maxDuration = 60;
 
+// Configure request body size limit for batch uploads (10MB)
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '10mb', // Allow up to 10MB per request for batch processing
+        },
+    },
+};
+
 // Helper function to log detailed error information
 function logError(error: any, context: string = '') {
     console.error(`[${new Date().toISOString()}] Error${context ? ' in ' + context : ''}:`, {
