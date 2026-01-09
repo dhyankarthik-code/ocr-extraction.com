@@ -42,16 +42,16 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
   }
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-gray-100 shadow-sm h-20">
-      <div className="container mx-auto px-4 h-full flex items-center justify-between relative">
+    <nav className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-gray-200 shadow-md h-24">
+      <div className="container mx-auto px-6 h-full flex items-center justify-between relative">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 z-10 group">
-          <div className="relative h-14 w-fit transition-transform group-hover:scale-105">
+        <Link href="/" className="flex items-center gap-4 z-10 group hover:opacity-90 transition-opacity">
+          <div className="relative h-16 w-fit transition-transform group-hover:scale-105">
             <Image
               src="/logo.png"
               alt="Infy Galaxy Logo"
-              height={56}
+              height={64}
               width={0}
               style={{ width: 'auto', height: '100%' }}
               sizes="100vw"
@@ -59,19 +59,19 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
               priority
             />
           </div>
-          <div className="flex flex-col items-center leading-none mt-3">
-            <span className="text-4xl font-bold text-red-600">
+          <div className="flex flex-col justify-center leading-tight">
+            <span className="text-3xl font-bold text-red-600 tracking-tight">
               InfyGalaxy
             </span>
-            <div className="h-[1px] w-full bg-red-600 my-1" />
-            <span className="text-[10px] font-light text-red-600 tracking-[0.3em] uppercase">
-              "Shaping AI Tools"
+            <div className="h-[2px] w-full bg-red-600 my-0.5" />
+            <span className="text-[9px] font-medium text-red-500 tracking-[0.25em] uppercase">
+              Shaping AI Tools
             </span>
           </div>
         </Link>
 
         {/* Desktop Navigation - Centered */}
-        <div className="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="hidden lg:flex items-center gap-10 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           {navLinks.filter(l => l.label !== 'Blog' && l.label !== 'Contact Us').map((link) => (
             <Link
               key={link.href}
@@ -128,7 +128,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
         </div>
 
         {/* Auth Section (Desktop) */}
-        <div className="hidden md:flex items-center gap-4 z-10">
+        <div className="hidden lg:flex items-center gap-4 z-10">
           {session ? (
             <div className="flex items-center gap-3">
               {session.picture ? (
@@ -172,10 +172,10 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
 
         {/* Mobile Menu Button */}
         <button aria-label="Open navigation menu"
-          className="md:hidden p-2 text-gray-600"
+          className="lg:hidden p-2 text-gray-700 hover:text-red-600 transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
 

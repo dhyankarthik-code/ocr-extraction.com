@@ -413,15 +413,15 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
             {/* Header */}
             <CardHeader className="sticky top-0 z-10 flex flex-row items-center justify-between gap-2 border-b bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6 py-4 rounded-t-lg">
                 <div className="flex items-center gap-4">
-                    <div className="relative bg-white p-2.5 rounded-xl shadow-sm flex-shrink-0">
-                        <img src="/logo.png" alt="Infy Galaxy" className="w-12 h-12 rounded-lg object-contain" />
-                        <span className="absolute bottom-0 right-0 block size-3 rounded-full bg-green-500 ring-2 ring-white" />
+                    <div className="relative bg-white p-3 rounded-xl shadow-md flex-shrink-0">
+                        <img src="/logo.png" alt="InfyGalaxy AI" className="w-10 h-10 rounded-lg object-contain" />
+                        <span className="absolute -bottom-1 -right-1 block size-3.5 rounded-full bg-green-500 ring-2 ring-white" />
                     </div>
                     <div className="flex flex-col justify-center">
-                        <div className="font-semibold text-lg text-gray-900 leading-tight">Chat with our Reports Agent</div>
-                        <div className="flex items-center gap-1.5 text-muted-foreground text-xs mt-0.5">
+                        <div className="font-bold text-lg text-gray-900 leading-tight">Chat with our Reports Agent</div>
+                        <div className="flex items-center gap-2 text-muted-foreground text-xs mt-1">
                             <StatusBadge status="online" />
-                            <span>Online</span>
+                            <span className="font-medium">Online</span>
                         </div>
                     </div>
                 </div>
