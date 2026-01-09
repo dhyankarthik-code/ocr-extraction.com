@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react"
 import { MessageCircle, X, Send, Minus } from "lucide-react"
 import { useSession } from "@/hooks/use-session"
+import { cn } from "@/lib/utils"
 
 interface Message {
     id: string
@@ -207,9 +208,11 @@ export default function ChatWidget() {
                 <div className="mb-4 w-[350px] md:w-[380px] h-[500px] max-h-[80vh] bg-white rounded-2xl shadow-xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-200">
                     {/* Header */}
                     <div className="bg-red-600 p-4 flex items-center justify-between text-white">
-                        <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                            <span className="font-semibold">Infy Galaxy Support</span>
+                        <div className="flex items-center gap-4">
+                            <div className="bg-white p-2 rounded-xl shadow-sm">
+                                <img src="/logo.png" alt="Infy Galaxy" className="w-9 h-9 rounded-lg" />
+                            </div>
+                            <span className="font-semibold text-lg">Infy Galaxy Support</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <button
@@ -253,18 +256,20 @@ export default function ChatWidget() {
                                     className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                                 >
                                     <div
-                                        className={`max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.sender === 'user'
-                                            ? 'bg-red-600 text-white rounded-tr-none'
-                                            : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none font-sans'
-                                            }`}
+                                        className={cn(
+                                            "max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm",
+                                            msg.sender === 'user'
+                                                ? 'bg-red-600 text-white rounded-tr-none font-medium'
+                                                : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
+                                        )}
                                     >
                                         {msg.sender === 'bot' ? (
                                             <div
-                                                className="prose prose-sm max-w-none text-sm prose-p:my-1 prose-ul:my-1 prose-li:my-0.5"
+                                                className="text-sm leading-relaxed space-y-2 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-4 [&_li]:mt-1"
                                                 dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }}
                                             />
                                         ) : (
-                                            msg.text
+                                            <p className="whitespace-pre-wrap font-medium">{msg.text}</p>
                                         )}
                                     </div>
                                 </div>

@@ -4,11 +4,17 @@ import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Send, Bot, User, Loader2, MoreVertical, Copy, Reply, Trash2, Flag, MoreHorizontal, UserMinus2 } from "lucide-react"
+import { Send, Bot, User, Loader2, MoreVertical, Copy, Download, FileText, Image as ImageIcon, MoreHorizontal, Trash2 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
+import { saveAs } from "file-saver"
+import { Document, Packer, Paragraph, TextRun } from "docx"
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
+import * as XLSX from "xlsx"
+import pptxgen from "pptxgenjs"
+import html2canvas from "html2canvas"
 
 interface Message {
     role: 'user' | 'assistant'
@@ -76,9 +82,121 @@ function UserActionsMenu() {
     );
 }
 
-function MessageActions({ isMe, text }: { isMe: boolean, text: string }) {
+function MessageActions({ isMe, text, messageRef }: { isMe: boolean, text: string, messageRef?: React.RefObject<HTMLDivElement | null> }) {
     const handleCopy = () => {
         navigator.clipboard.writeText(text);
+    };
+
+    const handleDownloadTxt = () => {
+        const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+        saveAs(blob, `AI_Report_${Date.now()}.txt`);
+    };
+
+    const handleDownloadDocx = async () => {
+        try {
+            const doc = new Document({
+                sections: [{
+                    properties: {},
+                    children: text.split("\n").map(line => new Paragraph({ children: [new TextRun(line)] })),
+                }],
+            });
+            const blob = await Packer.toBlob(doc);
+            saveAs(blob, `AI_Report_${Date.now()}.docx`);
+        } catch (error) {
+            console.error("Word generation failed:", error);
+            alert("Failed to generate Word document");
+        }
+    };
+
+    const handleDownloadPdf = async () => {
+        try {
+            const pdfDoc = await PDFDocument.create();
+            const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+            const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+            let page = pdfDoc.addPage();
+            const { width, height } = page.getSize();
+            const fontSize = 11;
+            const lineHeight = fontSize + 4;
+            let y = height - 50;
+
+            const lines = text.split('\n');
+            for (const line of lines) {
+                if (y < 50) {
+                    page = pdfDoc.addPage();
+                    y = height - 50;
+                }
+
+                const isBold = line.match(/^\*\*(.+?)\*\*:?/);
+                const displayText = isBold ? isBold[1] : line.replace(/^[•\-]\s*/, '');
+                const useFont = isBold ? boldFont : font;
+                const useFontSize = isBold ? fontSize + 2 : fontSize;
+
+                if (displayText.trim()) {
+                    page.drawText(displayText, {
+                        x: line.startsWith('-') || line.startsWith('•') ? 70 : 50,
+                        y,
+                        size: useFontSize,
+                        font: useFont,
+                        color: rgb(0, 0, 0)
+                    });
+                }
+                y -= lineHeight;
+            }
+
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([new Uint8Array(pdfBytes)], { type: "application/pdf" });
+            saveAs(blob, `AI_Report_${Date.now()}.pdf`);
+        } catch (error) {
+            console.error("PDF generation failed:", error);
+            alert("Failed to generate PDF");
+        }
+    };
+
+    const handleDownloadXlsx = () => {
+        try {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet([[text]]);
+            ws['!cols'] = [{ wch: 100 }];
+            XLSX.utils.book_append_sheet(wb, ws, "AI Report");
+            XLSX.writeFile(wb, `AI_Report_${Date.now()}.xlsx`);
+        } catch (error) {
+            console.error("Excel generation failed:", error);
+            alert("Failed to generate Excel file");
+        }
+    };
+
+    const handleDownloadPpt = async () => {
+        try {
+            const pres = new pptxgen();
+            let slide = pres.addSlide();
+            slide.addText("AI Report", { x: 0.5, y: 0.5, fontSize: 18, bold: true });
+            slide.addText(text, { x: 0.5, y: 1.0, w: '90%', h: '80%', fontSize: 12, color: '363636' });
+            await pres.writeFile({ fileName: `AI_Report_${Date.now()}.pptx` });
+        } catch (error) {
+            console.error("PowerPoint generation failed:", error);
+            alert("Failed to generate PowerPoint");
+        }
+    };
+
+    const handleDownloadImage = async () => {
+        try {
+            if (!messageRef?.current) {
+                alert("Unable to capture message");
+                return;
+            }
+            const canvas = await html2canvas(messageRef.current, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+            });
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    saveAs(blob, `AI_Report_${Date.now()}.png`);
+                }
+            });
+        } catch (error) {
+            console.error("Image generation failed:", error);
+            alert("Failed to generate image");
+        }
     };
 
     return (
@@ -100,19 +218,91 @@ function MessageActions({ isMe, text }: { isMe: boolean, text: string }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent
                 align="center"
-                className="w-40 rounded-lg bg-popover p-1 shadow-xl"
+                className="w-48 rounded-lg bg-popover p-1.5 shadow-xl"
             >
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-0.5">
                     <Button
                         aria-label="Copy"
-                        className="w-full justify-start gap-2 rounded px-2 py-1 text-xs"
+                        className="w-full justify-start gap-2 rounded px-3 py-2 text-xs font-medium hover:bg-accent"
                         size="sm"
                         type="button"
                         variant="ghost"
                         onClick={handleCopy}
                     >
-                        <Copy aria-hidden="true" className="size-3" focusable="false" />
-                        <span>Copy</span>
+                        <Copy aria-hidden="true" className="size-3.5" focusable="false" />
+                        <span>Copy Text</span>
+                    </Button>
+
+                    <div className="my-1 h-px bg-border" />
+
+                    <div className="px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+                        Download as
+                    </div>
+
+                    <Button
+                        className="w-full justify-start gap-2 rounded px-3 py-2 text-xs font-medium hover:bg-accent"
+                        size="sm"
+                        type="button"
+                        variant="ghost"
+                        onClick={handleDownloadTxt}
+                    >
+                        <FileText aria-hidden="true" className="size-3.5 text-gray-600" focusable="false" />
+                        <span>Text File (.txt)</span>
+                    </Button>
+
+                    <Button
+                        className="w-full justify-start gap-2 rounded px-3 py-2 text-xs font-medium hover:bg-accent"
+                        size="sm"
+                        type="button"
+                        variant="ghost"
+                        onClick={handleDownloadDocx}
+                    >
+                        <FileText aria-hidden="true" className="size-3.5 text-blue-600" focusable="false" />
+                        <span>Word (.docx)</span>
+                    </Button>
+
+                    <Button
+                        className="w-full justify-start gap-2 rounded px-3 py-2 text-xs font-medium hover:bg-accent"
+                        size="sm"
+                        type="button"
+                        variant="ghost"
+                        onClick={handleDownloadPdf}
+                    >
+                        <FileText aria-hidden="true" className="size-3.5 text-red-600" focusable="false" />
+                        <span>PDF (.pdf)</span>
+                    </Button>
+
+                    <Button
+                        className="w-full justify-start gap-2 rounded px-3 py-2 text-xs font-medium hover:bg-accent"
+                        size="sm"
+                        type="button"
+                        variant="ghost"
+                        onClick={handleDownloadXlsx}
+                    >
+                        <FileText aria-hidden="true" className="size-3.5 text-green-600" focusable="false" />
+                        <span>Excel (.xlsx)</span>
+                    </Button>
+
+                    <Button
+                        className="w-full justify-start gap-2 rounded px-3 py-2 text-xs font-medium hover:bg-accent"
+                        size="sm"
+                        type="button"
+                        variant="ghost"
+                        onClick={handleDownloadPpt}
+                    >
+                        <FileText aria-hidden="true" className="size-3.5 text-orange-600" focusable="false" />
+                        <span>PowerPoint (.pptx)</span>
+                    </Button>
+
+                    <Button
+                        className="w-full justify-start gap-2 rounded px-3 py-2 text-xs font-medium hover:bg-accent"
+                        size="sm"
+                        type="button"
+                        variant="ghost"
+                        onClick={handleDownloadImage}
+                    >
+                        <ImageIcon aria-hidden="true" className="size-3.5 text-purple-600" focusable="false" />
+                        <span>Image (.png)</span>
                     </Button>
                 </div>
             </DropdownMenuContent>
@@ -144,6 +334,10 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
         setInput("")
         setLoading(true)
 
+        // Add placeholder for streaming response
+        const botMessage: Message = { role: 'assistant', content: '', timestamp: now };
+        setMessages(prev => [...prev, botMessage]);
+
         try {
             const response = await fetch('/api/chat', {
                 method: 'POST',
@@ -156,21 +350,53 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
             })
 
             if (!response.ok) throw new Error('Chat failed')
+            if (!response.body) throw new Error('No response body')
 
-            const data = await response.json()
-            const assistantTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const assistantMessage: Message = { role: 'assistant', content: data.reply, timestamp: assistantTime }
-            setMessages(prev => [...prev, assistantMessage])
+            // Handle streaming response
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let fullContent = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value);
+                const lines = chunk.split('\n');
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        const data = line.slice(6);
+                        if (data === '[DONE]') {
+                            break;
+                        }
+                        try {
+                            const parsed = JSON.parse(data);
+                            if (parsed.content) {
+                                fullContent += parsed.content;
+                                // Update the bot message in real-time
+                                setMessages(prev => prev.map((msg, idx) =>
+                                    idx === prev.length - 1 && msg.role === 'assistant'
+                                        ? { ...msg, content: fullContent }
+                                        : msg
+                                ));
+                            }
+                        } catch (e) {
+                            // Skip invalid JSON
+                        }
+                    }
+                }
+            }
+
+            setLoading(false)
         } catch (error) {
             console.error('Chat error:', error)
-            const errorTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const errorMessage: Message = {
+            setMessages(prev => prev.slice(0, -1)) // Remove placeholder
+            setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: 'Sorry, I encountered an error. Please try again.',
-                timestamp: errorTime
-            }
-            setMessages(prev => [...prev, errorMessage])
-        } finally {
+                content: "Sorry, I encountered an error. Please try again.",
+                timestamp: now
+            }])
             setLoading(false)
         }
     }
@@ -185,24 +411,19 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
     return (
         <Card className="h-full flex flex-col shadow-none border-0 bg-transparent">
             {/* Header */}
-            <CardHeader className="sticky top-0 z-10 flex flex-row items-center justify-between gap-2 border-b bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3 rounded-t-lg">
-                <div className="flex items-center gap-3">
-                    <div className="relative">
-                        <Avatar className="border-2 border-blue-200">
-                            <AvatarImage src="https://api.dicebear.com/9.x/bottts/svg?seed=AI" alt="AI Assistant" />
-                            <AvatarFallback><Bot className="w-5 h-5" /></AvatarFallback>
-                        </Avatar>
-                        <span className="absolute bottom-0 right-0 block size-2.5 rounded-full bg-green-500 ring-2 ring-white" />
+            <CardHeader className="sticky top-0 z-10 flex flex-row items-center justify-between gap-2 border-b bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6 py-4 rounded-t-lg">
+                <div className="flex items-center gap-4">
+                    <div className="relative bg-white p-2.5 rounded-xl shadow-sm flex-shrink-0">
+                        <img src="/logo.png" alt="Infy Galaxy" className="w-12 h-12 rounded-lg object-contain" />
+                        <span className="absolute bottom-0 right-0 block size-3 rounded-full bg-green-500 ring-2 ring-white" />
                     </div>
-                    <div className="flex flex-col">
-                        <div className="font-semibold text-base text-gray-900">AI Document Assistant</div>
-                        <div className="flex items-center gap-1 text-muted-foreground text-xs">
-                            <StatusBadge status="online" /> Online
+                    <div className="flex flex-col justify-center">
+                        <div className="font-semibold text-lg text-gray-900 leading-tight">Chat with our Reports Agent</div>
+                        <div className="flex items-center gap-1.5 text-muted-foreground text-xs mt-0.5">
+                            <StatusBadge status="online" />
+                            <span>Online</span>
                         </div>
                     </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <UserActionsMenu />
                 </div>
             </CardHeader>
 
@@ -215,8 +436,8 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
                     <div className="flex flex-col gap-6 py-4">
                         {messages.length === 0 && (
                             <div className="text-center text-gray-400 py-12 flex flex-col items-center">
-                                <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mb-4">
-                                    <Bot className="w-8 h-8 text-blue-600" />
+                                <div className="w-20 h-20 bg-white rounded-2xl shadow-md flex items-center justify-center mb-4 p-3">
+                                    <img src="/logo.png" alt="Infy Galaxy" className="w-full h-full rounded-lg" />
                                 </div>
                                 <p className="text-sm font-semibold text-gray-700">No messages yet</p>
                                 <p className="text-xs text-gray-500 mt-1">Ask a question about your document to get started</p>
@@ -225,6 +446,8 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
 
                         {messages.map((msg, idx) => {
                             const isMe = msg.role === 'user';
+                            const messageRef = useRef<HTMLDivElement>(null);
+
                             const renderMarkdown = (text: string) => {
                                 // 1. Escape HTML entities to prevent XSS
                                 let safeText = text
@@ -277,20 +500,21 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
                                         </Avatar>
                                         <div>
                                             <div
+                                                ref={messageRef}
                                                 className={cn(
                                                     "rounded-2xl px-4 py-2.5 shadow-sm",
                                                     isMe
-                                                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-sm"
-                                                        : "bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-foreground rounded-tl-sm"
+                                                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-sm font-medium"
+                                                        : "bg-white border border-gray-100 text-gray-800 rounded-tl-sm"
                                                 )}
                                             >
                                                 {!isMe ? (
                                                     <div
-                                                        className="prose prose-sm max-w-none text-sm prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-strong:text-gray-900"
+                                                        className="text-sm leading-relaxed space-y-2 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-4 [&_li]:mt-1"
                                                         dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }}
                                                     />
                                                 ) : (
-                                                    <p className="whitespace-pre-wrap leading-relaxed text-sm">{msg.content}</p>
+                                                    <p className="whitespace-pre-wrap leading-relaxed text-sm font-medium">{msg.content}</p>
                                                 )}
                                             </div>
                                             <div className={cn(
@@ -301,7 +525,7 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
                                                     {msg.timestamp || 'Just now'}
                                                 </time>
                                                 <div className="opacity-0 transition-all group-hover:opacity-100 scale-90">
-                                                    <MessageActions isMe={isMe} text={msg.content} />
+                                                    <MessageActions isMe={isMe} text={msg.content} messageRef={messageRef} />
                                                 </div>
                                             </div>
                                         </div>

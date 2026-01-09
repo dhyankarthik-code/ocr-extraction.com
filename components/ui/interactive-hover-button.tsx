@@ -4,13 +4,14 @@ import { cn } from "@/lib/utils";
 
 interface InteractiveHoverButtonProps
     extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    text?: string;
+    text?: React.ReactNode;
+    showDot?: boolean;
 }
 
 const InteractiveHoverButton = React.forwardRef<
     HTMLButtonElement,
     InteractiveHoverButtonProps
->(({ text = "Button", className, ...props }, ref) => {
+>(({ text = "Button", showDot = true, className, ...props }, ref) => {
     return (
         <button
             ref={ref}
@@ -27,7 +28,7 @@ const InteractiveHoverButton = React.forwardRef<
                 <span>{text}</span>
                 <ArrowRight className="w-4 h-4" />
             </div>
-            <div className="absolute left-[20%] top-[40%] h-2 w-2 scale-[1] rounded-lg bg-red-500 transition-all duration-300 group-hover/interactive:left-[0%] group-hover/interactive:top-[0%] group-hover/interactive:h-full group-hover/interactive:w-full group-hover/interactive:scale-[1.8] group-hover/interactive:bg-red-500"></div>
+            <div className={`absolute left-[20%] top-[40%] h-2 w-2 scale-[1] rounded-lg bg-red-500 transition-all duration-300 group-hover/interactive:left-[0%] group-hover/interactive:top-[0%] group-hover/interactive:h-full group-hover/interactive:w-full group-hover/interactive:scale-[1.8] group-hover/interactive:bg-red-500 ${!showDot ? "hidden group-hover/interactive:block" : ""}`}></div>
         </button>
     );
 });
