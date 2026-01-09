@@ -130,12 +130,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
           <div className="flex gap-5 items-center justify-center flex-wrap">
             <div className="pointer-events-none">
               <InteractiveHoverButton
-                text={
-                  <div className="flex items-center gap-2">
-                    <Search className="w-4 h-4" />
-                    <span>Browse Files</span>
-                  </div>
-                }
+                text="Browse Files"
                 aria-label="Browse Files"
                 className="pointer-events-auto w-48"
               />
