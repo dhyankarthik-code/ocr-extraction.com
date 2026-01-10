@@ -66,7 +66,7 @@ function UserActionsMenu() {
                     />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="min-w-36 rounded-lg bg-popover p-1 shadow-xl z-[1002]">
+            <DropdownMenuContent className="min-w-36 rounded-lg bg-popover p-1 shadow-xl z-[9999]">
                 <div className="flex flex-col gap-1">
                     <Button
                         className="w-full justify-start gap-2 rounded bg-transparent text-rose-600 hover:bg-accent"
@@ -299,7 +299,7 @@ function MessageActions({ isMe, text, messageRef }: { isMe: boolean, text: strin
             </DropdownMenuTrigger>
             <DropdownMenuContent
                 align="center"
-                className="w-48 rounded-lg bg-popover p-1.5 shadow-xl z-[1002]"
+                className="w-48 rounded-lg bg-popover p-1.5 shadow-xl z-[9999]"
             >
                 <div className="flex flex-col gap-0.5">
                     <Button
