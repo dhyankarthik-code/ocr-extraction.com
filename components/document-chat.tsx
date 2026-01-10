@@ -109,6 +109,14 @@ function MessageActions({ isMe, text, messageRef }: { isMe: boolean, text: strin
     };
 
     const handleDownloadPdf = async () => {
+        const sanitizePdfText = (str: string) => {
+            return str
+                .replace(/[•●·]/g, '-') // Replace bullets with hyphens
+                .replace(/[→⇒\u2192\u21D2]/g, '->') // Replace arrows
+                .replace(/[←⇐\u2190\u21D0]/g, '<-')
+                .replace(/[^\x20-\x7E\n\r\t]/g, ' '); // Strip non-ASCII/printable characters to avoid WinAnsi errors
+        };
+
         try {
             const pdfDoc = await PDFDocument.create();
             const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -119,7 +127,8 @@ function MessageActions({ isMe, text, messageRef }: { isMe: boolean, text: strin
             const lineHeight = fontSize + 4;
             let y = height - 50;
 
-            const lines = text.split('\n');
+            const sanitizedText = sanitizePdfText(text);
+            const lines = sanitizedText.split('\n');
             for (const line of lines) {
                 if (y < 50) {
                     page = pdfDoc.addPage();
@@ -184,10 +193,86 @@ function MessageActions({ isMe, text, messageRef }: { isMe: boolean, text: strin
                 alert("Unable to capture message");
                 return;
             }
-            const canvas = await html2canvas(messageRef.current, {
-                backgroundColor: '#ffffff',
-                scale: 2,
+
+            // Create a "Clean Clone" to bypass Tailwind 4's 'lab'/'oklch' colors which crash html2canvas
+            const originalNode = messageRef.current;
+            const clone = originalNode.cloneNode(true) as HTMLElement;
+
+            // 1. Reset Container Styles (Force standard colors)
+            clone.style.backgroundColor = "#ffffff";
+            clone.style.color = "#111827";
+            clone.style.fontFamily = "ui-sans-serif, system-ui, sans-serif";
+            clone.style.padding = "20px";
+            clone.style.borderRadius = "12px";
+            clone.style.border = "1px solid #e5e7eb";
+            clone.style.width = `${originalNode.offsetWidth}px`;
+            clone.style.position = "fixed";
+            clone.style.top = "-9999px";
+            clone.style.left = "-9999px";
+            clone.style.zIndex = "-1000";
+
+            // 2. Strip ALL classes to remove Tailwind dependency
+            clone.removeAttribute("class");
+            const allElements = clone.querySelectorAll("*");
+            allElements.forEach((el) => {
+                el.removeAttribute("class");
+                if (el instanceof HTMLElement) {
+                    // Aggressively reset potential oklch/lab properties for ALL elements
+                    el.style.boxShadow = "none";
+                    el.style.backgroundImage = "none";
+                    el.style.borderColor = "transparent"; // Default borders to transparent hex
+
+                    // Apply basic readable styles based on tag
+                    if (el.tagName === "STRONG" || el.tagName === "B") {
+                        el.style.fontWeight = "bold";
+                        el.style.color = "#4338ca"; // Indigo Heading/Highlight
+                    }
+                    if (el.tagName === "H1" || el.tagName === "H2" || el.tagName === "H3") {
+                        el.style.fontWeight = "bold";
+                        el.style.marginBottom = "8px";
+                        el.style.marginTop = "16px";
+                        el.style.color = "#111827";
+                    }
+                    if (el.tagName === "P") {
+                        el.style.marginBottom = "10px";
+                        el.style.lineHeight = "1.6";
+                        el.style.color = "#1f2937";
+                    }
+                    if (el.tagName === "UL" || el.tagName === "OL") {
+                        el.style.paddingLeft = "20px";
+                        el.style.marginBottom = "10px";
+                        el.style.color = "#1f2937";
+                    }
+                    if (el.tagName === "LI") {
+                        el.style.marginBottom = "4px";
+                    }
+                    if (el.tagName === "HR") {
+                        el.style.border = "none";
+                        el.style.borderTop = "1px solid #e5e7eb";
+                        el.style.margin = "16px 0";
+                    }
+
+                    // Ensure links don't inherit weird colors
+                    if (el.tagName === "A") {
+                        el.style.color = "#2563eb";
+                        el.style.textDecoration = "underline";
+                    }
+                }
             });
+
+            document.body.appendChild(clone);
+
+            // 3. Capture the sanitized clone
+            const canvas = await html2canvas(clone, {
+                backgroundColor: "#ffffff",
+                scale: 2,
+                useCORS: true,
+                logging: false
+            });
+
+            // 4. Cleanup
+            document.body.removeChild(clone);
+
             canvas.toBlob((blob) => {
                 if (blob) {
                     saveAs(blob, `AI_Report_${Date.now()}.png`);
@@ -195,7 +280,7 @@ function MessageActions({ isMe, text, messageRef }: { isMe: boolean, text: strin
             });
         } catch (error) {
             console.error("Image generation failed:", error);
-            alert("Failed to generate image");
+            alert("Failed to generate image. Please try 'Text' or 'PDF' format instead.");
         }
     };
 
@@ -203,17 +288,12 @@ function MessageActions({ isMe, text, messageRef }: { isMe: boolean, text: strin
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button
-                    aria-label="Message actions"
-                    className="size-7 rounded bg-background hover:bg-accent"
-                    size="icon"
+                    className="flex items-center gap-1.5 h-7 px-3 rounded-md bg-white text-black border border-gray-200 hover:bg-gray-50 transition-all shadow-sm"
+                    size="sm"
                     type="button"
-                    variant="ghost"
                 >
-                    <MoreHorizontal
-                        aria-hidden="true"
-                        className="size-3.5"
-                        focusable="false"
-                    />
+                    <Download className="w-3.5 h-3.5" />
+                    <span className="text-[11px] font-medium">Download Report</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -307,6 +387,84 @@ function MessageActions({ isMe, text, messageRef }: { isMe: boolean, text: strin
                 </div>
             </DropdownMenuContent>
         </DropdownMenu>
+    );
+}
+
+
+import ReactMarkdown from 'react-markdown'
+
+function MessageItem({ msg, isLoadingStatus }: { msg: Message, isLoadingStatus?: boolean }) {
+    const isMe = msg.role === 'user';
+    const messageRef = useRef<HTMLDivElement>(null);
+
+    return (
+        <div
+            className={cn(
+                "group flex gap-2 w-full",
+                isMe ? "justify-end" : "justify-start"
+            )}
+        >
+            <div
+                className={cn(
+                    "flex max-w-[85%] items-start gap-2",
+                    isMe ? "flex-row-reverse" : undefined
+                )}
+            >
+                <Avatar className="size-8 mt-1">
+                    {isMe ? (
+                        <>
+                            <AvatarImage src="https://api.dicebear.com/9.x/avataaars/svg?seed=User" />
+                            <AvatarFallback><User className="w-4 h-4" /></AvatarFallback>
+                        </>
+                    ) : (
+                        <>
+                            <AvatarImage src="https://api.dicebear.com/9.x/bottts/svg?seed=AI" />
+                            <AvatarFallback><Bot className="w-4 h-4" /></AvatarFallback>
+                        </>
+                    )}
+                </Avatar>
+                <div>
+                    <div
+                        ref={messageRef}
+                        className={cn(
+                            "rounded-2xl px-4 py-2 shadow-sm min-h-[38px] flex items-center",
+                            isMe
+                                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-sm font-medium"
+                                : "bg-white border border-gray-100 text-gray-800 rounded-tl-sm"
+                        )}
+                    >
+                        {isLoadingStatus ? (
+                            <div className="flex gap-1 py-1">
+                                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
+                            </div>
+                        ) : !isMe ? (
+                            <div className="text-sm leading-relaxed max-w-none prose prose-sm prose-p:my-0.5 prose-headings:my-1 prose-headings:text-base prose-headings:font-bold prose-headings:text-gray-900 prose-strong:text-indigo-700 prose-only:m-0 prose-li:my-0 prose-hr:my-2 !text-sm font-normal">
+                                <ReactMarkdown>
+                                    {msg.content}
+                                </ReactMarkdown>
+                            </div>
+                        ) : (
+                            <p className="whitespace-pre-wrap leading-relaxed text-sm font-medium">{msg.content}</p>
+                        )}
+                    </div>
+                    <div className={cn(
+                        "mt-1 flex items-center gap-2",
+                        isMe ? "justify-end" : "justify-start"
+                    )}>
+                        <time className="text-[10px] text-muted-foreground font-medium opacity-70">
+                            {msg.timestamp || 'Just now'}
+                        </time>
+                        {!isMe && (
+                            <div className="transition-all scale-90">
+                                <MessageActions isMe={isMe} text={msg.content} messageRef={messageRef} />
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
 
@@ -414,7 +572,7 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
             <CardHeader className="sticky top-0 z-10 flex flex-row items-center justify-between gap-2 border-b bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6 py-4 rounded-t-lg">
                 <div className="flex items-center gap-4">
                     <div className="relative bg-white p-3 rounded-xl shadow-md flex-shrink-0">
-                        <img src="/logo.png" alt="InfyGalaxy AI" className="w-10 h-10 rounded-lg object-contain" />
+                        <img src="/logo.png" alt="InfyGalaxy AI" className="h-10 w-auto object-contain rounded-lg" />
                         <span className="absolute -bottom-1 -right-1 block size-3.5 rounded-full bg-green-500 ring-2 ring-white" />
                     </div>
                     <div className="flex flex-col justify-center">
@@ -437,122 +595,20 @@ export default function DocumentChat({ documentText }: DocumentChatProps) {
                         {messages.length === 0 && (
                             <div className="text-center text-gray-400 py-12 flex flex-col items-center">
                                 <div className="w-20 h-20 bg-white rounded-2xl shadow-md flex items-center justify-center mb-4 p-3">
-                                    <img src="/logo.png" alt="Infy Galaxy" className="w-full h-full rounded-lg" />
+                                    <img src="/logo.png" alt="Infy Galaxy" className="max-w-full max-h-full object-contain rounded-lg" />
                                 </div>
                                 <p className="text-sm font-semibold text-gray-700">No messages yet</p>
                                 <p className="text-xs text-gray-500 mt-1">Ask a question about your document to get started</p>
                             </div>
                         )}
 
-                        {messages.map((msg, idx) => {
-                            const isMe = msg.role === 'user';
-                            const messageRef = useRef<HTMLDivElement>(null);
-
-                            const renderMarkdown = (text: string) => {
-                                // 1. Escape HTML entities to prevent XSS
-                                let safeText = text
-                                    .replace(/&/g, "&amp;")
-                                    .replace(/</g, "&lt;")
-                                    .replace(/>/g, "&gt;")
-                                    .replace(/"/g, "&quot;")
-                                    .replace(/'/g, "&#039;");
-
-                                // 2. Apply Basic Markdown Formatting
-                                let html = safeText
-                                    // Bold
-                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                    // Italic
-                                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                                    // Lists
-                                    .replace(/^\s*-\s+(.*)$/gm, '<li>$1</li>')
-                                    .replace(/((?:<li>.*?<\/li>\s*)+)/g, '<ul class="list-disc pl-4 my-2">$1</ul>')
-                                    // Newlines
-                                    .replace(/\n/g, '<br />');
-                                return html;
-                            };
-
-                            return (
-                                <div
-                                    className={cn(
-                                        "group flex gap-2 w-full",
-                                        isMe ? "justify-end" : "justify-start"
-                                    )}
-                                    key={idx}
-                                >
-                                    <div
-                                        className={cn(
-                                            "flex max-w-[85%] items-start gap-2",
-                                            isMe ? "flex-row-reverse" : undefined
-                                        )}
-                                    >
-                                        <Avatar className="size-8 mt-1">
-                                            {isMe ? (
-                                                <>
-                                                    <AvatarImage src="https://api.dicebear.com/9.x/avataaars/svg?seed=User" />
-                                                    <AvatarFallback><User className="w-4 h-4" /></AvatarFallback>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <AvatarImage src="https://api.dicebear.com/9.x/bottts/svg?seed=AI" />
-                                                    <AvatarFallback><Bot className="w-4 h-4" /></AvatarFallback>
-                                                </>
-                                            )}
-                                        </Avatar>
-                                        <div>
-                                            <div
-                                                ref={messageRef}
-                                                className={cn(
-                                                    "rounded-2xl px-4 py-2.5 shadow-sm",
-                                                    isMe
-                                                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-sm font-medium"
-                                                        : "bg-white border border-gray-100 text-gray-800 rounded-tl-sm"
-                                                )}
-                                            >
-                                                {!isMe ? (
-                                                    <div
-                                                        className="text-sm leading-relaxed space-y-2 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-4 [&_li]:mt-1"
-                                                        dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }}
-                                                    />
-                                                ) : (
-                                                    <p className="whitespace-pre-wrap leading-relaxed text-sm font-medium">{msg.content}</p>
-                                                )}
-                                            </div>
-                                            <div className={cn(
-                                                "mt-1 flex items-center gap-2",
-                                                isMe ? "justify-end" : "justify-start"
-                                            )}>
-                                                <time className="text-[10px] text-muted-foreground font-medium opacity-70">
-                                                    {msg.timestamp || 'Just now'}
-                                                </time>
-                                                <div className="opacity-0 transition-all group-hover:opacity-100 scale-90">
-                                                    <MessageActions isMe={isMe} text={msg.content} messageRef={messageRef} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-
-                        {loading && (
-                            <div className="flex gap-2 justify-start w-full">
-                                <div className="flex max-w-[85%] items-start gap-2">
-                                    <Avatar className="size-8 mt-1">
-                                        <AvatarImage src="https://api.dicebear.com/9.x/bottts/svg?seed=AI" />
-                                        <AvatarFallback><Bot className="w-4 h-4" /></AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <div className="bg-white border text-foreground rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
-                                            <div className="flex gap-1">
-                                                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                                                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                                                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                        {messages.map((msg, idx) => (
+                            <MessageItem
+                                key={idx}
+                                msg={msg}
+                                isLoadingStatus={loading && idx === messages.length - 1 && msg.role === 'assistant' && !msg.content}
+                            />
+                        ))}
                     </div>
                 </ScrollArea>
 

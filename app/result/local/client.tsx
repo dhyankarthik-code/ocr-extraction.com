@@ -506,7 +506,7 @@ export default function LocalResultPage() {
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-5">
                                         <div className="bg-white p-2 rounded-xl shadow-sm">
-                                            <img src="/logo.png" alt="Infy Galaxy" className="w-12 h-12 rounded-lg" />
+                                            <img src="/logo.png" alt="Infy Galaxy" className="w-12 h-12 rounded-lg object-contain" />
                                         </div>
                                         <h2 className="text-2xl font-bold text-purple-900">AI Report</h2>
                                     </div>

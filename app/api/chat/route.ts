@@ -73,13 +73,21 @@ STRICT GUIDELINES - FOLLOW THESE WITHOUT EXCEPTION:
             { role: "system", content: systemPrompt }
         ];
 
-        // Add history if present
+        // Sanitize chatHistory
+        const validRoles = ['user', 'assistant', 'system'];
         if (chatHistory && Array.isArray(chatHistory)) {
             chatHistory.forEach((msg: any) => {
-                messagesForAI.push({
-                    role: msg.role === 'user' ? 'user' : 'assistant',
-                    content: msg.content
-                });
+                if (
+                    msg &&
+                    typeof msg === 'object' &&
+                    validRoles.includes(msg.role) &&
+                    typeof msg.content === 'string'
+                ) {
+                    messagesForAI.push({
+                        role: msg.role === 'user' ? 'user' : 'assistant', // Force valid role for Mistral
+                        content: msg.content
+                    });
+                }
             });
         }
 

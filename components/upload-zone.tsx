@@ -208,7 +208,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
 
         {/* Processing Overlay / Steps */}
         {uploading && (
-          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-2xl z-10 flex flex-col items-center justify-center p-8 border border-gray-200 shadow-xl">
+          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-2xl z-10 flex flex-col items-center justify-center p-4 md:p-8 border border-gray-200 shadow-xl overflow-y-auto">
             <div className="w-full max-w-md space-y-6">
               <div className="text-center">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Processing Image</h3>
