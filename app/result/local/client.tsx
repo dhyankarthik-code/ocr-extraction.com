@@ -490,7 +490,7 @@ export default function LocalResultPage() {
                         <div className="text-center">
                             <ShinyText
                                 text="Generating..."
-                                className="text-8xl font-black text-white drop-shadow-2xl"
+                                className="text-4xl md:text-8xl font-black text-white drop-shadow-2xl px-4 text-center break-words"
                                 speed={1.5}
                             />
                         </div>
@@ -643,7 +643,7 @@ export default function LocalResultPage() {
                                 </button>
                             </div>
                             <div className="flex-1 min-h-0">
-                                <DocumentChat documentText={getFullText()} />
+                                <DocumentChat documentText={getFullText()} hideHeader={true} />
                             </div>
                         </div>
                     </div>
