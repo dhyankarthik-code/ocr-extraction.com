@@ -43,11 +43,18 @@ model ChatConversation {
   id          String        @id @default(cuid())
   sessionId   String        @unique
   userEmail   String?
+  ipAddress   String?
+  country     String?
+  region      String?
+  city        String?
   startedAt   DateTime      @default(now())
   endedAt     DateTime?
   summary     String?
   emailSent   Boolean       @default(false)
   messages    ChatMessage[]
+
+  @@index([ipAddress])
+  @@index([country])
 }
 
 model ChatMessage {

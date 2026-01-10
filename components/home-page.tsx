@@ -6,11 +6,7 @@ import Flag from 'react-world-flags'
 import SmartUploadZone from "@/components/smart-upload-zone"
 import CtaSection from "@/components/cta-section"
 
-// Lazy load TypeAnimation for better performance
-const TypeAnimation = dynamic(
-    () => import('react-type-animation').then(mod => mod.TypeAnimation),
-    { ssr: false }
-)
+import { TypeAnimation } from 'react-type-animation'
 
 export default function HomePage() {
     const [mounted, setMounted] = useState(false)
@@ -33,18 +29,20 @@ export default function HomePage() {
                             </span>
                         )}
 
-                        <TypeAnimation
-                            sequence={[
-                                'Free OCR Extraction tool',
-                                2500,
-                                'Free OCR Extraction tool and Report Generation Tool',
-                                2500,
-                            ]}
-                            wrapper="span"
-                            speed={15}
-                            style={{ display: mounted ? 'inline-block' : 'none' }}
-                            repeat={Infinity}
-                        />
+                        {mounted && (
+                            <TypeAnimation
+                                sequence={[
+                                    'Free OCR Extraction tool',
+                                    2500,
+                                    'Free OCR Extraction tool and Report Generation Tool',
+                                    2500,
+                                ]}
+                                wrapper="span"
+                                speed={15}
+                                style={{ display: 'inline-block' }}
+                                repeat={Infinity}
+                            />
+                        )}
                     </h1>
                 </div>
 

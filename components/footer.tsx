@@ -3,7 +3,15 @@
 import Link from "next/link"
 import Image from "next/image"
 import { toolCategories } from "@/lib/tools-data"
-import { Heart, FileText, Wrench, BookOpen, Info, Mail, Newspaper } from "lucide-react"
+import {
+    Heart01 as Heart,
+    FileDocument as FileText,
+    Settings as Wrench,
+    BookOpen,
+    Info,
+    Mail,
+    Note as Newspaper
+} from "react-coolicons"
 
 export default function Footer() {
     return (
@@ -32,6 +40,12 @@ export default function Footer() {
                                 </ul>
                             </div>
                         ))}
+                    </div>
+                    {/* All Tools Link */}
+                    <div className="mt-6 text-center md:text-left">
+                        <Link href="/tools" className="inline-flex items-center gap-2 text-red-500 hover:text-red-400 font-semibold transition-colors">
+                            View All Tools <div className="w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center text-xs">&rarr;</div>
+                        </Link>
                     </div>
                 </div>
 
@@ -176,7 +190,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-sm text-gray-400">
-                        © {new Date().getFullYear()} Infy Galaxy. All rights reserved.
+                        © {new Date().getFullYear()} InfyGalaxy. All rights reserved.
                     </p>
                     {/* Privacy Policy and Terms of Service removed */}
                 </div>

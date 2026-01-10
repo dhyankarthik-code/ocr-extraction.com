@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import type { Session } from "@/types/auth"
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
-import { Menu, X } from "lucide-react"
+import { HamburgerMd as Menu, CloseMd as X } from "react-coolicons"
 
 import {
   DropdownMenu,
@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown } from "react-coolicons"
 import { toolCategories } from "@/lib/tools-data"
 
 interface NavbarProps {
@@ -31,6 +31,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
   const navLinks = [
     { label: 'About Us', href: '/about' },
     { label: 'OCR', href: '/' },
+    { label: 'Services', href: '/services' },
     { label: 'Blog', href: '/blog' },
     { label: 'Contact Us', href: '/contact' },
   ]

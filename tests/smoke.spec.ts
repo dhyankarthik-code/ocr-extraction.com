@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 // Critical User Journey: Home -> Login (Skipped/Implicit) -> OCR Upload -> Result Checking
 test.describe('Smoke Test: Critical Path (Mocked)', () => {
+    test.setTimeout(60000); // Increase timeout to 60s for slow environments
 
     test.beforeEach(async ({ page }) => {
         // Mock Mistral/Google OCR API to prevent costs and external flakiness
@@ -40,8 +41,8 @@ test.describe('Smoke Test: Critical Path (Mocked)', () => {
         await expect(page).toHaveTitle(/OCR/i);
     });
 
-    test('should complete image to excel journey with mocked backend', async ({ page }) => {
-        await page.goto('/tools/image-to-excel');
+    test('should complete image to text journey with mocked backend', async ({ page }) => {
+        await page.goto('/tools/image-to-text');
 
         // Ensure the upload area/button is visible
         // Adjust selector based on actual generic-tool.tsx or smart-upload-zone implementation

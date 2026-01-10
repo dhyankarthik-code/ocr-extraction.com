@@ -14,11 +14,21 @@ export async function POST(req: NextRequest) {
         try {
             const { default: prisma } = await import("@/lib/db");
 
+            // Extract Geo Data from Headers
+            const ipAddress = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip");
+            const country = req.headers.get("x-vercel-ip-country") || req.headers.get("cf-ipcountry"); // Vercel or Cloudflare
+            const region = req.headers.get("x-vercel-ip-region");
+            const city = req.headers.get("x-vercel-ip-city");
+
             // Upsert conversation
             const conversation = await prisma.chatConversation.upsert({
                 where: { sessionId: currentSessionId },
                 create: {
                     sessionId: currentSessionId,
+                    ipAddress,
+                    country,
+                    region,
+                    city,
                     messages: {
                         create: {
                             role: 'user',
@@ -27,6 +37,10 @@ export async function POST(req: NextRequest) {
                     }
                 },
                 update: {
+                    ipAddress, // Update location on new message if changed (optional, but good for tracking)
+                    country,
+                    region,
+                    city,
                     messages: {
                         create: {
                             role: 'user',
