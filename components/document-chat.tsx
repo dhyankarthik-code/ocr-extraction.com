@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Send, Bot, User, Loader2, MoreVertical, Copy, Download, FileText, Image as ImageIcon, MoreHorizontal, Trash2 } from "lucide-react"
+import { Send, Bot, User, Loader2, MoreVertical, Copy, Download, FileText, Image as ImageIcon, MoreHorizontal, Trash2, Check } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "@/components/ui/dropdown-menu"
@@ -84,8 +84,12 @@ function UserActionsMenu() {
 }
 
 function MessageActions({ isMe, text, messageRef }: { isMe: boolean, text: string, messageRef?: React.RefObject<HTMLDivElement | null> }) {
+    const [isCopied, setIsCopied] = useState(false);
+
     const handleCopy = () => {
         navigator.clipboard.writeText(text);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
     };
 
     const handleDownloadTxt = () => {
@@ -310,8 +314,17 @@ function MessageActions({ isMe, text, messageRef }: { isMe: boolean, text: strin
                         variant="ghost"
                         onClick={handleCopy}
                     >
-                        <Copy aria-hidden="true" className="size-3.5" focusable="false" />
-                        <span>Copy Text</span>
+                        {isCopied ? (
+                            <>
+                                <Check aria-hidden="true" className="size-3.5 text-green-600" focusable="false" />
+                                <span className="text-green-600">Copied</span>
+                            </>
+                        ) : (
+                            <>
+                                <Copy aria-hidden="true" className="size-3.5" focusable="false" />
+                                <span>Copy Text</span>
+                            </>
+                        )}
                     </Button>
 
                     <div className="my-1 h-px bg-border" />
