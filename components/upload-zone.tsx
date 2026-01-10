@@ -233,7 +233,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
                   const isCurrent = index === processingSteps.length - 1;
 
                   return (
-                    <div key={index} className="flex items-center gap-3 text-sm transition-all duration-300 animate-in fade-in slide-in-from-bottom-2">
+                    <div key={index} className="flex items-center gap-3 text-sm">
                       {isCompleted ? (
                         <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                       ) : (
