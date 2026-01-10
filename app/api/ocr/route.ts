@@ -93,7 +93,12 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
             console.log('Attempting Primary OCR...');
             const client = new Mistral({ apiKey: mistralKey });
 
-            const response = await client.ocr.process({
+            // CRITICAL: Add timeout to prevent hanging in production
+            const ocrTimeout = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Mistral OCR timeout (25s)')), 25000)
+            );
+
+            const ocrPromise = client.ocr.process({
                 model: "mistral-ocr-latest",
                 document: {
                     type: "image_url",
@@ -101,8 +106,10 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
                 }
             });
 
+            const response = await Promise.race([ocrPromise, ocrTimeout]) as any;
+
             if (response.pages && response.pages.length > 0) {
-                rawText = response.pages.map(p => p.markdown).join('\n\n');
+                rawText = response.pages.map((p: any) => p.markdown).join('\n\n');
                 usedMethod = 'primary_ocr';
 
                 // CRITICAL: Log raw OCR output to diagnose Unicode/encoding issues
@@ -129,7 +136,12 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
             try {
                 console.log('Falling back to Secondary Cloud Vision API...');
 
-                const visionResponse = await fetch(
+                // Add timeout to Google Vision API call
+                const visionTimeout = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Google Vision timeout (25s)')), 25000)
+                );
+
+                const visionPromise = fetch(
                     `https://vision.googleapis.com/v1/images:annotate?key=${googleKey}`,
                     {
                         method: 'POST',
@@ -143,6 +155,7 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
                     }
                 );
 
+                const visionResponse = await Promise.race([visionPromise, visionTimeout]) as Response;
                 const visionData = await visionResponse.json();
 
                 if (visionData.error) {
@@ -349,7 +362,7 @@ export async function POST(request: NextRequest) {
         if (!isPDF && !isExcel) {
             try {
                 const { processImageForOCR } = await import('@/lib/image-processing');
-                const processed = await processImageForOCR(buffer as any, { skipHeavyProcessing: isPreprocessed });
+                const processed = await processImageForOCR(buffer, { skipHeavyProcessing: isPreprocessed });
 
                 // Use processed buffer if it was successful
                 if (processed.buffer) {
@@ -453,9 +466,13 @@ export async function POST(request: NextRequest) {
             try {
                 const client = new Mistral({ apiKey: mistralApiKey });
 
-                // Step 1: Upload PDF file to Mistral
+                // Step 1: Upload PDF file to Mistral with timeout
                 console.log('Uploading PDF to Mistral...');
-                const uploadedFile = await client.files.upload({
+                const uploadTimeout = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('PDF upload timeout (30s)')), 30000)
+                );
+
+                const uploadPromise = client.files.upload({
                     file: {
                         fileName: file.name || 'document.pdf',
                         content: buffer,
@@ -463,17 +480,24 @@ export async function POST(request: NextRequest) {
                     purpose: 'ocr'
                 });
 
+                const uploadedFile = await Promise.race([uploadPromise, uploadTimeout]) as any;
                 console.log(`Uploaded PDF with file ID: ${uploadedFile.id}`);
 
-                // Step 2: Process OCR with uploaded file
+                // Step 2: Process OCR with uploaded file with timeout
                 console.log('Processing OCR on uploaded PDF...');
-                const response = await client.ocr.process({
+                const pdfOcrTimeout = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('PDF OCR timeout (30s)')), 30000)
+                );
+
+                const pdfOcrPromise = client.ocr.process({
                     model: "mistral-ocr-latest",
                     document: {
                         type: "file",
                         fileId: uploadedFile.id
                     }
                 });
+
+                const response = await Promise.race([pdfOcrPromise, pdfOcrTimeout]) as any;
 
                 if (!response.pages || response.pages.length === 0) {
                     throw new Error('Mistral OCR returned no pages');

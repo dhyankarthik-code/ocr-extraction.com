@@ -78,9 +78,9 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 }
 
+import { SessionProvider } from "@/components/providers/session-provider"
 import MainLayout from "@/components/main-layout"
-
-// ... imports ...
+import { toolCategories } from "@/lib/tools-data"
 
 export default function RootLayout({
   children,
@@ -126,17 +126,20 @@ export default function RootLayout({
         <link rel="preconnect" href="https://blog.ocr-extraction.com" />
       </head>
       <body className={`${geist.className} font-sans antialiased bg-white text-gray-900`} suppressHydrationWarning>
-        <MainLayout>
-          {children}
-        </MainLayout>
-        <ClientConsentWrapper />
-        <AnalyticsTracker />
+        <SessionProvider>
+          <MainLayout>
+            {children}
+          </MainLayout>
+          <ClientConsentWrapper />
+          <AnalyticsTracker />
+        </SessionProvider>
         <Analytics />
         <SpeedInsights />
         <SpeedInsights />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
+            // ...
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@graph": [
