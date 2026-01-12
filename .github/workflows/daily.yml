@@ -8,7 +8,7 @@ on:
 
 jobs:
   daily-checks:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     env:
       # Use Real DB for Cost Check, but File DB for Build/Start if compatible
       # Actually, Cost Check needs REAL DB. Build needs ANY DB.
@@ -28,9 +28,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci --prefer-offline
 
-      - name: Add Docker to PATH
-        run: echo "D:\Docker\resources\bin" >> $GITHUB_PATH
-
       - name: Prisma Generate
         run: npx prisma generate
 
@@ -39,35 +36,26 @@ jobs:
         continue-on-error: true
 
       - name: Build & Start App
-        shell: powershell
         run: |
           npm run build
-          # Start npm start in background using Start-Process
-          $process = Start-Process npm -ArgumentList "start" -PassThru -WindowStyle Hidden
-          echo "Started process ID: $($process.Id)"
-          echo "APP_PID=$($process.Id)" >> $env:GITHUB_ENV
+          # Start npm start in background
+          nohup npm start > app.log 2>&1 &
+          echo $! > app.pid
+          echo "Started process ID: $(cat app.pid)"
           npx wait-on http://localhost:3000 --timeout 60000
 
       - name: 🛡️ ZAP Baseline Scan (Direct Docker)
-        shell: powershell
         continue-on-error: true
         run: |
           # Create empty report file to ensure path exists
-          New-Item -Path "zap_report.html" -ItemType File -Force
-
-          # Get local IP address for Docker to access host
-          $localIP = (Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias "Ethernet*" | Select-Object -First 1).IPAddress
-          if (-not $localIP) {
-            $localIP = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object {$_.IPAddress -like "192.168.*" -or $_.IPAddress -like "10.*"} | Select-Object -First 1).IPAddress
-          }
-          
-          echo "Using local IP: $localIP"
+          touch zap_report.html
+          chmod 666 zap_report.html
           
           # Run ZAP Docker container directly
-          # -u 0 : Run as root to avoid permission issues writing to Windows volume
+          # --network host allows accessing localhost:3000 from container
+          # -u 0 : Run as root to avoid permission issues
           # -v : Map current directory
-          # Using local IP instead of host.docker.internal for Windows compatibility
-          & "D:\Docker\resources\bin\docker.exe" run --rm -u 0 -v "${PWD}:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t "http://${localIP}:3000" -r zap_report.html -I
+          docker run --rm -u 0 -v "$(pwd):/zap/wrk/:rw" --network host -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t "http://localhost:3000" -r zap_report.html -I
           
           
       - name: Upload ZAP Report
@@ -91,21 +79,20 @@ jobs:
 
       - name: Cleanup - Stop App
         if: always()
-        shell: powershell
         run: |
-          if ($env:APP_PID) {
-            Stop-Process -Id $env:APP_PID -Force -ErrorAction SilentlyContinue
-            echo "Stopped app process $env:APP_PID"
-          }
+          if [ -f app.pid ]; then
+            kill $(cat app.pid) || true
+            echo "Stopped app process"
+          fi
 
       - name: Report Status
         if: always()
-        shell: powershell
         run: |
-           $status = "${{ job.status }}"
-           $message = "Daily QA Finished. Status: $status"
-           $token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
-           $chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
-           $url = "https://api.telegram.org/bot$token/sendMessage"
-           $body = @{ chat_id = $chat_id; text = $message }
-           Invoke-RestMethod -Uri $url -Method Post -Body $body
+           STATUS="${{ job.status }}"
+           MESSAGE="Daily QA Finished. Status: $STATUS"
+           TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}"
+           CHAT_ID="${{ secrets.TELEGRAM_CHAT_ID }}"
+           
+           curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendMessage" \
+                -d chat_id="$CHAT_ID" \
+                -d text="$MESSAGE"

@@ -355,14 +355,16 @@ export async function POST(request: NextRequest) {
             file.type.includes('excel') ||
             file.type.includes('spreadsheet');
 
-        // Check if preprocessed
-        const isPreprocessed = formData.get("preprocessed") === 'true';
+        // Check if preprocessed (Legacy flag, now ignored to ensure quality)
+        // const isPreprocessed = formData.get("preprocessed") === 'true';
 
         // Pre-process images (non-PDF/Excel) for better OCR results
+        // ALWAYS run this on server now, as client only does minimal resizing
         if (!isPDF && !isExcel) {
             try {
                 const { processImageForOCR } = await import('@/lib/image-processing');
-                const processed = await processImageForOCR(buffer, { skipHeavyProcessing: isPreprocessed });
+                // Force skipHeavyProcessing: false
+                const processed = await processImageForOCR(buffer, { skipHeavyProcessing: false });
 
                 // Use processed buffer if it was successful
                 if (processed.buffer) {
