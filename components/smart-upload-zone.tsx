@@ -102,8 +102,7 @@ export default function SmartUploadZone() {
             setStatus("Processing with AI...")
 
             const data = await new Promise<any>((resolve, reject) => {
-                const xhr = new XMLHttpRequest()
-                xhr.open('POST', '/api/ocr')
+                xhr.timeout = 60000 // 60s timeout
 
                 xhr.upload.onprogress = (event) => {
                     if (event.lengthComputable) {
@@ -119,15 +118,28 @@ export default function SmartUploadZone() {
                 }
 
                 xhr.onload = () => {
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        resolve(JSON.parse(xhr.responseText))
-                    } else {
-                        const errorData = JSON.parse(xhr.responseText || '{}')
-                        reject({ status: xhr.status, data: errorData })
+                    try {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            resolve(JSON.parse(xhr.responseText))
+                        } else {
+                            let errorData = {}
+                            try {
+                                errorData = JSON.parse(xhr.responseText || '{}')
+                            } catch (e) {
+                                // Fallback for HTML errors (like Vercel timeouts)
+                                errorData = { details: xhr.responseText || 'Server Error' }
+                            }
+                            reject({ status: xhr.status, data: errorData })
+                        }
+                    } catch (e) {
+                        reject(new Error('Invalid server response'))
                     }
                 }
                 xhr.onerror = () => {
                     reject(new Error('Network error during upload.'))
+                }
+                xhr.ontimeout = () => {
+                    reject(new Error('Request timed out. Server took too long to respond.'))
                 }
                 xhr.send(formData)
             }).catch(err => {
@@ -247,6 +259,8 @@ export default function SmartUploadZone() {
                     const data = await new Promise<any>((resolve, reject) => {
                         const xhr = new XMLHttpRequest()
                         xhr.open('POST', '/api/ocr')
+                        xhr.timeout = 60000 // 60s timeout
+
                         xhr.upload.onprogress = (event) => {
                             if (event.lengthComputable) {
                                 const chunkProgress = (event.loaded / event.total) * 90 * stepProgressMultiplier
@@ -254,10 +268,23 @@ export default function SmartUploadZone() {
                             }
                         }
                         xhr.onload = () => {
-                            if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText))
-                            else reject({ status: xhr.status, data: JSON.parse(xhr.responseText || '{}') })
+                            try {
+                                if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText))
+                                else {
+                                    let errorData = {}
+                                    try {
+                                        errorData = JSON.parse(xhr.responseText || '{}')
+                                    } catch (e) {
+                                        errorData = { details: xhr.responseText || 'Batch Error' }
+                                    }
+                                    reject({ status: xhr.status, data: errorData })
+                                }
+                            } catch (e) {
+                                reject(new Error('Invalid batch response'))
+                            }
                         }
                         xhr.onerror = () => reject(new Error('Network error'))
+                        xhr.ontimeout = () => reject(new Error('Batch request timed out'))
                         xhr.send(formData)
                     })
 
