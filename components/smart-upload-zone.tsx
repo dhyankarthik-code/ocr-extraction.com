@@ -102,6 +102,8 @@ export default function SmartUploadZone() {
             setStatus("Processing with AI...")
 
             const data = await new Promise<any>((resolve, reject) => {
+                const xhr = new XMLHttpRequest()
+                xhr.open('POST', '/api/ocr')
                 xhr.timeout = 60000 // 60s timeout
 
                 xhr.upload.onprogress = (event) => {
