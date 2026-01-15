@@ -1,156 +1,156 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/db";
 
 // IP extraction with security checks
 function getClientIp(request: NextRequest): string | null {
-    const forwarded = request.headers.get("x-forwarded-for");
-    const realIp = request.headers.get("x-real-ip");
-    const cfConnectingIp = request.headers.get("cf-connecting-ip");
+  const forwarded = request.headers.get("x-forwarded-for");
+  const realIp = request.headers.get("x-real-ip");
+  const cfConnectingIp = request.headers.get("cf-connecting-ip");
 
-    if (cfConnectingIp) return cfConnectingIp.split(",")[0].trim();
-    if (forwarded) return forwarded.split(",")[0].trim();
-    if (realIp) return realIp.trim();
+  if (cfConnectingIp) return cfConnectingIp.split(",")[0].trim();
+  if (forwarded) return forwarded.split(",")[0].trim();
+  if (realIp) return realIp.trim();
 
-    return null;
+  return null;
 }
 
 // Geolocation data extraction
 function getGeoData(request: NextRequest) {
-    return {
-        country: request.headers.get("x-vercel-ip-country") ||
-            request.headers.get("cf-ipcountry") || null,
-        city: request.headers.get("x-vercel-ip-city") || null,
-        region: request.headers.get("x-vercel-ip-country-region") || null,
-    };
+  return {
+    country: request.headers.get("x-vercel-ip-country") ||
+      request.headers.get("cf-ipcountry") || null,
+    city: request.headers.get("x-vercel-ip-city") || null,
+    region: request.headers.get("x-vercel-ip-country-region") || null,
+  };
 }
 
 export async function GET(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
-    const isCheck = searchParams.get("check") === "true";
+  const { searchParams } = new URL(request.url);
+  const isCheck = searchParams.get("check") === "true";
 
-    if (!isCheck) {
-        return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  if (!isCheck) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+
+  try {
+    const ipAddress = getClientIp(request);
+
+    if (!ipAddress) {
+      return NextResponse.json({ hasVoted: false }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
     }
 
-    try {
-        const ipAddress = getClientIp(request);
+    // Check if IP has already submitted feedback (within 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-        if (!ipAddress) {
-            return NextResponse.json({ hasVoted: false }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-        }
+    const existingFeedback = await prisma.feedback.findFirst({
+      where: {
+        ipAddress,
+        createdAt: {
+          gte: thirtyDaysAgo,
+        },
+      },
+    });
 
-        // Check if IP has already submitted feedback (within 30 days)
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-        const existingFeedback = await prisma.feedback.findFirst({
-            where: {
-                ipAddress,
-                createdAt: {
-                    gte: thirtyDaysAgo,
-                },
-            },
-        });
-
-        return NextResponse.json({ hasVoted: !!existingFeedback }, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-    } catch (error) {
-        console.error("Feedback check error:", error);
-        return NextResponse.json({ hasVoted: false }, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-    }
+    return NextResponse.json({ hasVoted: !!existingFeedback }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (error) {
+    console.error("Feedback check error:", error);
+    return NextResponse.json({ hasVoted: false }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
 }
 
 export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { rating, comment } = body;
+
+    // Input validation
+    if (typeof rating !== "number" || rating < 1 || rating > 5) {
+      return NextResponse.json(
+        { error: "Invalid rating. Must be between 1 and 5." },
+        { status: 400 }
+      );
+    }
+
+    const ipAddress = getClientIp(request);
+
+    if (!ipAddress) {
+      return NextResponse.json(
+        { error: "Unable to verify request" },
+        { status: 400 }
+      );
+    }
+
+    // Check if IP has already voted (within 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const existingFeedback = await prisma.feedback.findFirst({
+      where: {
+        ipAddress,
+        createdAt: {
+          gte: thirtyDaysAgo,
+        },
+      },
+    });
+
+    if (existingFeedback) {
+      return NextResponse.json(
+        { error: "You have already submitted feedback recently" },
+        { status: 429 }
+      );
+    }
+
+    // Sanitize comment (prevent XSS)
+    const sanitizedComment = comment
+      ? comment.trim().slice(0, 1000)
+      : null;
+
+    const geoData = getGeoData(request);
+    const userAgent = request.headers.get("user-agent") || null;
+
+    // Create feedback entry
+    await prisma.feedback.create({
+      data: {
+        ipAddress,
+        rating,
+        comment: sanitizedComment,
+        country: geoData.country,
+        city: geoData.city,
+        region: geoData.region,
+        userAgent,
+      },
+    });
+
+    // Send email notification via Resend
     try {
-        const body = await request.json();
-        const { rating, comment } = body;
+      const { Resend } = await import("resend");
+      const resend = new Resend(process.env.RESEND_API_KEY);
 
-        // Input validation
-        if (typeof rating !== "number" || rating < 1 || rating > 5) {
-            return NextResponse.json(
-                { error: "Invalid rating. Must be between 1 and 5." },
-                { status: 400 }
-            );
-        }
+      const location = [geoData.city, geoData.region, geoData.country]
+        .filter(Boolean)
+        .join(", ") || "Unknown";
 
-        const ipAddress = getClientIp(request);
+      const stars = "⭐".repeat(rating);
 
-        if (!ipAddress) {
-            return NextResponse.json(
-                { error: "Unable to verify request" },
-                { status: 400 }
-            );
-        }
-
-        // Check if IP has already voted (within 30 days)
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-        const existingFeedback = await prisma.feedback.findFirst({
-            where: {
-                ipAddress,
-                createdAt: {
-                    gte: thirtyDaysAgo,
-                },
-            },
-        });
-
-        if (existingFeedback) {
-            return NextResponse.json(
-                { error: "You have already submitted feedback recently" },
-                { status: 429 }
-            );
-        }
-
-        // Sanitize comment (prevent XSS)
-        const sanitizedComment = comment
-            ? comment.trim().slice(0, 1000)
-            : null;
-
-        const geoData = getGeoData(request);
-        const userAgent = request.headers.get("user-agent") || null;
-
-        // Create feedback entry
-        await prisma.feedback.create({
-            data: {
-                ipAddress,
-                rating,
-                comment: sanitizedComment,
-                country: geoData.country,
-                city: geoData.city,
-                region: geoData.region,
-                userAgent,
-            },
-        });
-
-        // Send email notification via Resend
-        try {
-            const { Resend } = await import("resend");
-            const resend = new Resend(process.env.RESEND_API_KEY);
-
-            const location = [geoData.city, geoData.region, geoData.country]
-                .filter(Boolean)
-                .join(", ") || "Unknown";
-
-            const stars = "⭐".repeat(rating);
-
-            await resend.emails.send({
-                from: "OCR Extraction <onboarding@resend.dev>",
-                to: "dhyan.vrit@gmail.com",
-                replyTo: "admin@ocr-extraction.com",
-                subject: `🎯 Feedback ${stars} | ${geoData.country || 'Unknown'} ${geoData.region ? `(${geoData.region})` : ''} | IP: ${ipAddress?.substring(0, 15) || 'N/A'}`,
-                html: `
+      await resend.emails.send({
+        from: "OCR Extraction <onboarding@resend.dev>",
+        to: "dhyan.vrit@gmail.com",
+        replyTo: "admin@ocr-extraction.com",
+        subject: `🎯 Feedback ${stars} | ${geoData.country || 'Unknown'} ${geoData.region ? `(${geoData.region})` : ''} | IP: ${ipAddress?.substring(0, 15) || 'N/A'}`,
+        html: `
           <!DOCTYPE html>
           <html>
             <head>
@@ -345,10 +345,10 @@ export async function POST(request: NextRequest) {
                       <div class="info-row">
                         <div class="info-label">🕐 Submitted At</div>
                         <div class="info-value">${new Date().toLocaleString('en-US', {
-                    timeZone: 'Asia/Kolkata',
-                    dateStyle: 'full',
-                    timeStyle: 'long'
-                })}</div>
+          timeZone: 'Asia/Kolkata',
+          dateStyle: 'full',
+          timeStyle: 'long'
+        })}</div>
                       </div>
                       ${userAgent ? `
                         <div class="info-row">
@@ -399,31 +399,31 @@ export async function POST(request: NextRequest) {
             </body>
           </html>
         `,
-            });
-        } catch (emailError) {
-            console.error("Failed to send email notification:", emailError);
-            // Don't fail the request if email fails
-        }
-
-        return NextResponse.json(
-            { success: true, message: "Thank you for your feedback!" },
-            {
-                status: 200,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
-    } catch (error) {
-        console.error("Feedback submission error:", error);
-        return NextResponse.json(
-            { error: "Failed to submit feedback. Please try again." },
-            {
-                status: 500,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
+      });
+    } catch (emailError) {
+      console.error("Failed to send email notification:", emailError);
+      // Don't fail the request if email fails
     }
+
+    return NextResponse.json(
+      { success: true, message: "Thank you for your feedback!" },
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Feedback submission error:", error);
+    return NextResponse.json(
+      { error: "Failed to submit feedback. Please try again." },
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  }
 }

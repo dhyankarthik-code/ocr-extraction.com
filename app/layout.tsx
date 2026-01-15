@@ -2,7 +2,6 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { Geist } from "next/font/google"
-import Script from "next/script"
 import "./globals.css"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -80,7 +79,6 @@ export const viewport: Viewport = {
 
 import { SessionProvider } from "@/components/providers/session-provider"
 import MainLayout from "@/components/main-layout"
-import { toolCategories } from "@/lib/tools-data"
 
 export default function RootLayout({
   children,

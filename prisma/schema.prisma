@@ -174,3 +174,19 @@ model VisitLog {
   @@index([createdAt])
   @@index([ipAddress])
 }
+
+model Feedback {
+  id         String   @id @default(cuid())
+  ipAddress  String?  @map("ip_address")
+  rating     Int
+  comment    String?
+  country    String?
+  city       String?
+  region     String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([ipAddress])
+  @@index([createdAt])
+  @@map("Feedback")
+}

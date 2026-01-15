@@ -5,14 +5,7 @@ import { Mistral } from '@mistralai/mistralai';
 // Configure Vercel Serverless Function timeout (seconds)
 export const maxDuration = 60;
 
-// Configure request body size limit for batch uploads (10MB)
-export const config = {
-    api: {
-        bodyParser: {
-            sizeLimit: '10mb', // Allow up to 10MB per request for batch processing
-        },
-    },
-};
+
 
 // Helper function to log detailed error information
 function logError(error: any, context: string = '') {
@@ -32,10 +25,10 @@ function cleanOCROutput(text: string): string {
     let cleaned = text;
 
     // Remove excessive newlines (3+ consecutive)
-    cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
+    cleaned = cleaned.replaceAll(/\n{3,}/g, '\n\n');
 
     // Normalize spaces and tabs (but preserve Unicode characters)
-    cleaned = cleaned.replace(/[ \t]+/g, ' ');
+    cleaned = cleaned.replaceAll(/[ \t]+/g, ' ');
 
     // Clean up lines while preserving all Unicode content
     cleaned = cleaned.split('\n')
@@ -210,6 +203,7 @@ export async function POST(request: NextRequest) {
         console.log('Received OCR request');
 
         const mistralApiKey = process.env.MISTRAL_API_KEY;
+
         const googleApiKey = process.env.GOOGLE_CLOUD_API_KEY;
 
         const sessionCookie = request.cookies.get("session")?.value
@@ -369,7 +363,7 @@ export async function POST(request: NextRequest) {
                 // Use processed buffer if it was successful
                 if (processed.buffer) {
                     console.log(`[Image Processing] Optimized image: ${processed.originalSize}b -> ${processed.processedSize}b`);
-                    buffer = processed.buffer;
+                    buffer = processed.buffer as any;
                 }
             } catch (procError) {
                 console.error("Image preprocessing warning:", procError);

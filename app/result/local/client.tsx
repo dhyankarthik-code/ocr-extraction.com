@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -16,15 +15,12 @@ import {
     Download,
     FileDocument as FileText,
     SearchMagnifyingGlass as Search,
-    ArrowLeftMd as ArrowLeft,
     FileUpload as Upload,
-    Heart01,
     Globe,
     Chat,
 } from "react-coolicons"
-import { Loader2, Bot, X, File as FileIcon, Table as TableIcon, Presentation as PresentationIcon, FileType as FileTypeIcon, FileText as LucideFileText, Languages } from "lucide-react"
+import { Loader2, X, File as FileIcon, Table as TableIcon, Presentation as PresentationIcon, FileType as FileTypeIcon, FileText as LucideFileText, Languages } from "lucide-react"
 import { saveAs } from "file-saver"
-import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
 import { Document, Packer, Paragraph, TextRun } from "docx"
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
 import DocumentChat from "@/components/document-chat"
@@ -33,6 +29,7 @@ import pptxgen from "pptxgenjs"
 import { jsPDF } from "jspdf"
 import ShinyText from "@/components/ui/shiny-text"
 import ReportChatModal from "@/components/report-chat-modal"
+import FeedbackPopup from "@/components/feedback-popup"
 
 
 export default function LocalResultPage() {
@@ -232,7 +229,7 @@ export default function LocalResultPage() {
 
             // Clean text to remove characters that might cause issues (basic sanitization)
             // jsPDF handles most things, but let's be safe against control chars
-            const cleanText = fullText.replace(/[\x00-\x09\x0B\x0C\x0E-\x1F]/g, "")
+            const cleanText = fullText.replaceAll(/[\x00-\x09\x0B\x0C\x0E-\x1F]/g, "")
 
             const lines = doc.splitTextToSize(cleanText, maxLineWidth)
             let cursorY = 20
@@ -1069,6 +1066,7 @@ export default function LocalResultPage() {
                     </div>
                 )}
             </div>
+            <FeedbackPopup />
         </div >
     )
 }
