@@ -6,7 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "inngest:dev": "npx inngest-cli@latest dev",
-    "lint": "eslint .",
+    "lint": "next lint",
     "start": "next start",
     "postinstall": "prisma generate",
     "test": "npx playwright test tests/"

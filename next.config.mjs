@@ -6,10 +6,10 @@ const nextConfig = {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    // ignoreBuildErrors: false,
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    // ignoreDuringBuilds: false,
   },
   images: {
     unoptimized: true,

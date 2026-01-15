@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import type { Session } from "@/types/auth"
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
-import { HamburgerMd as Menu, CloseMd as X } from "react-coolicons"
+import { HamburgerMd as Menu, CloseMd as X, ChevronDown } from "react-coolicons"
 
 import {
   DropdownMenu,
@@ -13,7 +13,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ChevronDown } from "react-coolicons"
 import { toolCategories } from "@/lib/tools-data"
 
 interface NavbarProps {
@@ -176,7 +175,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
           className="lg:hidden p-2 text-gray-700 hover:text-red-600 transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          {mobileMenuOpen ? <X width={28} height={28} /> : <Menu width={28} height={28} />}
         </button>
       </div>
 

@@ -96,13 +96,18 @@ export async function POST(request: NextRequest) {
 
         console.log('[Search API] Embeddings generated successfully')
 
-        const queryEmbedding = queryEmbeddingResponse.data[0].embedding;
+        const queryEmbedding = queryEmbeddingResponse.data[0]?.embedding;
+        if (!queryEmbedding) {
+            console.error('[Search API] Failed to generate query embedding');
+            return NextResponse.json({ error: 'Failed to generate query embedding' }, { status: 500 });
+        }
         const chunkEmbeddings = chunkEmbeddingsResponse.data.map(d => d.embedding);
 
         // Calculate similarities
         const results = chunks.map((chunk, index) => {
             const chunkEmbedding = chunkEmbeddings[index];
-            const similarity = cosineSimilarity(queryEmbedding, chunkEmbedding);
+            if (!chunkEmbedding) return { text: chunk, similarity: 0 };
+            const similarity = cosineSimilarity(queryEmbedding, chunkEmbedding!);
 
             return {
                 text: chunk,

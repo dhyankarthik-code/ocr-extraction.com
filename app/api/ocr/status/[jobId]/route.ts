@@ -8,9 +8,10 @@ import { NextRequest, NextResponse } from 'next/server'
  */
 export async function GET(
     request: NextRequest,
-    { params }: { params: { jobId: string } }
+    props: { params: Promise<{ jobId: string }> }
 ) {
     try {
+        const params = await props.params;
         const { jobId } = params
 
         if (!jobId) {
