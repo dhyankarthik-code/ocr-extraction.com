@@ -2,70 +2,44 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // ============================================
-// Rate Limiting Configuration
+// Distributed Rate Limiting with Upstash Redis
 // ============================================
-const RATE_LIMIT_REQUESTS = 10 // Max requests per window
-const RATE_LIMIT_WINDOW_MS = 60 * 1000 // 1 minute window
+import { apiRateLimiter, ocrRateLimiter, toolRateLimiter, authRateLimiter, getClientIp } from '@/lib/rate-limit'
 
-// In-memory rate limit store (resets on deployment)
-// For production, consider Upstash Redis
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
-
-function getRateLimitKey(request: NextRequest): string {
-    // Get IP from various headers
-    const forwardedFor = request.headers.get('x-forwarded-for')
-    const realIp = request.headers.get('x-real-ip')
-    const ip = forwardedFor?.split(',')[0]?.trim() || realIp || 'anonymous'
-
-    // Include path for endpoint-specific limits
+/**
+ * Check rate limit using Upstash distributed limiter
+ * Shared across all Vercel serverless instances
+ */
+async function checkDistributedRateLimit(
+    request: NextRequest,
+    limiter: any
+): Promise<{ allowed: boolean; remaining: number; resetIn: number; limit: number }> {
+    const ip = getClientIp(request.headers)
     const path = request.nextUrl.pathname
-    return `${ip}:${path}`
-}
+    const identifier = `${ip}:${path}`
 
-function checkRateLimit(request: NextRequest): { allowed: boolean; remaining: number; resetIn: number } {
-    const key = getRateLimitKey(request)
-    const now = Date.now()
+    try {
+        const { success, limit, remaining, reset } = await limiter.limit(identifier)
+        const resetIn = Math.max(0, reset - Date.now())
 
-    const record = rateLimitStore.get(key)
-
-    // No record or expired window - allow and create new record
-    if (!record || now > record.resetTime) {
-        rateLimitStore.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS })
-        return { allowed: true, remaining: RATE_LIMIT_REQUESTS - 1, resetIn: RATE_LIMIT_WINDOW_MS }
-    }
-
-    // Within window - check count
-    if (record.count >= RATE_LIMIT_REQUESTS) {
         return {
-            allowed: false,
-            remaining: 0,
-            resetIn: record.resetTime - now
+            allowed: success,
+            remaining,
+            resetIn,
+            limit
         }
-    }
-
-    // Increment and allow
-    record.count++
-    return {
-        allowed: true,
-        remaining: RATE_LIMIT_REQUESTS - record.count,
-        resetIn: record.resetTime - now
+    } catch (error) {
+        console.error('[Rate Limit] Upstash error, allowing request:', error)
+        // Fail open on Redis errors to prevent blocking legitimate traffic
+        return { allowed: true, remaining: 10, resetIn: 60000, limit: 10 }
     }
 }
 
-// Cleanup old entries periodically (prevent memory leak)
-setInterval(() => {
-    const now = Date.now()
-    for (const [key, record] of rateLimitStore.entries()) {
-        if (now > record.resetTime) {
-            rateLimitStore.delete(key)
-        }
-    }
-}, 60 * 1000) // Cleanup every minute
 
 // ============================================
 // Middleware Function
 // ============================================
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
     const hostname = request.headers.get('host') || ''
     const pathname = request.nextUrl.pathname
 
@@ -91,11 +65,22 @@ export function middleware(request: NextRequest) {
     // 2. Rate Limiting for API Routes
     // ============================================
     const isApiRoute = pathname.startsWith('/api/')
-    const isProtectedRoute = pathname.startsWith('/api/bill/') ||
-        pathname.startsWith('/api/ocr')
+    const isOcrRoute = pathname.startsWith('/api/ocr')
+    const isAuthRoute = pathname.startsWith('/api/auth/')
+    const isToolRoute = pathname.match(/\/api\/(upload|download|result)/)
 
-    if (isApiRoute && isProtectedRoute) {
-        const { allowed, remaining, resetIn } = checkRateLimit(request)
+    if (isApiRoute) {
+        // Select appropriate rate limiter based on route
+        let limiter = apiRateLimiter
+        if (isOcrRoute) {
+            limiter = ocrRateLimiter
+        } else if (isAuthRoute) {
+            limiter = authRateLimiter
+        } else if (isToolRoute) {
+            limiter = toolRateLimiter
+        }
+
+        const { allowed, remaining, resetIn, limit } = await checkDistributedRateLimit(request, limiter)
 
         if (!allowed) {
             return new NextResponse(
@@ -108,7 +93,7 @@ export function middleware(request: NextRequest) {
                     status: 429,
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-RateLimit-Limit': RATE_LIMIT_REQUESTS.toString(),
+                        'X-RateLimit-Limit': limit.toString(),
                         'X-RateLimit-Remaining': '0',
                         'X-RateLimit-Reset': Math.ceil(resetIn / 1000).toString(),
                         'Retry-After': Math.ceil(resetIn / 1000).toString(),
@@ -119,7 +104,7 @@ export function middleware(request: NextRequest) {
 
         // Add rate limit headers to response
         const response = NextResponse.next()
-        response.headers.set('X-RateLimit-Limit', RATE_LIMIT_REQUESTS.toString())
+        response.headers.set('X-RateLimit-Limit', limit.toString())
         response.headers.set('X-RateLimit-Remaining', remaining.toString())
         response.headers.set('X-RateLimit-Reset', Math.ceil(resetIn / 1000).toString())
         return response

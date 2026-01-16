@@ -43,11 +43,18 @@ model ChatConversation {
   id          String        @id @default(cuid())
   sessionId   String        @unique
   userEmail   String?
+  ipAddress   String?
+  country     String?
+  region      String?
+  city        String?
   startedAt   DateTime      @default(now())
   endedAt     DateTime?
   summary     String?
   emailSent   Boolean       @default(false)
   messages    ChatMessage[]
+
+  @@index([ipAddress])
+  @@index([country])
 }
 
 model ChatMessage {
@@ -166,4 +173,20 @@ model VisitLog {
 
   @@index([createdAt])
   @@index([ipAddress])
+}
+
+model Feedback {
+  id         String   @id @default(cuid())
+  ipAddress  String?  @map("ip_address")
+  rating     Int
+  comment    String?
+  country    String?
+  city       String?
+  region     String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([ipAddress])
+  @@index([createdAt])
+  @@map("Feedback")
 }

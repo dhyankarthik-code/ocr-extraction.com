@@ -2,7 +2,6 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { Geist } from "next/font/google"
-import Script from "next/script"
 import "./globals.css"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -78,15 +77,43 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 }
 
+import { SessionProvider } from "@/components/providers/session-provider"
 import MainLayout from "@/components/main-layout"
-
-// ... imports ...
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const jsonLdGraph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "name": "Free OCR Extraction",
+        "url": "https://www.ocr-extraction.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://www.ocr-extraction.com/search?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "SiteNavigationElement",
+        "name": ["Tools", "Services", "Blog", "Contact"],
+        "url": [
+          "https://www.ocr-extraction.com/tools",
+          "https://www.ocr-extraction.com/services",
+          "https://www.ocr-extraction.com/blog",
+          "https://www.ocr-extraction.com/contact"
+        ]
+      }
+    ]
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -97,45 +124,56 @@ export default function RootLayout({
         <link rel="preconnect" href="https://blog.ocr-extraction.com" />
       </head>
       <body className={`${geist.className} font-sans antialiased bg-white text-gray-900`} suppressHydrationWarning>
-        <MainLayout>
-          {children}
-        </MainLayout>
-        <ClientConsentWrapper />
-        <AnalyticsTracker />
+        <SessionProvider>
+          <MainLayout>
+            {children}
+          </MainLayout>
+          <ClientConsentWrapper />
+          <AnalyticsTracker />
+        </SessionProvider>
         <Analytics />
         <SpeedInsights />
         <SpeedInsights />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
+            // ...
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "Free OCR Extraction",
-              "url": "https://www.ocr-extraction.com",
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": {
-                  "@type": "EntryPoint",
-                  "urlTemplate": "https://www.ocr-extraction.com/search?q={search_term_string}"
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "name": "Free OCR Extraction",
+                  "url": "https://www.ocr-extraction.com",
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": {
+                      "@type": "EntryPoint",
+                      "urlTemplate": "https://www.ocr-extraction.com/search?q={search_term_string}"
+                    },
+                    "query-input": "required name=search_term_string"
+                  }
                 },
-                "query-input": "required name=search_term_string"
-              }
-            })
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "Infy Galaxy",
-              "url": "https://www.ocr-extraction.com",
-              "logo": "https://www.ocr-extraction.com/logo.png",
-              "sameAs": [
-                "https://twitter.com/infygalaxy",
-                "https://facebook.com/infygalaxy"
+                {
+                  "@type": "Organization",
+                  "name": "Infy Galaxy",
+                  "url": "https://www.ocr-extraction.com",
+                  "logo": "https://www.ocr-extraction.com/logo.png",
+                  "sameAs": [
+                    "https://twitter.com/infygalaxy",
+                    "https://facebook.com/infygalaxy"
+                  ]
+                },
+                {
+                  "@type": "SiteNavigationElement",
+                  "name": ["Tools", "Services", "Blog", "Contact"],
+                  "url": [
+                    "https://www.ocr-extraction.com/tools",
+                    "https://www.ocr-extraction.com/services",
+                    "https://www.ocr-extraction.com/blog",
+                    "https://www.ocr-extraction.com/contact"
+                  ]
+                }
               ]
             })
           }}

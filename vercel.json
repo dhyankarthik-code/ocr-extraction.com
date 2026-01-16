@@ -1,4 +1,17 @@
 {
+    "redirects": [
+        {
+            "source": "/:path(.*)",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "ocr-extraction.com"
+                }
+            ],
+            "destination": "https://www.ocr-extraction.com/:path",
+            "permanent": true
+        }
+    ],
     "crons": [
         {
             "path": "/api/cron/daily-login-report",

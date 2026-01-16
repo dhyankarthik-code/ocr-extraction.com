@@ -5,6 +5,8 @@ import { Mistral } from '@mistralai/mistralai';
 // Configure Vercel Serverless Function timeout (seconds)
 export const maxDuration = 60;
 
+
+
 // Helper function to log detailed error information
 function logError(error: any, context: string = '') {
     console.error(`[${new Date().toISOString()}] Error${context ? ' in ' + context : ''}:`, {
@@ -16,24 +18,56 @@ function logError(error: any, context: string = '') {
 
 function cleanOCROutput(text: string): string {
     if (!text) return '';
+
+    // Log original text for debugging (first 200 chars)
+    console.log('[OCR Clean] Original text sample:', text.substring(0, 200));
+
     let cleaned = text;
-    cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
-    cleaned = cleaned.replace(/[ \t]+/g, ' ');
+
+    // Remove excessive newlines (3+ consecutive)
+    cleaned = cleaned.replaceAll(/\n{3,}/g, '\n\n');
+
+    // Normalize spaces and tabs (but preserve Unicode characters)
+    cleaned = cleaned.replaceAll(/[ \t]+/g, ' ');
+
+    // Clean up lines while preserving all Unicode content
     cleaned = cleaned.split('\n')
         .map(line => line.trim())
         .filter(line => line.length > 0)
         .join('\n');
-    return cleaned.trim();
+
+    const result = cleaned.trim();
+    console.log('[OCR Clean] Cleaned text sample:', result.substring(0, 200));
+    console.log('[OCR Clean] Character count - Original:', text.length, 'Cleaned:', result.length);
+
+    return result;
 }
 
 function isValidOCROutput(text: string): boolean {
     if (!text || text.trim().length === 0) return false;
+
+    // Count Unicode letters and numbers (supports all languages: Latin, Arabic, Khmer, etc.)
     const alphanumeric = (text.match(/[\p{L}\p{N}]/gu) || []).length;
     const total = text.replace(/\s/g, '').length; // characters minus whitespace
 
-    // For documents like brochures, alphanumeric ratio can be lower due to symbols/punctuation
-    // We allow it if at least 25% of the non-whitespace content is alphanumeric
-    if (total > 0 && (alphanumeric / total) < 0.25) return false;
+    console.log('[OCR Validation] Alphanumeric chars:', alphanumeric, 'Total non-whitespace:', total);
+
+    // CRITICAL: Lower threshold from 25% to 15% to support:
+    // - Symbol-heavy documents (tables, charts)
+    // - Non-Latin scripts with complex characters (Khmer, Arabic)
+    // - Documents with significant punctuation
+    if (total > 0 && (alphanumeric / total) < 0.15) {
+        console.warn('[OCR Validation] Failed - Alphanumeric ratio too low:', (alphanumeric / total).toFixed(2));
+        return false;
+    }
+
+    // Additional check: Ensure we have at least some meaningful content
+    if (alphanumeric < 3) {
+        console.warn('[OCR Validation] Failed - Too few alphanumeric characters:', alphanumeric);
+        return false;
+    }
+
+    console.log('[OCR Validation] ✓ Passed validation');
     return true;
 }
 
@@ -64,7 +98,12 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
             console.log('Attempting Primary OCR...');
             const client = new Mistral({ apiKey: mistralKey });
 
-            const response = await client.ocr.process({
+            // CRITICAL: Add timeout to prevent hanging in production
+            const ocrTimeout = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Mistral OCR timeout (25s)')), 25000)
+            );
+
+            const ocrPromise = client.ocr.process({
                 model: "mistral-ocr-latest",
                 document: {
                     type: "image_url",
@@ -72,10 +111,17 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
                 }
             });
 
+            const response = await Promise.race([ocrPromise, ocrTimeout]) as any;
+
             if (response.pages && response.pages.length > 0) {
-                rawText = response.pages.map(p => p.markdown).join('\n\n');
+                rawText = response.pages.map((p: any) => p.markdown).join('\n\n');
                 usedMethod = 'primary_ocr';
+
+                // CRITICAL: Log raw OCR output to diagnose Unicode/encoding issues
                 console.log('✅ Primary OCR success!');
+                console.log('[OCR Debug] Raw Mistral response (first 300 chars):', rawText.substring(0, 300));
+                console.log('[OCR Debug] Character encoding check - First 10 char codes:',
+                    rawText.substring(0, 10).split('').map(c => c.charCodeAt(0)).join(', '));
             } else {
                 throw new Error("Primary provider response contained no pages");
             }
@@ -95,7 +141,12 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
             try {
                 console.log('Falling back to Secondary Cloud Vision API...');
 
-                const visionResponse = await fetch(
+                // Add timeout to Google Vision API call
+                const visionTimeout = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Google Vision timeout (25s)')), 25000)
+                );
+
+                const visionPromise = fetch(
                     `https://vision.googleapis.com/v1/images:annotate?key=${googleKey}`,
                     {
                         method: 'POST',
@@ -109,6 +160,7 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
                     }
                 );
 
+                const visionResponse = await Promise.race([visionPromise, visionTimeout]) as Response;
                 const visionData = await visionResponse.json();
 
                 if (visionData.error) {
@@ -163,6 +215,7 @@ export async function POST(request: NextRequest) {
         console.log('Received OCR request');
 
         const mistralApiKey = process.env.MISTRAL_API_KEY;
+
         const googleApiKey = process.env.GOOGLE_CLOUD_API_KEY;
 
         const sessionCookie = request.cookies.get("session")?.value
@@ -308,19 +361,21 @@ export async function POST(request: NextRequest) {
             file.type.includes('excel') ||
             file.type.includes('spreadsheet');
 
-        // Check if preprocessed
-        const isPreprocessed = formData.get("preprocessed") === 'true';
+        // Check if preprocessed (Legacy flag, now ignored to ensure quality)
+        // const isPreprocessed = formData.get("preprocessed") === 'true';
 
         // Pre-process images (non-PDF/Excel) for better OCR results
+        // ALWAYS run this on server now, as client only does minimal resizing
         if (!isPDF && !isExcel) {
             try {
                 const { processImageForOCR } = await import('@/lib/image-processing');
-                const processed = await processImageForOCR(buffer as any, { skipHeavyProcessing: isPreprocessed });
+                // Force skipHeavyProcessing: false
+                const processed = await processImageForOCR(buffer, { skipHeavyProcessing: false });
 
                 // Use processed buffer if it was successful
                 if (processed.buffer) {
                     console.log(`[Image Processing] Optimized image: ${processed.originalSize}b -> ${processed.processedSize}b`);
-                    buffer = processed.buffer;
+                    buffer = processed.buffer as any;
                 }
             } catch (procError) {
                 console.error("Image preprocessing warning:", procError);
@@ -437,9 +492,13 @@ export async function POST(request: NextRequest) {
             try {
                 const client = new Mistral({ apiKey: mistralApiKey });
 
-                // Step 1: Upload PDF file to Mistral
+                // Step 1: Upload PDF file to Mistral with timeout
                 console.log('Uploading PDF to Mistral...');
-                const uploadedFile = await client.files.upload({
+                const uploadTimeout = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('PDF upload timeout (30s)')), 30000)
+                );
+
+                const uploadPromise = client.files.upload({
                     file: {
                         fileName: file.name || 'document.pdf',
                         content: buffer,
@@ -447,17 +506,24 @@ export async function POST(request: NextRequest) {
                     purpose: 'ocr'
                 });
 
+                const uploadedFile = await Promise.race([uploadPromise, uploadTimeout]) as any;
                 console.log(`Uploaded PDF with file ID: ${uploadedFile.id}`);
 
-                // Step 2: Process OCR with uploaded file
+                // Step 2: Process OCR with uploaded file with timeout
                 console.log('Processing OCR on uploaded PDF...');
-                const response = await client.ocr.process({
+                const pdfOcrTimeout = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('PDF OCR timeout (30s)')), 30000)
+                );
+
+                const pdfOcrPromise = client.ocr.process({
                     model: "mistral-ocr-latest",
                     document: {
                         type: "file",
                         fileId: uploadedFile.id
                     }
                 });
+
+                const response = await Promise.race([pdfOcrPromise, pdfOcrTimeout]) as any;
 
                 if (!response.pages || response.pages.length === 0) {
                     throw new Error('Mistral OCR returned no pages');

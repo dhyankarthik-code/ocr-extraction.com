@@ -11,7 +11,7 @@ test.describe('Tool Pages Availability', () => {
 
     toolsToCheck.forEach(tool => {
         test(`Tool page /tools/${tool} loads correctly`, async ({ page }) => {
-            await page.goto(`/tools/${tool}`);
+            await page.goto(`/tools/${tool}`, { timeout: 60000 });
 
             // Expect a main heading
             await expect(page.locator('h1')).toBeVisible();

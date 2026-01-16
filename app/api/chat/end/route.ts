@@ -55,7 +55,10 @@ export async function POST(request: NextRequest) {
             temperature: 0.3,
         })
 
-        const summary = summaryResponse.choices?.[0]?.message?.content || 'No summary available.'
+        let summary = summaryResponse.choices?.[0]?.message?.content || 'No summary available.'
+        if (typeof summary !== 'string') {
+            summary = JSON.stringify(summary)
+        }
 
         // Update conversation with summary and end time
         await prisma.chatConversation.update({

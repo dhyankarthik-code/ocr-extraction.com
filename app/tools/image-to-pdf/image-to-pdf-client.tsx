@@ -51,7 +51,7 @@ export default function ImageToPdfClient() {
 
     const downloadPdf = () => {
         if (!pdfBytes) return
-        const blob = new Blob([pdfBytes], { type: "application/pdf" })
+        const blob = new Blob([pdfBytes as any], { type: "application/pdf" })
         const fileName = originalName ? `${originalName}-extracted.pdf` : "converted-images.pdf"
         saveAs(blob, fileName)
     }

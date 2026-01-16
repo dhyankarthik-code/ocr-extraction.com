@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { useDropzone } from "react-dropzone"
-import { Upload, Download, Settings, CheckCircle2, Loader2 } from "lucide-react"
+import { Upload, Download, Settings, CheckCircle2, Loader2, Search } from "lucide-react"
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
+import ImageCropper from "@/components/image-cropper"
 
 interface UploadZoneProps {
   onDrop: (files: File[]) => void
@@ -23,6 +24,8 @@ const truncateFilename = (name: string, maxLength: number = 20) => {
 export default function UploadZone({ onDrop, uploading, progress, processingSteps = [], accept, hideUsage = false, lastUploadTime = 0 }: UploadZoneProps & { accept?: Record<string, string[]>, hideUsage?: boolean }) {
   const [isDragging, setIsDragging] = useState(false)
   const [quota, setQuota] = useState<{ used: number, limit: number } | null>(null)
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null)
+  const [cropFileName, setCropFileName] = useState<string>("camera-capture.jpg")
 
   // Fetch quota on mount and when lastUploadTime changes
   useEffect(() => {
@@ -56,7 +59,21 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
   }
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
-    onDrop,
+    onDrop: (acceptedFiles) => {
+      // Intercept single image uploads for cropping
+      if (acceptedFiles.length === 1 && acceptedFiles[0].type.startsWith("image/") && !acceptedFiles[0].type.includes("svg")) {
+        const file = acceptedFiles[0]
+        setCropFileName(file.name)
+        const reader = new FileReader()
+        reader.onload = () => {
+          setImageToCrop(reader.result as string)
+        }
+        reader.readAsDataURL(file)
+      } else {
+        // Pass through strict files (PDFs, multiple images, etc.)
+        onDrop(acceptedFiles)
+      }
+    },
     accept: accept || defaultAccept,
     multiple: true,
     disabled: uploading,
@@ -120,7 +137,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
             </div>
 
             {/* Camera Button - Mobile Only */}
-            <div className="block md:hidden">
+            <div className="md:hidden flex flex-col items-center gap-3 w-full">
               <input
                 type="file"
                 accept="image/*"
@@ -129,26 +146,69 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
                 onChange={(e) => {
                   const files = e.target.files
                   if (files && files.length > 0) {
-                    onDrop(Array.from(files))
+                    const file = files[0]
+                    setCropFileName(file.name)
+                    const reader = new FileReader()
+                    reader.onload = () => {
+                      setImageToCrop(reader.result as string)
+                    }
+                    reader.readAsDataURL(file)
                     e.target.value = '' // Reset input
                   }
                 }}
                 className="hidden"
                 id="camera-input"
               />
-              <label htmlFor="camera-input" className="cursor-pointer">
+              <label htmlFor="camera-input" className="cursor-pointer w-full max-w-[200px]">
                 <InteractiveHoverButton
-                  text="Take Photo"
-                  className="w-48"
+                  text={
+                    <span className="flex items-center gap-2">
+                      {/* Custom "Modern Camera" Icon - Safe generic alternative to Instagram logo */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="w-5 h-5"
+                      >
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                        <circle cx="12" cy="12" r="3.5" />
+                        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+                      </svg>
+                      Take Photo
+                    </span>
+                  }
+                  className="w-full"
+                  showDot={false}
                 />
               </label>
+
+              <p className="text-xs text-center text-gray-500 max-w-[260px]">
+                Take a photo via camera and convert it to text immediately
+              </p>
             </div>
           </div>
         </div>
 
+        {/* Image Cropper Modal */}
+        {imageToCrop && (
+          <ImageCropper
+            imageSrc={imageToCrop}
+            onCancel={() => setImageToCrop(null)}
+            onCropComplete={(croppedBlob) => {
+              const file = new File([croppedBlob], cropFileName, { type: "image/jpeg" })
+              onDrop([file])
+              setImageToCrop(null)
+            }}
+          />
+        )}
+
         {/* Processing Overlay / Steps */}
         {uploading && (
-          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-2xl z-10 flex flex-col items-center justify-center p-8 border border-gray-200 shadow-xl">
+          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-2xl z-10 flex flex-col items-center justify-center p-4 md:p-8 border border-gray-200 shadow-xl overflow-y-auto">
             <div className="w-full max-w-md space-y-6">
               <div className="text-center">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Processing Image</h3>
@@ -173,7 +233,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
                   const isCurrent = index === processingSteps.length - 1;
 
                   return (
-                    <div key={index} className="flex items-center gap-3 text-sm transition-all duration-300 animate-in fade-in slide-in-from-bottom-2">
+                    <div key={index} className="flex items-center gap-3 text-sm">
                       {isCompleted ? (
                         <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                       ) : (

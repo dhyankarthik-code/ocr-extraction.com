@@ -69,37 +69,32 @@ export default function SmartUploadZone() {
                 setStatus("Uploading document...")
                 formData.append('file', file)
             } else {
-                // 1. Preprocess image (Client-side) with relaxed timeout
-                setProcessingSteps(prev => [...prev, "Optimizing image..."])
+                // 1. Preprocess image (Client-side)
+
+                // Detect device type for optimization strategy
+                const isMobile = typeof window !== 'undefined' && (
+                    window.innerWidth < 768 ||
+                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                );
+
+                setProcessingSteps(prev => [...prev, isMobile ? "Optimizing (Fast Mode)..." : "Enhancing image quality..."])
                 setStatus("Preparing high-res image...")
 
                 const { quickPreprocess } = await import('@/lib/image-preprocessing')
 
-                // RELAXED TIMEOUT: We give it 8s because resizing saves massive upload time.
-                const optimizationPromise = quickPreprocess(file)
-                const timeoutPromise = new Promise<Blob>((resolve) =>
-                    setTimeout(() => {
-                        console.warn('Optimization timed out (8s) - skipping')
-                        resolve(file)
-                    }, 8000)
-                )
+                // Pass isMobile flag: Mobile = Fast Resize, Desktop = High Quality Filters
+                const preprocessedBlob = await quickPreprocess(file, isMobile)
 
-                let preprocessedBlob: Blob
-                let isOptimized = false
-                try {
-                    preprocessedBlob = await Promise.race([optimizationPromise, timeoutPromise])
-                    isOptimized = preprocessedBlob !== file // If processed, it's optimized
-                    setStatus("Compressing to speed up upload...")
-                } catch (e) {
-                    console.error("Optimization failed, using original file:", e)
-                    preprocessedBlob = file
-                }
-
-                console.log(`Final image size: ${(preprocessedBlob.size / 1024 / 1024).toFixed(2)} MB`)
+                setStatus("Compressing to speed up upload...")
+                console.log(`Final image size: ${(preprocessedBlob.size / 1024 / 1024).toFixed(2)} MB (${isMobile ? 'Mobile' : 'Desktop'} Mode)`)
                 formData.append('file', preprocessedBlob, file.name)
-                if (isOptimized) {
-                    formData.append('preprocessed', 'true')
-                }
+
+                // If on Desktop, we can tell server we already did some work, 
+                // BUT better to let server re-run sharp to be safe or set preprocessed=true
+                // The user wants QUALITY, so let's let the server do its magic too unless it's redundant.
+                // Server logic: if (!processed) -> process.
+                // Let's keep it simple: Server always runs its pipeline (it's fast). 
+                // This ensures Maximum Quality (Client + Server = Double Strong).
             }
 
             console.log('Sending to OCR API...')
@@ -109,10 +104,7 @@ export default function SmartUploadZone() {
             const data = await new Promise<any>((resolve, reject) => {
                 const xhr = new XMLHttpRequest()
                 xhr.open('POST', '/api/ocr')
-
-                // Simulation timer for "AI steps"
-                let simulationTimer: NodeJS.Timeout
-                let stepStage = 0
+                xhr.timeout = 60000 // 60s timeout
 
                 xhr.upload.onprogress = (event) => {
                     if (event.lengthComputable) {
@@ -121,37 +113,35 @@ export default function SmartUploadZone() {
                         if (percentComplete < 90) {
                             setStatus(`Uploading... ${Math.round((event.loaded / event.total) * 100)}%`)
                         } else {
+                            // REAL FEEDBACK: No fake delays
                             setStatus("AI Processing... Please wait")
-
-                            // Start simulating AI steps once upload is done
-                            if (!simulationTimer) {
-                                simulationTimer = setInterval(() => {
-                                    stepStage++
-                                    if (stepStage === 1) {
-                                        setProcessingSteps(prev => [...prev, "AI: Analyzing document layout..."])
-                                    } else if (stepStage === 2) {
-                                        setProcessingSteps(prev => [...prev, "AI: Recognizing text (OCR)..."])
-                                    } else if (stepStage === 3) {
-                                        setProcessingSteps(prev => [...prev, "AI: Correcting & Formatting..."])
-                                    }
-                                }, 2500) // Add a new step every 2.5 seconds
-                            }
                         }
                     }
                 }
 
                 xhr.onload = () => {
-                    if (simulationTimer) clearInterval(simulationTimer)
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        resolve(JSON.parse(xhr.responseText))
-                    } else {
-                        const errorData = JSON.parse(xhr.responseText || '{}')
-                        reject({ status: xhr.status, data: errorData })
+                    try {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            resolve(JSON.parse(xhr.responseText))
+                        } else {
+                            let errorData = {}
+                            try {
+                                errorData = JSON.parse(xhr.responseText || '{}')
+                            } catch (e) {
+                                // Fallback for HTML errors (like Vercel timeouts)
+                                errorData = { details: xhr.responseText || 'Server Error' }
+                            }
+                            reject({ status: xhr.status, data: errorData })
+                        }
+                    } catch (e) {
+                        reject(new Error('Invalid server response'))
                     }
                 }
                 xhr.onerror = () => {
-                    if (simulationTimer) clearInterval(simulationTimer)
                     reject(new Error('Network error during upload.'))
+                }
+                xhr.ontimeout = () => {
+                    reject(new Error('Request timed out. Server took too long to respond.'))
                 }
                 xhr.send(formData)
             }).catch(err => {
@@ -250,6 +240,11 @@ export default function SmartUploadZone() {
                 const pageResults: Array<{ pageNumber: number; text: string; imageName: string }> = []
                 const { quickPreprocess } = await import('@/lib/image-preprocessing')
 
+                const isMobile = typeof window !== 'undefined' && (
+                    window.innerWidth < 768 ||
+                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                );
+
                 for (let i = 0; i < imageFiles.length; i++) {
                     const imageFile = imageFiles[i]
                     setStatus(`Processing ${i + 1}/${imageFiles.length}: ${imageFile.name}`)
@@ -257,15 +252,17 @@ export default function SmartUploadZone() {
                     const stepProgressMultiplier = 1 / imageFiles.length
                     const baseProgress = (i / imageFiles.length) * 100
 
-                    const preprocessedBlob = await quickPreprocess(imageFile)
+                    const preprocessedBlob = await quickPreprocess(imageFile, isMobile)
                     const formData = new FormData()
                     formData.append('file', preprocessedBlob, imageFile.name)
-                    // Flag as preprocessed for server speedup
-                    formData.append('preprocessed', 'true')
+                    // REMOVED 'preprocessed' flag - Server will enhance
+                    // formData.append('preprocessed', 'true')
 
                     const data = await new Promise<any>((resolve, reject) => {
                         const xhr = new XMLHttpRequest()
                         xhr.open('POST', '/api/ocr')
+                        xhr.timeout = 60000 // 60s timeout
+
                         xhr.upload.onprogress = (event) => {
                             if (event.lengthComputable) {
                                 const chunkProgress = (event.loaded / event.total) * 90 * stepProgressMultiplier
@@ -273,10 +270,23 @@ export default function SmartUploadZone() {
                             }
                         }
                         xhr.onload = () => {
-                            if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText))
-                            else reject({ status: xhr.status, data: JSON.parse(xhr.responseText || '{}') })
+                            try {
+                                if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText))
+                                else {
+                                    let errorData = {}
+                                    try {
+                                        errorData = JSON.parse(xhr.responseText || '{}')
+                                    } catch (e) {
+                                        errorData = { details: xhr.responseText || 'Batch Error' }
+                                    }
+                                    reject({ status: xhr.status, data: errorData })
+                                }
+                            } catch (e) {
+                                reject(new Error('Invalid batch response'))
+                            }
                         }
                         xhr.onerror = () => reject(new Error('Network error'))
+                        xhr.ontimeout = () => reject(new Error('Batch request timed out'))
                         xhr.send(formData)
                     })
 

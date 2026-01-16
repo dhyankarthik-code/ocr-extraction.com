@@ -6,11 +6,9 @@ const nextConfig = {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    // ignoreBuildErrors: false,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+
   images: {
     unoptimized: true,
   },
@@ -46,15 +44,15 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               // Scripts: GTM, GA, reCAPTCHA, Vercel
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://va.vercel-scripts.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://va.vercel-scripts.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://cdn-in.pagesense.io",
               // Styles
               "style-src 'self' 'unsafe-inline'",
               // Images: All Google domains including DoubleClick for GA4
-              "img-src 'self' blob: data: https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://*.google.com https://*.google.co.in https://*.doubleclick.net https://lh3.googleusercontent.com https://ui-avatars.com",
+              "img-src 'self' blob: data: https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://*.google.com https://*.google.co.in https://*.doubleclick.net https://lh3.googleusercontent.com https://ui-avatars.com https://api.dicebear.com https://flagcdn.com",
               // Fonts
               "font-src 'self' data:",
-              // Connect: Critical - includes stats.g.doubleclick.net and analytics endpoints
-              "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://*.doubleclick.net https://vitals.vercel-insights.com https://va.vercel-scripts.com",
+              // Connect: Critical - includes stats.g.doubleclick.net, analytics endpoints, Upstash Redis, Inngest
+              "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://*.doubleclick.net https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.upstash.io https://api.inngest.com https://*.inngest.com",
               // Frames: reCAPTCHA
               "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/"
             ].join('; ')

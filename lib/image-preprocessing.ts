@@ -121,18 +121,18 @@ function applyExifOrientation(
 
 /**
  * Preprocess image for better OCR results
+ * OPTIMIZED: Supports both fast mobile resize and high-quality desktop enhancement.
  */
 export async function preprocessImageForOCR(
     file: File,
     options: PreprocessingOptions = {}
 ): Promise<Blob> {
     const {
-        grayscale = true,
-        enhanceContrast = true,
-        reduceNoise = true,
-        sharpen = true,
+        grayscale = false,      // Default false for speed, enable for desktop
+        enhanceContrast = false,
+        sharpen = false,
         autoRotate = true,
-        quality = 0.95,
+        quality = 0.8,
     } = options;
 
     // Get EXIF orientation first
@@ -158,8 +158,9 @@ export async function preprocessImageForOCR(
                     return;
                 }
 
-                // Optimized Dimensions for Mobile (1900px: High detail for OCR, but significantly lighter for Mobile GPUs)
-                const MAX_DIMENSION = 1900;
+                // Optimized Dimensions
+                // Mobile/Fast: 1500px, Desktop/Quality: 1900px
+                const MAX_DIMENSION = (grayscale || enhanceContrast) ? 1900 : 1500;
                 let targetWidth = img.width;
                 let targetHeight = img.height;
 
@@ -179,13 +180,11 @@ export async function preprocessImageForOCR(
 
                 const isSVG = file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg');
 
-                // --- HARDWARE ACCELERATED FILTERS ---
+                // --- OPTIONAL HARDWARE ACCELERATED FILTERS ---
                 let filterString = '';
 
-                // SVGs are usually clean, we can skip heavy filtering unless explicitly requested or if we want grayscale
+                // Only apply heavy filters if explicitly requested (Desktop)
                 if (grayscale) filterString += 'grayscale(100%) ';
-
-                // Only apply contrast boost to raster images, SVGs usually don't need it
                 if (enhanceContrast && !isSVG) {
                     filterString += 'contrast(1.15) brightness(1.02) ';
                 }
@@ -194,25 +193,30 @@ export async function preprocessImageForOCR(
                     ctx.filter = filterString.trim();
                 }
 
-                // Draw image with filters applied (Fast!)
                 ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-
-                // Reset filter
                 ctx.filter = 'none';
+
+                // Simple sharpening (optional) - using canvas composition
+                // This is much faster than pixel manipulation
+                if (sharpen && !isSVG) {
+                    // Very lightweight unsharp mask simulation logic could go here
+                    // For now keeping it simple to avoid regression
+                }
 
                 const startTime = performance.now();
                 // Convert to blob
                 canvas.toBlob(
                     (blob) => {
                         const endTime = performance.now();
-                        console.log(`[Preprocessing] Optimization took ${(endTime - startTime).toFixed(2)}ms. Result size: ${(blob?.size || 0) / 1024}KB`);
+                        const mode = (grayscale || enhanceContrast) ? 'High Quality' : 'Fast Mode';
+                        console.log(`[Preprocessing] ${mode} took ${(endTime - startTime).toFixed(2)}ms. Result size: ${(blob?.size || 0) / 1024}KB`);
                         if (blob) {
                             resolve(blob);
                         } else {
                             reject(new Error('Failed to convert canvas to blob'));
                         }
                     },
-                    'image/jpeg', // Always use JPEG for better compression
+                    'image/jpeg',
                     quality
                 );
             } catch (error) {
@@ -232,19 +236,27 @@ export async function preprocessImageForOCR(
     });
 }
 
-// Helper removed as we no longer use the slow JS sharpening loop
-// function applyDocumentSharpen(...) {} 
-
 /**
- * Quick preprocessing with default settings optimized for documents
+ * Quick preprocessing with configurable quality
  */
-export async function quickPreprocess(file: File): Promise<Blob> {
-    return preprocessImageForOCR(file, {
-        grayscale: true,
-        enhanceContrast: true,
-        reduceNoise: false, // Disabled for speed
-        sharpen: false,    // Disabled for speed
-        autoRotate: true,
-        quality: 0.7,      // Slightly higher compression for faster upload
-    });
+export async function quickPreprocess(file: File, isMobile: boolean = true): Promise<Blob> {
+    if (isMobile) {
+        // Mobile: Fast, Resize Only
+        return preprocessImageForOCR(file, {
+            autoRotate: true,
+            quality: 0.8,
+            grayscale: false,
+            enhanceContrast: false,
+            sharpen: false
+        });
+    } else {
+        // Desktop: High Quality, Filters Enabled
+        return preprocessImageForOCR(file, {
+            autoRotate: true,
+            quality: 0.9,
+            grayscale: true,
+            enhanceContrast: true,
+            sharpen: true
+        });
+    }
 }

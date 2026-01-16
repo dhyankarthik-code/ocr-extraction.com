@@ -6,11 +6,7 @@ import Flag from 'react-world-flags'
 import SmartUploadZone from "@/components/smart-upload-zone"
 import CtaSection from "@/components/cta-section"
 
-// Lazy load TypeAnimation for better performance
-const TypeAnimation = dynamic(
-    () => import('react-type-animation').then(mod => mod.TypeAnimation),
-    { ssr: false }
-)
+import { TypeAnimation } from 'react-type-animation'
 
 export default function HomePage() {
     const [mounted, setMounted] = useState(false)
@@ -22,9 +18,9 @@ export default function HomePage() {
     return (
         <div className="flex flex-col items-center justify-center p-6 md:p-8 w-full" data-hydrated={mounted}>
             <div className="w-full max-w-2xl">
-                <div className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 text-center text-balance min-h-[4rem] flex items-center justify-center">
+                <div className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 text-center text-balance">
                     {/* SEO H1 (Visually Hidden but accessible to crawlers) */}
-                    <h1 className="text-gray-900 text-center relative overflow-hidden w-full">
+                    <h1 className="text-gray-900 text-center relative w-full min-h-[8rem] md:min-h-[7rem] flex items-center justify-center">
                         <span className="sr-only">Free OCR Extraction Tool - Convert Images to Text, Excel & PDF</span>
 
                         {!mounted && (
@@ -33,18 +29,20 @@ export default function HomePage() {
                             </span>
                         )}
 
-                        <TypeAnimation
-                            sequence={[
-                                'Free OCR Extraction tool',
-                                1000,
-                                'Free OCR Extraction tool and Report Generation Tool',
-                                1000,
-                            ]}
-                            wrapper="span"
-                            speed={50}
-                            style={{ display: mounted ? 'inline-block' : 'none' }}
-                            repeat={Infinity}
-                        />
+                        {mounted && (
+                            <TypeAnimation
+                                sequence={[
+                                    'Free OCR Extraction tool',
+                                    2500,
+                                    'Free OCR Extraction tool and Report Generation Tool',
+                                    2500,
+                                ]}
+                                wrapper="span"
+                                speed={15}
+                                style={{ display: 'inline-block' }}
+                                repeat={Infinity}
+                            />
+                        )}
                     </h1>
                 </div>
 
