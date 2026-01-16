@@ -232,7 +232,8 @@ export default function HomePage() {
                             "Summarize long or complex documents instantly",
                             "Digitize notes, invoices, medical reports, legal papers",
                             "Create searchable document archives",
-                            "Use it for education, business, research, analytics"
+                            "Use it for education, business, research, analytics",
+                            "No Download or Installation is required. Our process is browser based and not desktop or any device based."
                         ].map((item, idx) => (
                             <li key={idx} className="flex items-start gap-3">
                                 <svg className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
