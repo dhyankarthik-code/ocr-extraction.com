@@ -11,7 +11,27 @@ export async function POST(request: NextRequest) {
 
     const mistralKey = process.env.MISTRAL_API_KEY;
     if (!mistralKey) {
-      return NextResponse.json({ error: 'Mistral API key not configured' }, { status: 500 });
+      console.warn('⚠️ MOCK MODE: MISTRAL_API_KEY not configured. Returning mock summary.');
+      // Simulate AI processing delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      return NextResponse.json({
+        summary: `**Executive Summary**:
+This is a **MOCK SUMMARY** generated because the Mistral API key is not configured in your environment variables. In a production environment, this text would be a comprehensive analysis of your uploaded document.
+
+**Key Insights**:
+- The document appears to contain important information, but I cannot analyze it without the AI provider.
+- This mock mode allows you to test the frontend UI/UX without incurring API costs.
+- Please configure MISTRAL_API_KEY in your .env file to enable real AI summarization.
+
+**Detailed Analysis**:
+The system has successfully received your request and processed the text input. Since the AI backend is currently in simulated mode, we are providing this placeholder content. This ensures that the application flow remains functional for development and testing purposes.
+
+**Actionable Takeaways**:
+- Verify your .env configuration.
+- Restart your development server if you recently added the key.
+- Enjoy the seamless experience of the OCR Extraction tool!`
+      });
     }
 
     const client = new Mistral({ apiKey: mistralKey });

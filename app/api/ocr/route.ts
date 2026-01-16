@@ -46,6 +46,18 @@ async function performOCR(base64Image: string, dataUrl: string, mistralKey?: str
 
     console.log(`[OCR Debug] Mistral key present: ${!!mistralKey}, Google key present: ${!!googleKey}`);
 
+    // MOCK MODE: If no keys are present, simulate success for local testing
+    if (!mistralKey && !googleKey) {
+        console.warn('⚠️ No API keys configured. Running in MOCK MODE for local testing.');
+        // Simulate processing delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        return {
+            rawText: "This is MOCK DATA generated because no API keys were found.\n\nThe OCR process was simulated successfully to allow you to test the application flow.\n\nIn a real production environment with valid API keys, this would be the actual text extracted from your image using Mistral AI or Google Cloud Vision.",
+            usedMethod: 'mock_mode'
+        };
+    }
+
     // Try Mistral first
     if (mistralKey) {
         try {
@@ -396,6 +408,24 @@ export async function POST(request: NextRequest) {
 
         if (isPDF) {
             console.log('📄 PDF detected, sending directly to Mistral OCR...');
+
+            // MOCK MODE FOR PDF: If no keys are present
+            const mistralApiKey = process.env.MISTRAL_API_KEY;
+            const googleApiKey = process.env.GOOGLE_CLOUD_API_KEY;
+
+            if (!mistralApiKey && !googleApiKey) {
+                console.warn('⚠️ No API keys configured. Running PDF in MOCK MODE for local testing.');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                return NextResponse.json({
+                    success: true,
+                    isPDF: true,
+                    pages: [
+                        { pageNumber: 1, text: "MOCK PDF PAGE 1\n\nThis is simulated PDF content because no API keys were found.", rawText: "MOCK PDF PAGE 1", characters: 100, warnings: [], method: 'mock_mode' },
+                        { pageNumber: 2, text: "MOCK PDF PAGE 2\n\nMocking multi-page PDF support for testing.", rawText: "MOCK PDF PAGE 2", characters: 100, warnings: [], method: 'mock_mode' }
+                    ],
+                    totalPages: 2
+                });
+            }
 
             if (!mistralApiKey) {
                 return NextResponse.json({

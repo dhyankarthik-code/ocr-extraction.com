@@ -12,6 +12,7 @@ import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button
 import { Document, Packer, Paragraph, TextRun } from "docx"
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
 import DocumentChat from "@/components/document-chat"
+import FeedbackModal from "@/components/feedback-modal"
 import * as XLSX from "xlsx"
 import pptxgen from "pptxgenjs"
 import { jsPDF } from "jspdf"
@@ -32,6 +33,7 @@ export default function LocalResultPage() {
     const [currentPage, setCurrentPage] = useState(1)
     const [fileName, setFileName] = useState<string>("document")
     const [reportFormatModal, setReportFormatModal] = useState(false)
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false)
 
     useEffect(() => {
         const storedData = sessionStorage.getItem("ocr_result")
@@ -62,6 +64,14 @@ export default function LocalResultPage() {
             setText(storedData)
         }
         setLoading(false)
+
+        // Show feedback modal after 3 seconds if not already submitted
+        const feedbackSubmitted = localStorage.getItem("feedback_submitted")
+        if (!feedbackSubmitted) {
+            setTimeout(() => {
+                setShowFeedbackModal(true)
+            }, 3000)
+        }
     }, [router])
 
     // Debounced semantic search
@@ -579,6 +589,12 @@ export default function LocalResultPage() {
                         </div>
                     </div>
                 )}
+
+                {/* Feedback Modal */}
+                <FeedbackModal
+                    isOpen={showFeedbackModal}
+                    onClose={() => setShowFeedbackModal(false)}
+                />
             </div>
         </div>
     )

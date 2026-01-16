@@ -42,7 +42,31 @@ export async function POST(req: NextRequest) {
 
         const mistralKey = process.env.MISTRAL_API_KEY;
         if (!mistralKey) {
-            return NextResponse.json({ error: 'Mistral API key not found' }, { status: 500 });
+            console.warn('⚠️ MOCK MODE: MISTRAL_API_KEY not configured. Returning mock chat response.');
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const mockReply = "I am currently running in **MOCK MODE** because the `MISTRAL_API_KEY` is not set. \n\nI can pretend to analyze your document, but I don't actually see it. \n\n*Did you know?* You can set up the API key in your `.env` file to unlock my full potential!";
+
+            // Store Mock Assistant Reply in DB
+            if (conversationId) {
+                try {
+                    const { default: prisma } = await import("@/lib/db");
+                    await prisma.chatMessage.create({
+                        data: {
+                            conversationId: conversationId,
+                            role: 'assistant',
+                            content: mockReply
+                        }
+                    })
+                } catch (e) {
+                    // Ignore DB errors in mock mode
+                }
+            }
+
+            return NextResponse.json({
+                reply: mockReply,
+                sessionId: currentSessionId
+            });
         }
 
         const client = new Mistral({ apiKey: mistralKey });
