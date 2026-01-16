@@ -169,8 +169,7 @@ export default function HomePage() {
                         </div>
                         <h4 className="text-lg font-bold text-gray-900 mb-2">Works on Any Device</h4>
                         <p className="text-gray-600 text-sm">
-                            Desktop, laptop, tablet, or smartphone — OCR-Extraction.com adapts to every screen
-                            for a seamless user experience.
+                            Our Tool / software is browser based and through Artificial Intelligence engine, we process all data without having the need to download or install locally in the desktop or in any device.
                         </p>
                     </div>
 
