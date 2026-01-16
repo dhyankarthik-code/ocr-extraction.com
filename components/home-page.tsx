@@ -2,23 +2,31 @@
 // Deployment update: 2026-01-16 21:28
 
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import dynamic from 'next/dynamic'
 import Flag from 'react-world-flags'
 import SmartUploadZone from "@/components/smart-upload-zone"
 import CtaSection from "@/components/cta-section"
+import { gsap } from "gsap"
 
 import { TypeAnimation } from 'react-type-animation'
 
 export default function HomePage() {
     const [mounted, setMounted] = useState(false)
+    const heroRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         setMounted(true)
+        if (heroRef.current) {
+            gsap.fromTo(heroRef.current,
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", delay: 0.5 }
+            )
+        }
     }, [])
 
     return (
-        <div className="flex flex-col items-center justify-center p-6 md:p-8 w-full" data-hydrated={mounted} data-deploy-id="811ca08-v2">
+        <div ref={heroRef} className="flex flex-col items-center justify-center p-6 md:p-8 w-full" data-hydrated={mounted} data-deploy-id="811ca08-v2">
             <div className="w-full max-w-2xl">
                 <div className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 text-center text-balance">
                     {/* SEO H1 (Visually Hidden but accessible to crawlers) */}
