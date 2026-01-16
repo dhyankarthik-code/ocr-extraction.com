@@ -18,7 +18,7 @@ export default function HomePage() {
     }, [])
 
     return (
-        <div className="flex flex-col items-center justify-center p-6 md:p-8 w-full" data-hydrated={mounted}>
+        <div className="flex flex-col items-center justify-center p-6 md:p-8 w-full" data-hydrated={mounted} data-deploy-id="811ca08-v2">
             <div className="w-full max-w-2xl">
                 <div className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 text-center text-balance">
                     {/* SEO H1 (Visually Hidden but accessible to crawlers) */}
