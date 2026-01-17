@@ -71,7 +71,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
         </Link>
 
         {/* Desktop Navigation - Centered */}
-        <div className="hidden lg:flex items-center gap-10 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="hidden lg:flex flex-1 items-center justify-center gap-10">
           {navLinks.filter(l => l.label !== 'Blog' && l.label !== 'Contact Us').map((link) => (
             <Link
               key={link.href}

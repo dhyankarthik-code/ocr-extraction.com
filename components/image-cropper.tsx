@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from "react-image-crop"
 import "react-image-crop/dist/ReactCrop.css"
-import { Check, X, RefreshCw } from "lucide-react"
+import { Check, X, Loader2 } from "lucide-react"
 import getCroppedImg from "@/lib/crop-image"
 import { Slider } from "@/components/ui/slider"
 
@@ -69,10 +69,12 @@ export default function ImageCropper({ imageSrc, onCropComplete, onCancel }: Ima
   }
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center p-4">
-      <div className="relative w-full max-w-4xl flex flex-col items-center gap-6">
-        {/* Image Crop Area */}
-        <div className="w-full h-[70vh] flex items-center justify-center overflow-auto rounded-xl bg-black/50">
+    <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex flex-col items-center justify-start pt-20 md:pt-24 p-4 animate-in fade-in duration-200 overflow-y-auto">
+
+      <div className="flex flex-col items-center w-full max-w-4xl gap-6 pb-10">
+        <div className="relative w-full h-[60vh] md:h-[70vh] flex items-center justify-center bg-zinc-900/50 rounded-xl border border-white/10 shadow-2xl overflow-hidden shrink-0">
+          {!crop && <div className="absolute text-white/50 flex items-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Loading image...</div>}
+
           <ReactCrop
             crop={crop}
             onChange={(_, percentCrop) => setCrop(percentCrop)}
@@ -83,46 +85,49 @@ export default function ImageCropper({ imageSrc, onCropComplete, onCancel }: Ima
               ref={imgRef}
               alt="Crop me"
               src={imageSrc}
-              style={{ transform: `rotate(${rotation}deg)`, maxHeight: '70vh', display: 'block' }}
+              style={{ transform: `rotate(${rotation}deg)`, maxHeight: '70vh', maxWidth: '100%', objectFit: 'contain' }}
               onLoad={onImageLoad}
+              className="transition-transform duration-200"
             />
           </ReactCrop>
         </div>
 
-        {/* Controls */}
-        <div className="w-full max-w-2xl bg-black/80 backdrop-blur-md p-6 rounded-xl flex flex-col items-center gap-4">
-          <div className="flex items-center gap-4 w-full">
-            <span className="text-white text-xs font-medium w-16">Rotate</span>
+        {/* Controls Overlay - Now relative below image */}
+        <div className="relative mt-6 w-auto min-w-[320px] max-w-[90vw] bg-zinc-900/90 backdrop-blur-md border border-white/10 rounded-full p-2 px-6 flex flex-col sm:flex-row items-center gap-4 shadow-xl z-[101]">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <span className="text-gray-300 text-xs font-semibold uppercase tracking-wider w-12 text-center">Rotate</span>
             <Slider
               value={[rotation]}
               min={0}
               max={360}
-              step={1}
+              step={90}
               onValueChange={(vals) => setRotation(vals[0])}
-              className="flex-1"
+              className="w-32"
             />
-            <span className="text-white text-xs font-medium w-16 text-right">{rotation}°</span>
           </div>
 
-          <div className="flex gap-4">
+          <div className="h-8 w-px bg-white/10 hidden sm:block"></div>
+
+          <div className="flex gap-2 w-full sm:w-auto justify-center">
             <button
               onClick={onCancel}
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium transition-colors"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 text-gray-200 hover:text-white font-medium transition-all text-sm"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
               Cancel
             </button>
+
             <button
               onClick={handleSave}
               disabled={processing || !completedCrop}
-              className="flex items-center gap-2 px-8 py-3 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg transition-transform active:scale-95 disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg shadow-red-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
             >
               {processing ? (
-                <RefreshCw className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                <Check className="w-5 h-5" />
+                <Check className="w-4 h-4" />
               )}
-              Done
+              Crop & Upload
             </button>
           </div>
         </div>

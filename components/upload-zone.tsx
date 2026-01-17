@@ -41,6 +41,18 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
       .catch(() => { }) // Ignore errors, just don't show bar
   }, [hideUsage, lastUploadTime])
 
+  // Auto-scroll to view when activities start
+  useEffect(() => {
+    if (uploading || imageToCrop) {
+      const element = document.getElementById('upload-zone-container');
+      if (element) {
+        const yOffset = -100; // Offset for navbar
+        const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }
+  }, [uploading, imageToCrop]);
+
   // Calculate usage percentage
   const usagePercent = quota ? Math.min((quota.used / quota.limit) * 100, 100) : 0
   const usedMB = quota ? quota.used.toFixed(1) : "0"
@@ -91,7 +103,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
   }, [open])
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6">
+    <div id="upload-zone-container" className="w-full max-w-2xl mx-auto space-y-6">
       <div className="relative w-full">
         {/* Main Drop Zone */}
         <div

@@ -117,6 +117,9 @@ export default function LocalResultPage() {
     ];
 
     useEffect(() => {
+        // Ensure page starts at top
+        window.scrollTo(0, 0)
+
         const storedData = sessionStorage.getItem("ocr_result")
         if (!storedData) {
             router.push("/")

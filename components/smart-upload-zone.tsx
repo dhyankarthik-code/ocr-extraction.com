@@ -176,7 +176,8 @@ export default function SmartUploadZone() {
         } catch (error: any) {
             if (error.message === 'QUOTA_EXCEEDED') return
             console.error("OCR Error:", error)
-            alert(`Failed: ${error.message}`)
+            // Show error in UI instead of alert
+            setValidationError(`Processing Failed: ${error.message || "Unknown error occurred"}`)
             setUploading(false)
             setProgress(0)
             setProcessingSteps([])
