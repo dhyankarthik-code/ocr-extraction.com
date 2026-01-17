@@ -57,5 +57,6 @@ Copyright © 2024 Infygalaxy-OCR. All Rights Reserved.
 <!-- Updated: Vercel integration reconnected -->
 <!-- Trigger: Force Vercel deployment -->
 <!-- Deploy: Sonar removed, ready for production -->
+<!-- Deploy: New deployment trigger - Sonar cleanup complete -->
 
 This project is proprietary and confidential. Unauthorized copying, distribution, or use of this source code, via any medium, is strictly prohibited.
