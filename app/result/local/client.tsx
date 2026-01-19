@@ -30,7 +30,7 @@ import pptxgen from "pptxgenjs"
 import { jsPDF } from "jspdf"
 import ShinyText from "@/components/ui/shiny-text"
 import ReportChatModal from "@/components/report-chat-modal"
-import FeedbackPopup from "@/components/feedback-popup"
+
 
 
 export default function LocalResultPage() {
@@ -518,33 +518,33 @@ export default function LocalResultPage() {
     return (
         <div className="bg-gray-50 flex-1 py-8">
             <div className="container mx-auto px-4">
-                <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-6 border-b border-gray-200 pb-6">
+                <div className="mb-6 grid grid-cols-1 md:grid-cols-3 items-center gap-4">
                     <div className="flex justify-center md:justify-start">
                         <Button
                             onClick={() => router.push("/")}
-                            className="w-full md:w-auto gap-2 bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm transition-all py-2 px-6 font-semibold rounded-lg"
+                            className="w-full md:w-auto gap-2 bg-red-600 hover:bg-red-700 text-white transition-all duration-300 hover:shadow-lg hover:shadow-red-500/50 hover:scale-[1.02] py-4 px-8 text-lg font-bold"
                         >
-                            <span className="text-red-600">←</span> Upload New File
+                            <Upload className="w-4 h-4" /> Upload More Files
                         </Button>
                     </div>
 
-                    <div className="flex flex-col md:flex-row items-center gap-4">
-                        <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Download As:</span>
-                        <div className="flex gap-2 flex-wrap justify-center">
-                            <Button className="h-9 px-4 bg-white hover:bg-red-50 text-gray-700 hover:text-red-700 border border-gray-200 hover:border-red-200 transition-all shadow-sm" onClick={handleDownloadTxt}>
-                                <span className="font-bold text-xs">TXT</span>
+                    <div className="flex flex-col items-center justify-center gap-3 w-full md:w-auto md:col-start-2">
+                        <span className="text-xl font-bold text-gray-700 text-center">Download the extracted data in:</span>
+                        <div className="flex gap-2 flex-wrap justify-center w-full">
+                            <Button className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white border-none min-w-[80px]" variant="outline" onClick={handleDownloadTxt}>
+                                <FileText className="w-4 h-4 mr-2" /> TXT
                             </Button>
-                            <Button className="h-9 px-4 bg-white hover:bg-blue-50 text-gray-700 hover:text-blue-700 border border-gray-200 hover:border-blue-200 transition-all shadow-sm" onClick={handleDownloadDocx}>
-                                <span className="font-bold text-xs">DOCX</span>
+                            <Button className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white border-none min-w-[80px]" variant="outline" onClick={handleDownloadDocx}>
+                                <FileText className="w-4 h-4 mr-2" /> Word
                             </Button>
-                            <Button className="h-9 px-4 bg-white hover:bg-purple-50 text-gray-700 hover:text-purple-700 border border-gray-200 hover:border-purple-200 transition-all shadow-sm" onClick={handleDownloadPdf}>
-                                <span className="font-bold text-xs">PDF</span>
+                            <Button className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white border-none min-w-[80px]" variant="outline" onClick={handleDownloadPdf}>
+                                <FileText className="w-4 h-4 mr-2" /> PDF
                             </Button>
-                            <Button className="h-9 px-4 bg-white hover:bg-emerald-50 text-gray-700 hover:text-emerald-700 border border-gray-200 hover:border-emerald-200 transition-all shadow-sm" onClick={handleDownloadXlsx}>
-                                <span className="font-bold text-xs">XLSX</span>
+                            <Button className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white border-none min-w-[80px]" variant="outline" onClick={handleDownloadXlsx}>
+                                <FileText className="w-4 h-4 mr-2" /> Excel
                             </Button>
-                            <Button className="h-9 px-4 bg-white hover:bg-orange-50 text-gray-700 hover:text-orange-700 border border-gray-200 hover:border-orange-200 transition-all shadow-sm" onClick={handleDownloadPpt}>
-                                <span className="font-bold text-xs">PPT</span>
+                            <Button className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white border-none min-w-[80px]" variant="outline" onClick={handleDownloadPpt}>
+                                <FileText className="w-4 h-4 mr-2" /> PPT
                             </Button>
                         </div>
                     </div>
@@ -1067,7 +1067,6 @@ export default function LocalResultPage() {
                     </div>
                 )}
             </div>
-            <FeedbackPopup />
         </div >
     )
 }

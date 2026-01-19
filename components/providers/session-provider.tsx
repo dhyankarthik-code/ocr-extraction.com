@@ -37,6 +37,14 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         fetchSession()
+
+        // Refresh session when window regains focus (user returns to tab)
+        const handleFocus = () => {
+            fetchSession()
+        }
+
+        window.addEventListener('focus', handleFocus)
+        return () => window.removeEventListener('focus', handleFocus)
     }, [fetchSession])
 
     const logout = async () => {
