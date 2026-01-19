@@ -40,7 +40,7 @@ export const toolRateLimiter = new Ratelimit({
 // Rate limiter for authentication endpoints
 export const authRateLimiter = new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(5, '5 m'), // 5 auth attempts per 5 minutes
+    limiter: Ratelimit.slidingWindow(100, '1 m'), // Relaxed for session polling
     analytics: true,
     prefix: 'ratelimit:auth',
 })
