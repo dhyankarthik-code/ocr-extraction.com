@@ -10,6 +10,10 @@ import { AnalyticsTracker } from "@/components/analytics-tracker"
 
 const geist = Geist({ subsets: ["latin"] })
 
+// Imports moved to top
+import { SessionProvider } from "@/components/providers/session-provider"
+import MainLayout from "@/components/main-layout"
+
 export const metadata: Metadata = {
   title: {
     default: "Free OCR to Text | Convert Image to Text & Excel | 100% Accurate",
@@ -69,25 +73,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: './',
   },
-  google: 'HUTjHFqILP0UEMSzlOkJsfFSsnn8Nt8WKPKtQQ1xvS8', // Previous verification code
-  other: {
-    'google-site-verification': 'google4302c34707f6874e.html', // Add if user provided file name, but they provided TXT record error.
-    // Actually, looking at the user screenshot, it failed to find the TOKEN in TXT records.
-    // The user likely wants to use the HTML tag method if DNS fails or takes time.
-    // Wait, the error message in screenshot is: "We couldn't find your verification token in your domain's TXT records."
-    // I should ASK the user for the specific HTML tag content if I want to use that method, OR just use the code from the screenshot if it's visible. 
-    // The screenshot shows: `google-site-verification: ...` or similar? No, it usually gives a meta tag like `<meta name="google-site-verification" content="..." />`.
-    // The `verification: { google: '...' }` in `layout.tsx` ALREADY has a code 'HUTjHFqILP0UEMSzlOkJsfFSsnn8Nt8WKPKtQQ1xvS8'.
-    // This suggests the code might be WRONG or the method is failing. 
-    // User showed a screenshot of a *failed* DNS verification. 
-    // Often, switching to the meta tag method is instant.
-    // I will keep the existing one but maybe I should check if it matches what they *expect*.
-    // Actually, the error says: "Found these DNS TXT records instead: ... vc-domain-verify=...".
-    // This looks like Vercel domain verification, not Google.
-    // Wait, the user might be confusing things or I need to see if `proxy.ts` is unrelated.
-    // Let's first look at `proxy.ts`.
-  }
-},
+  verification: {
+    google: 'HUTjHFqILP0UEMSzlOkJsfFSsnn8Nt8WKPKtQQ1xvS8',
+  },
 }
 
 export const viewport: Viewport = {
@@ -95,9 +83,6 @@ export const viewport: Viewport = {
   initialScale: 1,
   themeColor: "#ffffff",
 }
-
-import { SessionProvider } from "@/components/providers/session-provider"
-import MainLayout from "@/components/main-layout"
 
 export default function RootLayout({
   children,

@@ -169,6 +169,16 @@ export default function Footer() {
                         </h3>
                         <ul className="space-y-2 text-sm">
                             <li>
+                                <Link href="/contact" className="hover:text-red-500 transition-colors">
+                                    Contact Us
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/feedback" className="hover:text-red-500 transition-colors">
+                                    Feedback is appreciated
+                                </Link>
+                            </li>
+                            <li>
                                 <Link href="/privacy" className="hover:text-red-500 transition-colors">
                                     Privacy Policy
                                 </Link>
@@ -176,11 +186,6 @@ export default function Footer() {
                             <li>
                                 <Link href="/terms" className="hover:text-red-500 transition-colors">
                                     Terms and Conditions
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/contact" className="hover:text-red-500 transition-colors">
-                                    Contact Us
                                 </Link>
                             </li>
                         </ul>
