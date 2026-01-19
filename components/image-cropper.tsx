@@ -1,7 +1,7 @@
-"use client"
 
 import { useState, useRef, useEffect } from "react"
-import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from "react-image-crop"
+import { createPortal } from "react-dom"
+import ReactCrop, { Crop, PixelCrop } from "react-image-crop"
 import "react-image-crop/dist/ReactCrop.css"
 import { Check, X, Loader2 } from "lucide-react"
 import getCroppedImg from "@/lib/crop-image"
@@ -13,36 +13,28 @@ interface ImageCropperProps {
   onCancel: () => void
 }
 
-function centerAspectCrop(
-  mediaWidth: number,
-  mediaHeight: number,
-  aspect: number,
-) {
-  return centerCrop(
-    makeAspectCrop(
-      {
-        unit: '%',
-        width: 90,
-      },
-      aspect,
-      mediaWidth,
-      mediaHeight,
-    ),
-    mediaWidth,
-    mediaHeight,
-  )
-}
-
 export default function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCropperProps) {
   const [crop, setCrop] = useState<Crop>()
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
   const [rotation, setRotation] = useState(0)
   const [processing, setProcessing] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const imgRef = useRef<HTMLImageElement>(null)
 
+  useEffect(() => {
+    setMounted(true)
+    return () => setMounted(false)
+  }, [])
+
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const { width, height } = e.currentTarget
-    setCrop(centerAspectCrop(width, height, 16 / 9))
+    // Default to full image crop (100%)
+    setCrop({
+      unit: '%',
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 100
+    })
   }
 
   const handleSave = async () => {
@@ -68,11 +60,13 @@ export default function ImageCropper({ imageSrc, onCropComplete, onCancel }: Ima
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex flex-col items-center justify-start pt-20 md:pt-24 p-4 animate-in fade-in duration-200 overflow-y-auto">
+  if (!mounted) return null
 
-      <div className="flex flex-col items-center w-full max-w-4xl gap-6 pb-10">
-        <div className="relative w-full h-[60vh] md:h-[70vh] flex items-center justify-center bg-zinc-900/50 rounded-xl border border-white/10 shadow-2xl overflow-hidden shrink-0">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-in fade-in duration-200 overflow-y-auto">
+
+      <div className="flex flex-col items-center w-full max-w-5xl gap-6">
+        <div className="relative w-full h-[70vh] flex items-center justify-center bg-zinc-900/50 rounded-xl border border-white/10 shadow-2xl overflow-hidden shrink-0">
           {!crop && <div className="absolute text-white/50 flex items-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Loading image...</div>}
 
           <ReactCrop
@@ -132,6 +126,7 @@ export default function ImageCropper({ imageSrc, onCropComplete, onCancel }: Ima
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

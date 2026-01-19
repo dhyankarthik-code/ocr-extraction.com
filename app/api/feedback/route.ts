@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { headers } from "next/headers"
 import { Resend } from "resend"
+import prisma from "@/lib/db"
 
 // Initialize Resend with API key from environment variables
 // Move initialization inside the function or check for key existence safely
@@ -15,7 +16,7 @@ const getResendClient = () => {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const { rating, feedback, timestamp } = body
+        const { rating, feedback } = body
 
         // Validate input
         if (!rating || rating < 1 || rating > 5) {
@@ -28,31 +29,30 @@ export async function POST(request: NextRequest) {
         // Get visitor information
         const headersList = await headers()
         const userAgent = headersList.get("user-agent") || "Unknown"
+        // standard headers for geography if available (e.g. Vercel)
         const ip = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "Unknown"
+        const country = headersList.get("x-vercel-ip-country") || null
+        const city = headersList.get("x-vercel-ip-city") || null
+        const region = headersList.get("x-vercel-ip-country-region") || null
 
-        // Prepare feedback data
-        const feedbackData = {
-            rating,
-            feedback: feedback || "",
-            timestamp: timestamp || new Date().toISOString(),
-            userAgent,
-            ip,
+        // Store in database
+        try {
+            await prisma.feedback.create({
+                data: {
+                    rating,
+                    comment: feedback || "",
+                    ipAddress: ip,
+                    userAgent,
+                    country,
+                    city,
+                    region,
+                }
+            })
+            console.log("✅ Feedback saved to database")
+        } catch (dbError) {
+            console.error("❌ Failed to save feedback to database:", dbError)
+            // Continue to send email even if DB save fails
         }
-
-        // Log feedback to console (you can replace this with database storage)
-        console.log("=== NEW FEEDBACK RECEIVED ===")
-        console.log("Rating:", rating, "⭐".repeat(rating))
-        console.log("Feedback:", feedback || "(No text feedback)")
-        console.log("Timestamp:", feedbackData.timestamp)
-        console.log("IP:", ip)
-        console.log("User Agent:", userAgent)
-        console.log("============================")
-
-        // TODO: Store in database
-        // Example:
-        // await db.feedback.create({
-        //     data: feedbackData
-        // })
 
         // Send email notification to admins
         const resend = getResendClient();
@@ -102,8 +102,9 @@ export async function POST(request: NextRequest) {
                                     ` : '<p style="text-align: center; color: #999; font-style: italic;">No additional comments provided</p>'}
                                     
                                     <div class="meta">
-                                        <p><span class="label">Submitted:</span> ${new Date(feedbackData.timestamp).toLocaleString()}</p>
+                                        <p><span class="label">Submitted:</span> ${new Date().toLocaleString()}</p>
                                         <p><span class="label">IP Address:</span> ${ip}</p>
+                                        ${country ? `<p><span class="label">Location:</span> ${city ? city + ', ' : ''}${country}</p>` : ''}
                                         <p><span class="label">Browser:</span> ${userAgent.substring(0, 100)}${userAgent.length > 100 ? '...' : ''}</p>
                                     </div>
                                 </div>
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
                 console.log("✅ Email notification sent successfully")
             } catch (emailError) {
                 console.error("❌ Failed to send email notification:", emailError)
-                // Don't fail the request if email fails - still save the feedback
+                // Don't fail the request if email fails
             }
         } else {
             console.warn("⚠️ Mock Mode: RESEND_API_KEY not configured. Skipping email sending. Feedback logged to console.");
@@ -141,25 +142,26 @@ export async function POST(request: NextRequest) {
     }
 }
 
-// Optional: GET endpoint to retrieve feedback (for admin dashboard)
+// GET endpoint to retrieve feedback
 export async function GET(request: NextRequest) {
-    // Add authentication check here
-    // const isAdmin = await checkAdminAuth(request)
-    // if (!isAdmin) {
-    //     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    // }
+    try {
+        const feedbackList = await prisma.feedback.findMany({
+            orderBy: { createdAt: 'desc' },
+            take: 100
+        })
 
-    // TODO: Retrieve feedback from database
-    // const feedbackList = await db.feedback.findMany({
-    //     orderBy: { timestamp: 'desc' },
-    //     take: 100
-    // })
-
-    return NextResponse.json(
-        {
-            message: "Feedback retrieval endpoint",
-            // feedbackList
-        },
-        { status: 200 }
-    )
+        return NextResponse.json(
+            {
+                message: "Feedback retrieval endpoint",
+                feedbackList
+            },
+            { status: 200 }
+        )
+    } catch (error) {
+        console.error("Error retrieving feedback:", error)
+        return NextResponse.json(
+            { error: "Failed to retrieve feedback" },
+            { status: 500 }
+        )
+    }
 }
