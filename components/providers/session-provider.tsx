@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react"
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react"
 import type { Session } from "@/types/auth"
 
 interface SessionContextType {
@@ -35,12 +35,21 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         }
     }, [])
 
+    const lastRefresh = useRef(0)
+
     useEffect(() => {
+        // Initial fetch
         fetchSession()
+        lastRefresh.current = Date.now()
 
         // Refresh session when window regains focus (user returns to tab)
         const handleFocus = () => {
-            fetchSession()
+            const now = Date.now()
+            // Throttle: Only refresh if more than 10 seconds have passed since last refresh
+            if (now - lastRefresh.current > 10000) {
+                fetchSession()
+                lastRefresh.current = now
+            }
         }
 
         window.addEventListener('focus', handleFocus)
