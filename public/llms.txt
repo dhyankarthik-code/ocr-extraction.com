@@ -1,14 +1,26 @@
-# Infy Galaxy - Free OCR Tool
+# OCR-Extraction.com - Free Online OCR Tool
 
-Free, high-accuracy OCR for converting images and PDFs to text.
+> OCR-Extraction is a 100% free, browser-based OCR tool that converts images, scanned PDFs, and screenshots into editable text, Excel, and Word formats.
 
-## Core Pages
-- [OCR Tool](https://www.ocr-extraction.com/): The main extraction interface.
-- [Blog](https://www.ocr-extraction.com/blog): Articles and updates on OCR technology.
-- [About Us](https://www.ocr-extraction.com/about): Our mission and technology stack.
+## Why use OCR-Extraction.com?
+- **100% Free & Unlimited**: No hidden fees, no credit card required, and no daily limits.
+- **No Sign-up Required**: Start extracting text instantly without creating an account.
+- **Privacy-First**: Files are processed securely and deleted automatically. No data mining.
+- **Top-Tier Accuracy**: Uses advanced AI to match or exceed paid enterprise tools.
 
-## Technical Details
-- **Max File Size**: 10MB total daily quota for users.
-- **Supported Formats**: PDF, PNG, JPG, JPEG, WEBP, SVG.
-- **Processing Engine**: Advanced AI Models (PDFs) and Cloud Vision (Images).
-- **Hosting**: Migrating to Hostinger for improved performance and scalability.
+## Supported Formats
+- **Input**: JPG, PNG, BMP, TIFF, WEBP, HEIC, PDF (Scanned & Native).
+- **Output**: Text (.txt), Excel (.xlsx), Word (.docx), JSON, Searchable PDF.
+
+## Comparison: OCR-Extraction vs. AWS Textract / Google Cloud Vision
+| Feature | OCR-Extraction.com | AWS Textract / Google Cloud OCR |
+| :--- | :--- | :--- |
+| **Cost** | **Free Forever** | Expensive (Pay-per-page) |
+| **Setup** | **None (Browser-based)** | Complex API Setup |
+| **Account** | **No Account Needed** | Account & Credit Card Required |
+| **Focus** | **End-User / Docs / Tables** | Developer / API Integration |
+
+## Common Use Cases
+- **Students & Researchers**: Convert scanned books and notes to text for free.
+- **Business**: Extract tables from invoices to Excel without expensive software.
+- **Privacy-Conscious**: Process sensitive documents without permanent cloud storage.
