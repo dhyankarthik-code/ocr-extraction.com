@@ -52,7 +52,7 @@ const nextConfig = {
               // Fonts
               "font-src 'self' data:",
               // Connect: Critical - includes stats.g.doubleclick.net, analytics endpoints, Upstash Redis, Inngest
-              "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://*.doubleclick.net https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.upstash.io https://api.inngest.com https://*.inngest.com",
+              "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://*.doubleclick.net https://*.google.com https://*.google.co.in https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.upstash.io https://api.inngest.com https://*.inngest.com",
               // Frames: reCAPTCHA
               "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/"
             ].join('; ')

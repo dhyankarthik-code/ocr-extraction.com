@@ -281,11 +281,14 @@ export default function ChatWidget() {
                     {/* Input Area */}
                     <div className="p-4 bg-white border-t border-gray-100 flex gap-2">
                         <input
+                            id="chat-message-input"
+                            name="message"
                             type="text"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={handleKeyPress}
                             placeholder="Type your message..."
+                            autoComplete="off"
                             className="flex-1 px-4 py-2 border border-gray-200 rounded-full focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm"
                         />
                         <button

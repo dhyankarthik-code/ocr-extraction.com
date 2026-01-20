@@ -78,32 +78,38 @@ export default function ProfileModal({ userName, onClose, onComplete }: ProfileM
                     )}
 
                     <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="profile-phone" className="block text-sm font-medium text-gray-700">
                             Phone Number <span className="text-gray-400">(optional)</span>
                         </label>
                         <div className="relative">
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                             <input
+                                id="profile-phone"
+                                name="phone"
                                 type="tel"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 placeholder="+91 98765 43210"
+                                autoComplete="tel"
                                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="profile-organization" className="block text-sm font-medium text-gray-700">
                             Organization <span className="text-gray-400">(optional)</span>
                         </label>
                         <div className="relative">
                             <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                             <input
+                                id="profile-organization"
+                                name="organization"
                                 type="text"
                                 value={organization}
                                 onChange={(e) => setOrganization(e.target.value)}
                                 placeholder="Company or School name"
+                                autoComplete="organization"
                                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
                             />
                         </div>

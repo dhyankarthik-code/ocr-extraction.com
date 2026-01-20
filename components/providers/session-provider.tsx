@@ -16,11 +16,37 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     const [session, setSession] = useState<Session | null>(null)
     const [loading, setLoading] = useState(true)
 
+    const isFetching = useRef(false)
+    const retryDelay = useRef(1000) // Start with 1s, exponential backoff
+
     const fetchSession = useCallback(async () => {
+        // Prevent concurrent requests
+        if (isFetching.current) {
+            return
+        }
+
+        isFetching.current = true
         try {
-            // Don't set loading to true here if we want background refresh
-            // But for initial load, loading state is already true
             const response = await fetch("/api/auth/session")
+
+            if (response.status === 429) {
+                // Rate limited - exponential backoff
+                const retryAfter = response.headers.get('Retry-After')
+                const delay = retryAfter ? parseInt(retryAfter) * 1000 : retryDelay.current
+
+                console.warn(`Session rate limited. Retrying after ${delay}ms`)
+                retryDelay.current = Math.min(retryDelay.current * 2, 30000) // Max 30s
+
+                setTimeout(() => {
+                    isFetching.current = false
+                    fetchSession()
+                }, delay)
+                return
+            }
+
+            // Reset retry delay on success
+            retryDelay.current = 1000
+
             if (response.ok) {
                 const data = await response.json()
                 setSession(data)
@@ -32,6 +58,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
             setSession(null)
         } finally {
             setLoading(false)
+            isFetching.current = false
         }
     }, [])
 
@@ -45,8 +72,8 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         // Refresh session when window regains focus (user returns to tab)
         const handleFocus = () => {
             const now = Date.now()
-            // Throttle: Only refresh if more than 10 seconds have passed since last refresh
-            if (now - lastRefresh.current > 10000) {
+            // Throttle: Only refresh if more than 30 seconds have passed since last refresh
+            if (now - lastRefresh.current > 30000) {
                 fetchSession()
                 lastRefresh.current = now
             }
