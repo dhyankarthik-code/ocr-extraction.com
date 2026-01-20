@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { X } from "lucide-react"
-import ReCAPTCHA from "react-google-recaptcha"
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 
 interface AuthModalProps {
   onClose: () => void
@@ -11,29 +11,48 @@ interface AuthModalProps {
 
 export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
   const [loading, setLoading] = useState(false)
-  const [captchaVerified, setCaptchaVerified] = useState(false)
-  const recaptchaRef = useRef<ReCAPTCHA>(null)
+  const { executeRecaptcha } = useGoogleReCaptcha()
+
+  const verifyBot = async (action: string) => {
+    if (!executeRecaptcha) return true // Dev mode fallthrough
+
+    try {
+      const token = await executeRecaptcha(action)
+      const res = await fetch("/api/verify-recaptcha", {
+        method: "POST",
+        body: JSON.stringify({ token })
+      })
+      const data = await res.json()
+      return data.success
+    } catch (e) {
+      console.error("Bot check failed", e)
+      return false
+    }
+  }
 
   const handleGoogleLogin = async () => {
-    if (!captchaVerified) {
-      alert("Please verify you're not a robot")
+    setLoading(true)
+    const isHuman = await verifyBot("login_google")
+
+    if (!isHuman) {
+      setLoading(false)
+      alert("Bot check failed. Please refresh.")
       return
     }
-    setLoading(true)
+
     window.location.href = "/api/auth/google"
   }
 
   const handleFacebookLogin = async () => {
-    if (!captchaVerified) {
-      alert("Please verify you're not a robot")
+    setLoading(true)
+    const isHuman = await verifyBot("login_facebook")
+
+    if (!isHuman) {
+      setLoading(false)
+      alert("Bot check failed. Please refresh.")
       return
     }
-    setLoading(true)
     window.location.href = "/api/auth/facebook"
-  }
-
-  const handleCaptchaChange = (value: string | null) => {
-    setCaptchaVerified(!!value)
   }
 
   return (
@@ -53,21 +72,14 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
           <p className="text-gray-600 text-sm">Sign in with your account to upload and process OCR documents.</p>
         </div>
 
-        {/* reCAPTCHA */}
-        <div className="flex justify-center mb-6">
-          <ReCAPTCHA
-            ref={recaptchaRef}
-            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
-            onChange={handleCaptchaChange}
-          />
-        </div>
+
 
         {/* OAuth Buttons */}
         <div className="space-y-3">
           {/* Google Button */}
           <button
             onClick={handleGoogleLogin}
-            disabled={loading || !captchaVerified}
+            disabled={loading}
             className="w-full flex items-center justify-center gap-3 py-3 px-4 border-2 border-blue-600 rounded-lg bg-blue-600 text-white hover:bg-blue-700 hover:border-blue-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -94,7 +106,7 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
           {/* Facebook Button - Temporarily hidden */}
           {/* <button
             onClick={handleFacebookLogin}
-            disabled={loading || !captchaVerified}
+            disabled={loading}
             className="w-full flex items-center justify-center gap-3 py-3 px-4 border-2 border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
           >
             <svg className="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">

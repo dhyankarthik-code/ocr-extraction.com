@@ -2,7 +2,7 @@
 
 import { useState, useRef, useMemo } from "react"
 
-import ReCAPTCHA from "react-google-recaptcha"
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -221,12 +221,11 @@ export default function ContactPage() {
     })
     const [countrySearch, setCountrySearch] = useState("")
     const [showCountryDropdown, setShowCountryDropdown] = useState(false)
-    const [captchaVerified, setCaptchaVerified] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
     const [errors, setErrors] = useState<{ [key: string]: string }>({})
     const [touched, setTouched] = useState<{ [key: string]: boolean }>({})
-    const recaptchaRef = useRef<ReCAPTCHA>(null)
+    const { executeRecaptcha } = useGoogleReCaptcha()
     const countryInputRef = useRef<HTMLInputElement>(null)
 
     // ... Filter countries based on search ...
@@ -306,10 +305,6 @@ export default function ContactPage() {
         if (errors.country) setErrors(prev => ({ ...prev, country: "" }))
     }
 
-    const handleCaptchaChange = (value: string | null) => {
-        setCaptchaVerified(!!value)
-    }
-
     const handleBlur = (field: string) => {
         setTouched(prev => ({ ...prev, [field]: true }))
         if (field === 'email') {
@@ -358,12 +353,28 @@ export default function ContactPage() {
             setErrors(newErrors)
             return
         }
-        if (!captchaVerified) {
-            alert("Please verify you're not a robot")
-            return
-        }
+
         setSubmitting(true)
         try {
+            if (!executeRecaptcha) {
+                console.warn("Execute recaptcha not available")
+                // Proceed without token if key missing (dev mode)
+            }
+
+            const token = executeRecaptcha ? await executeRecaptcha("contact_form") : null
+
+            // Verify token first
+            if (token) {
+                const verifyRes = await fetch("/api/verify-recaptcha", {
+                    method: 'POST',
+                    body: JSON.stringify({ token })
+                })
+                const verifyData = await verifyRes.json()
+                if (!verifyData.success) {
+                    throw new Error("Bot verification failed")
+                }
+            }
+
             const response = await fetch("/api/contact", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -386,8 +397,6 @@ export default function ContactPage() {
                 mobile: "",
                 message: ""
             })
-            setCaptchaVerified(false)
-            recaptchaRef.current?.reset()
         } catch (error) {
             console.error("Contact form error:", error)
             alert("Failed to submit form. Please try again.")
@@ -639,19 +648,12 @@ export default function ContactPage() {
                                         )}
                                     </div>
 
-                                    {/* reCAPTCHA */}
-                                    <div className="flex justify-center">
-                                        <ReCAPTCHA
-                                            ref={recaptchaRef}
-                                            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
-                                            onChange={handleCaptchaChange}
-                                        />
-                                    </div>
+
 
                                     {/* Submit Button */}
                                     <Button
                                         type="submit"
-                                        disabled={!captchaVerified || submitting}
+                                        disabled={submitting}
                                         className="w-full bg-red-500 hover:bg-red-600 text-white py-3 text-lg font-semibold disabled:opacity-50"
                                     >
                                         {submitting ? (

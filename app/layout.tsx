@@ -12,6 +12,7 @@ const geist = Geist({ subsets: ["latin"] })
 
 // Imports moved to top
 import { SessionProvider } from "@/components/providers/session-provider"
+import { ReCaptchaProvider } from "@/components/providers/recaptcha-provider"
 import MainLayout from "@/components/main-layout"
 
 export const metadata: Metadata = {
@@ -128,13 +129,15 @@ export default function RootLayout({
         <link rel="preconnect" href="https://blog.ocr-extraction.com" />
       </head>
       <body className={`${geist.className} font-sans antialiased bg-white text-gray-900`} suppressHydrationWarning>
-        <SessionProvider>
-          <MainLayout>
-            {children}
-          </MainLayout>
-          <ClientConsentWrapper />
-          <AnalyticsTracker />
-        </SessionProvider>
+        <ReCaptchaProvider reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}>
+          <SessionProvider>
+            <MainLayout>
+              {children}
+            </MainLayout>
+            <ClientConsentWrapper />
+            <AnalyticsTracker />
+          </SessionProvider>
+        </ReCaptchaProvider>
         <Analytics />
         <SpeedInsights />
         <SpeedInsights />
