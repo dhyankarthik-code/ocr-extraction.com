@@ -38,6 +38,78 @@ export default function SmartUploadZone() {
         trackUsage('OCR')
     }, [trackUsage])
 
+    // Helper to poll for job completion
+    const pollForCompletion = async (jobId: string) => {
+        const pollUrl = `/api/ocr/status/${jobId}`
+        let attempts = 0
+        const maxAttempts = 50 // Cap attempts to prevent infinite loops (50 * ~3s avg = ~2.5 mins max wait)
+        const baseDelay = 1000 // Start with 1s
+        const maxDelay = 10000 // Cap delay at 10s
+
+        while (attempts < maxAttempts) {
+            attempts++
+            try {
+                const res = await fetch(pollUrl)
+
+                if (res.status === 429) {
+                    console.warn("Status polling rate limited. Backing off...")
+                    // Aggressive backoff for 429s: 5s + exponential factor
+                    const backoff = Math.min(5000 + (Math.pow(1.5, attempts) * 1000), 15000)
+                    // Add jitter
+                    const jitter = Math.random() * 2000
+                    await new Promise(r => setTimeout(r, backoff + jitter))
+                    continue
+                }
+
+                if (res.status === 503 || res.status === 504 || res.status === 502) {
+                    // Gateway errors, retry slowly
+                    await new Promise(r => setTimeout(r, 4000))
+                    continue
+                }
+
+                if (!res.ok) {
+                    // 404 might mean job not created yet (consistency delay)
+                    if (res.status === 404 && attempts < 5) {
+                        await new Promise(r => setTimeout(r, 2000))
+                        continue
+                    }
+                    throw new Error(`Status check failed with ${res.status}`)
+                }
+
+                const data = await res.json()
+
+                if (data.status === 'completed') {
+                    return data.result
+                }
+
+                if (data.status === 'failed' || data.error) {
+                    throw new Error(data.error || 'Job failed')
+                }
+
+                // Still processing
+                setStatus("AI Processing... (Running in background)")
+
+                // Standard Exponential Backoff
+                // 1s, 1.5s, 2.25s, 3.375s, 5s... capped at 10s
+                const delay = Math.min(baseDelay * Math.pow(1.5, attempts - 1), maxDelay)
+                // Add slight jitter to prevent thundering herd if multiple tabs open
+                const jitter = Math.random() * 500
+                await new Promise(r => setTimeout(r, delay + jitter))
+
+            } catch (e) {
+                console.error("Polling error", e)
+                const errorMessage = e instanceof Error ? e.message : String(e)
+
+                if (errorMessage.includes("Job failed") || errorMessage.includes("Status check failed")) throw e
+
+                // Network glitches - retry
+                if (attempts >= maxAttempts) throw new Error("Processing timed out. Please try again.")
+                await new Promise(r => setTimeout(r, 3000))
+            }
+        }
+        throw new Error('Processing timed out')
+    }
+
     const handleUpload = async (file: File) => {
         // STRICT CONSENT CHECK (Omitted for now)
         /*
@@ -155,16 +227,24 @@ export default function SmartUploadZone() {
 
             if (data === 'QUOTA_EXCEEDED') return
 
+            // Handle Async Job Response
+            let finalData = data;
+            if (data.jobId) {
+                console.log("Async job started:", data.jobId)
+                setStatus("AI Processing... (Queued)")
+                finalData = await pollForCompletion(data.jobId)
+            }
+
             setProcessingSteps(prev => [...prev, "Extraction complete!"])
             setProgress(100)
 
             // Trigger quota refresh in UploadZone
             setLastUploadTime(Date.now())
 
-            if (data.isPDF && data.pages) {
-                sessionStorage.setItem("ocr_result", JSON.stringify({ ...data, fileName: file.name }))
+            if (finalData.isPDF && finalData.pages) {
+                sessionStorage.setItem("ocr_result", JSON.stringify({ ...finalData, fileName: file.name }))
             } else {
-                const text = String(data?.text || "")
+                const text = String(finalData?.text || "")
                 if (!text || text.trim().length === 0) {
                     throw new Error('No text extracted from image')
                 }
@@ -192,13 +272,15 @@ export default function SmartUploadZone() {
 
 
             const pdfFiles = acceptedFiles.filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'))
-            const excelFiles = acceptedFiles.filter(f => f.name.match(/\.xls(x)?$/i) || f.type.includes('excel') || f.type.includes('spreadsheet'))
+            const excelFiles = acceptedFiles.filter(f => f.name.match(/\.xls(x)?$/i) || f.type.includes('excel') || f.type.includes('spreadsheet') || f.name.toLowerCase().endsWith('.xls') || f.name.toLowerCase().endsWith('.xlsx'))
             const imageFiles = acceptedFiles.filter(f =>
                 !f.type.includes('pdf') &&
                 !f.name.toLowerCase().endsWith('.pdf') &&
                 !f.name.match(/\.xls(x)?$/i) &&
                 !f.type.includes('excel') &&
-                !f.type.includes('spreadsheet') ||
+                !f.type.includes('spreadsheet') &&
+                !f.name.toLowerCase().endsWith('.xls') &&
+                !f.name.toLowerCase().endsWith('.xlsx') ||
                 f.type === 'image/svg+xml' ||
                 f.name.toLowerCase().endsWith('.svg')
             )
@@ -222,7 +304,7 @@ export default function SmartUploadZone() {
 
             const file = acceptedFiles[0]
             const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
-            const isExcel = file.name.match(/\.xls(x)?$/i) || file.type.includes('excel') || file.type.includes('spreadsheet')
+            const isExcel = file.name.match(/\.xls(x)?$/i) || file.type.includes('excel') || file.type.includes('spreadsheet') || file.name.toLowerCase().endsWith('.xls') || file.name.toLowerCase().endsWith('.xlsx')
 
             trackVisitor()
 
@@ -291,10 +373,17 @@ export default function SmartUploadZone() {
                         xhr.send(formData)
                     })
 
+                    // Handle Async Batch Job
+                    let finalBatchData = data;
+                    if (data.jobId) {
+                        setStatus(`Processing ${i + 1}/${imageFiles.length}: AI working...`)
+                        finalBatchData = await pollForCompletion(data.jobId)
+                    }
+
                     pageResults.push({
                         pageNumber: i + 1,
-                        text: String(data?.text || ""),
-                        imageName: imageFile.name
+                        text: String(finalBatchData?.text || ""),
+                        imageName: imageFiles[i].name
                     })
                 }
 
