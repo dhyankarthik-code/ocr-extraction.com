@@ -127,8 +127,8 @@ export default function AboutOCRPage() {
                         </ul>
                     </div>
 
-                    <div className="mt-12 bg-white p-8 rounded-2xl border border-gray-100 shadow-sm text-center">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Start Your First Extraction</h2>
+                    <div className="mt-8 bg-white pb-6 rounded-2xl border border-gray-100 shadow-sm text-center not-prose">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-6 mt-0">Start Your Data Extraction</h2>
                         <SmartUploadZone />
                     </div>
                 </article>

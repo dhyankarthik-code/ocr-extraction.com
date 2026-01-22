@@ -145,6 +145,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
                 text="Browse Files"
                 aria-label="Browse Files"
                 className="pointer-events-auto w-48"
+                showDot={false}
               />
             </div>
 
