@@ -57,35 +57,37 @@ export default function ToolsPage() {
 
             {/* Tools Grid */}
             <div className="container mx-auto px-4 py-16">
-                <div className="grid gap-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
                     {toolCategories.map((category) => {
                         const Icon = categoryIcons[category.name] || FileText;
                         const style = categoryColors[category.name] || "text-gray-600 bg-gray-50 border-gray-100";
 
                         return (
-                            <div key={category.name} id={category.name.toLowerCase().replace(/\s+/g, '-')}>
-                                <div className="flex items-center gap-4 mb-8">
+                            <div key={category.name} id={category.name.toLowerCase().replace(/\s+/g, '-')} className="flex flex-col">
+                                {/* Category Header */}
+                                <div className="flex flex-col items-center gap-3 mb-6 pb-4 border-b-2 border-gray-100">
                                     <div className={`p-3 rounded-2xl border ${style} shadow-sm`}>
-                                        <Icon className="w-8 h-8" />
+                                        <Icon className="w-6 h-6" />
                                     </div>
-                                    <h2 className="text-3xl font-bold text-gray-900">{category.name}</h2>
+                                    <h2 className="text-xl font-bold text-gray-900 text-center">{category.name}</h2>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                {/* Tools List */}
+                                <div className="flex flex-col gap-4">
                                     {category.items.map((tool) => (
                                         <Link key={tool.href} href={tool.href} className="group">
                                             <Card className="h-full hover:shadow-lg transition-all duration-300 border-gray-200 hover:border-red-200 group-hover:-translate-y-1">
-                                                <CardHeader className="pb-4">
-                                                    <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-red-600 transition-colors">
+                                                <CardHeader className="pb-3">
+                                                    <CardTitle className="text-base font-bold text-gray-900 group-hover:text-red-600 transition-colors leading-snug">
                                                         {tool.label}
                                                     </CardTitle>
                                                 </CardHeader>
-                                                <CardContent>
-                                                    <CardDescription className="text-sm text-gray-500 mb-6">
+                                                <CardContent className="pt-0">
+                                                    <CardDescription className="text-xs text-gray-500 mb-3">
                                                         Easily {tool.label.toLowerCase()} with high accuracy and speed.
                                                     </CardDescription>
-                                                    <div className="flex items-center text-sm font-semibold text-red-600 gap-2 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
-                                                        Use Tool <ArrowRight className="w-4 h-4" />
+                                                    <div className="flex items-center text-xs font-semibold text-red-600 gap-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
+                                                        Use Tool <ArrowRight className="w-3 h-3" />
                                                     </div>
                                                 </CardContent>
                                             </Card>

@@ -24,6 +24,7 @@ import { saveAs } from "file-saver"
 import { Document, Packer, Paragraph, TextRun } from "docx"
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
 import DocumentChat from "@/components/document-chat"
+import { sendGAEvent } from "@/lib/gtag"
 
 import * as XLSX from "xlsx"
 import pptxgen from "pptxgenjs"
@@ -207,12 +208,14 @@ export default function LocalResultPage() {
     };
 
     const handleDownloadTxt = () => {
+        sendGAEvent({ action: 'file_download', category: 'Download', label: 'txt' })
         const fullText = getFullText();
         const blob = new Blob([fullText], { type: "text/plain;charset=utf-8" })
         saveAs(blob, `${fileName} ocr result.txt`)
     }
 
     const handleDownloadDocx = async () => {
+        sendGAEvent({ action: 'file_download', category: 'Download', label: 'docx' })
         const fullText = getFullText();
         const doc = new Document({
             sections: [{
@@ -226,6 +229,7 @@ export default function LocalResultPage() {
 
     const handleDownloadPdf = () => {
         try {
+            sendGAEvent({ action: 'file_download', category: 'Download', label: 'pdf' })
             const doc = new jsPDF()
             const fullText = getFullText()
 
@@ -259,6 +263,7 @@ export default function LocalResultPage() {
     }
 
     const handleDownloadXlsx = () => {
+        sendGAEvent({ action: 'file_download', category: 'Download', label: 'xlsx' })
         const fullText = getFullText()
         const wb = XLSX.utils.book_new()
         const ws = XLSX.utils.aoa_to_sheet([[fullText]])
@@ -269,6 +274,7 @@ export default function LocalResultPage() {
     }
 
     const handleDownloadPpt = async () => {
+        sendGAEvent({ action: 'file_download', category: 'Download', label: 'pptx' })
         const pres = new pptxgen()
 
         if (isMultiPage && pages.length > 0) {
@@ -285,6 +291,7 @@ export default function LocalResultPage() {
     }
 
     const handleDownloadReport = async (format: 'txt' | 'docx' | 'pdf' | 'xlsx' | 'pptx') => {
+        sendGAEvent({ action: 'ai_report_download', category: 'AI Features', label: format })
         if (format === 'txt') {
             const blob = new Blob([summary], { type: "text/plain;charset=utf-8" })
             saveAs(blob, `${fileName} AI Report.txt`)
@@ -351,6 +358,7 @@ export default function LocalResultPage() {
     }
 
     const handleGenerateSummary = async () => {
+        sendGAEvent({ action: 'ai_summary_generate', category: 'AI Features', label: 'Summary' })
         setGeneratingSummary(true)
         const start = Date.now()
         try {
@@ -386,6 +394,7 @@ export default function LocalResultPage() {
 
     const handleTranslate = async (lang: string, scope: 'current' | 'all' = 'current') => {
         if (!lang) return;
+        sendGAEvent({ action: 'translate_text', category: 'Translation', label: lang, scope: scope })
         setTranslateLanguage(lang);
         setIsTranslating(true);
         setShowTranslation(true);
@@ -418,6 +427,7 @@ export default function LocalResultPage() {
 
     const handleDownloadTranslation = async (format: 'txt' | 'docx' | 'pdf' | 'xlsx' | 'pptx') => {
         if (!translatedText) return;
+        sendGAEvent({ action: 'translation_download', category: 'Download', label: format })
         const timestamp = new Date().toISOString().split('T')[0];
         const filename = `Translation_${translateLanguage}_${timestamp}`;
 

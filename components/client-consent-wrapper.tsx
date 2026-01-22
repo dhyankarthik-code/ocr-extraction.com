@@ -7,6 +7,8 @@ import { useSession } from "@/hooks/use-session"
 import ConsentPopup from "@/components/consent-popup"
 import CookieBanner from "@/components/cookie-banner"
 
+import { updateConsent } from "@/lib/gtag"
+
 export default function ClientConsentWrapper() {
     const { session } = useSession()
     const [termsAccepted, setTermsAccepted] = useState(false)
@@ -17,11 +19,18 @@ export default function ClientConsentWrapper() {
         // Initial check on mount
         const accepted = localStorage.getItem("terms_accepted") === "true"
         setTermsAccepted(accepted)
+
+        // Sync consent state with GTM on load
+        if (accepted) {
+            updateConsent(true)
+        }
     }, [])
 
     const handleTermsAccepted = () => {
         setTermsAccepted(true)
-        // Storage update is handled inside component but state update triggers re-render
+        localStorage.setItem("terms_accepted", "true")
+        // Trigger GTM consent update
+        updateConsent(true)
     }
 
     if (!mounted) return null

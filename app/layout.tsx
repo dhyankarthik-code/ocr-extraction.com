@@ -122,6 +122,22 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <script
+          id="gtm-consent-mode"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('consent', 'default', {
+                'ad_storage': 'denied',
+                'analytics_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'wait_for_update': 500
+              });
+            `,
+          }}
+        />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <GoogleAnalytics gaId="G-230FBSCTMJ" />
         <GoogleTagManager gtmId="GTM-K9SH3TBW" />

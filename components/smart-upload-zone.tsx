@@ -7,6 +7,7 @@ import LimitWarningModal from "@/components/limit-warning-modal"
 import { useVisitorTracker } from "@/hooks/use-visitor-tracker"
 
 import { useUploadStore } from "@/lib/store"
+import { sendGAEvent } from "@/lib/gtag"
 
 export default function SmartUploadZone() {
     const [uploading, setUploading] = useState(false)
@@ -128,6 +129,15 @@ export default function SmartUploadZone() {
             return
         }
 
+        const startTime = Date.now()
+        sendGAEvent({
+            action: "ocr_attempt",
+            category: "OCR",
+            label: "Single File",
+            file_type: file.type,
+            file_size: file.size
+        })
+
         setUploading(true)
         setProgress(0)
         setProcessingSteps(["Starting..."])
@@ -241,6 +251,14 @@ export default function SmartUploadZone() {
             // Trigger quota refresh in UploadZone
             setLastUploadTime(Date.now())
 
+            sendGAEvent({
+                action: "ocr_success",
+                category: "OCR",
+                label: "Success",
+                duration_ms: Date.now() - startTime,
+                file_type: isPDF ? 'pdf' : isExcel ? 'excel' : 'image'
+            })
+
             if (finalData.isPDF && finalData.pages) {
                 sessionStorage.setItem("ocr_result", JSON.stringify({ ...finalData, fileName: file.name }))
             } else {
@@ -256,6 +274,14 @@ export default function SmartUploadZone() {
         } catch (error: any) {
             if (error.message === 'QUOTA_EXCEEDED') return
             console.error("OCR Error:", error)
+
+            sendGAEvent({
+                action: "ocr_fail",
+                category: "OCR",
+                label: error.message || "Unknown",
+                duration_ms: Date.now() - startTime
+            })
+
             // Show error in UI instead of alert
             setValidationError(`Processing Failed: ${error.message || "Unknown error occurred"}`)
             setUploading(false)
@@ -403,6 +429,13 @@ export default function SmartUploadZone() {
             } catch (error: any) {
                 if (error.status === 403) setShowLimitWarning(true)
                 else alert(`Batch failed: ${error.message || 'Unknown error'}`)
+
+                sendGAEvent({
+                    action: "ocr_fail",
+                    category: "OCR",
+                    label: error.message || "Batch Error",
+                })
+
                 setUploading(false)
                 setProgress(0)
             }

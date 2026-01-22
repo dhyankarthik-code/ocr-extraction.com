@@ -182,12 +182,12 @@ const services: ServiceSection[] = [
         ],
     },
 
-    // Row 3: Oil & Gas, Travel, Hospitality
+    // Row 3: Energy, Travel, Hospitality
     {
-        title: "Oil & Gas",
+        title: "Energy",
         icon: <Fuel className="w-6 h-6 text-orange-600" />,
         image: "/services-images/OCR Extraction Website Archs/Oil & Gas.png",
-        altText: "Oil & Gas industry OCR workflow for Inspection Safety Data, Operational Document Processing, Compliance Reporting, and Operational Analytics.",
+        altText: "Energy industry OCR workflow for Inspection Safety Data, Operational Document Processing, Compliance Reporting, and Operational Analytics.",
         items: [
             {
                 title: "Inspection & Safety Data Capture",
