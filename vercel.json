@@ -39,6 +39,28 @@
                     "value": "DENY"
                 }
             ]
+        },
+        {
+            "source": "/:path*.(png|jpg|jpeg|webp|svg|ico|woff|woff2|ttf|otf|eot)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000, immutable"
+                }
+            ]
+        },
+        {
+            "source": "/(_next/static/.*|favicon.ico|robots.txt|sitemap.xml)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000, immutable"
+                },
+                {
+                    "key": "CDN-Cache-Control",
+                    "value": "public, max-age=31536000"
+                }
+            ]
         }
     ],
     "rewrites": [

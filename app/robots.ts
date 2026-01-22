@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
         rules: {
             userAgent: '*',
             allow: '/',
-            disallow: ['/api/', '/admin/', '/result/'],
+            disallow: ['/api/', '/admin/', '/result/', '/_next/'],
         },
         sitemap: 'https://www.ocr-extraction.com/sitemap.xml',
     }

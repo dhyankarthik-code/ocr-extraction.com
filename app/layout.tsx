@@ -151,15 +151,7 @@ export default function RootLayout({
                 {
                   "@type": "WebSite",
                   "name": "Free OCR Extraction",
-                  "url": "https://www.ocr-extraction.com",
-                  "potentialAction": {
-                    "@type": "SearchAction",
-                    "target": {
-                      "@type": "EntryPoint",
-                      "urlTemplate": "https://www.ocr-extraction.com/search?q={search_term_string}"
-                    },
-                    "query-input": "required name=search_term_string"
-                  }
+                  "url": "https://www.ocr-extraction.com"
                 },
                 {
                   "@type": "Organization",
