@@ -175,7 +175,7 @@ export default function Footer() {
                             </li>
                             <li>
                                 <Link href="/feedback/" className="hover:text-red-500 transition-colors">
-                                    Feedback is appreciated
+                                    Your Feedback is Appreciated
                                 </Link>
                             </li>
                             <li>
