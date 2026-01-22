@@ -1,8 +1,7 @@
 "use client"
 
-import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import ContactPage from "@/app/contact/client"
+import ToolsContactForm from "@/components/tools/tools-contact-form"
 
 interface ContactModalProps {
     isOpen: boolean
@@ -16,7 +15,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 <DialogHeader className="sr-only">
                     <DialogTitle>Reach Out To The Experts</DialogTitle>
                 </DialogHeader>
-                <ContactPage />
+                <ToolsContactForm />
             </DialogContent>
         </Dialog>
     )
