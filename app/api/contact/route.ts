@@ -4,27 +4,18 @@ import prisma from "@/lib/db"
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const { name, email, country, mobile, message } = body
+        const { lookingFor, name, email, country, mobile, message } = body
 
         // Get user's IP address
         const forwarded = request.headers.get("x-forwarded-for")
         const realIp = request.headers.get("x-real-ip")
         const ipAddress = forwarded ? forwarded.split(",")[0] : realIp || "Unknown"
 
-        // Google Sheets Web App URL - UPDATED
-        const GOOGLE_SHEET_URL = process.env.GOOGLE_SHEET_WEBHOOK_URL || ""
-
-        if (!GOOGLE_SHEET_URL) {
-            console.warn("⚠️ MOCK MODE: GOOGLE_SHEET_WEBHOOK_URL not configured. Simulating successful submission.")
-            // Simulate network delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            return NextResponse.json({ success: true, message: "Form submitted successfully (Mock)" })
-        }
-
-        // Save to Supabase (Non-blocking or parallel preferred, but sequential for simplicity)
+        // Save to Supabase FIRST (always, regardless of webhook config)
         try {
             await prisma.contactSubmission.create({
                 data: {
+                    lookingFor,
                     name,
                     email,
                     country,
@@ -33,9 +24,22 @@ export async function POST(request: NextRequest) {
                     ipAddress
                 }
             })
+            console.log("✅ Contact submission saved to Supabase")
         } catch (dbError) {
-            console.error("Failed to save contact submission to Supabase:", dbError)
-            // Continue execution to still send to Google Sheets
+            console.error("❌ Failed to save contact submission to Supabase:", dbError)
+            // Return error if database save fails
+            return NextResponse.json(
+                { error: "Failed to save contact submission" },
+                { status: 500 }
+            )
+        }
+
+        // Google Sheets Web App URL - OPTIONAL
+        const GOOGLE_SHEET_URL = process.env.GOOGLE_SHEET_WEBHOOK_URL || ""
+
+        if (!GOOGLE_SHEET_URL) {
+            console.warn("⚠️ GOOGLE_SHEET_WEBHOOK_URL not configured. Skipping Google Sheets sync.")
+            return NextResponse.json({ success: true, message: "Form submitted successfully" })
         }
 
         // Send data to Google Sheets
@@ -45,6 +49,7 @@ export async function POST(request: NextRequest) {
                 "Content-Type": "text/plain",
             },
             body: JSON.stringify({
+                lookingFor,
                 name,
                 email,
                 country,

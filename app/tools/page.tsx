@@ -1,16 +1,10 @@
 import Link from "next/link";
-import {
-    FileDocument as FileText,
-    Image01 as ImageIcon,
-    FileDocument as FileSpreadsheet,
-    FileDocument as Presentation,
-    FileBlank as FileType,
-    ArrowRightMd as ArrowRight,
-    Settings as Wrench
-} from "react-coolicons";
+import { ArrowRightMd as ArrowRight, Settings as Wrench } from "react-coolicons";
 import { toolCategories } from "@/lib/tools-data";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PdfIcon, WordIcon, ExcelIcon, PptIcon, ImageFileIcon } from "@/components/icons/file-type-icons";
+import { ToolsCTA } from "@/components/tools/tools-cta";
 
 export const metadata = {
     title: "All Free OCR & PDF Tools | InfyGalaxy",
@@ -18,11 +12,11 @@ export const metadata = {
 };
 
 const categoryIcons: Record<string, any> = {
-    "PDF Tools": FileText,
-    "Word Tools": FileType,
-    "Image Tools": ImageIcon,
-    "Excel Tools": FileSpreadsheet,
-    "PPT Tools": Presentation,
+    "PDF Tools": PdfIcon,
+    "Word Tools": WordIcon,
+    "Image Tools": ImageFileIcon,
+    "Excel Tools": ExcelIcon,
+    "PPT Tools": PptIcon,
 };
 
 const categoryColors: Record<string, string> = {
@@ -51,6 +45,9 @@ export default function ToolsPage() {
                             Simplify your document workflows with our comprehensive suite of conversion and OCR tools.
                             Secure, fast, and 100% free to use.
                         </p>
+
+                        {/* Contact CTA */}
+                        <ToolsCTA />
                     </div>
                 </div>
             </div>
@@ -59,7 +56,7 @@ export default function ToolsPage() {
             <div className="container mx-auto px-4 py-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
                     {toolCategories.map((category) => {
-                        const Icon = categoryIcons[category.name] || FileText;
+                        const Icon = categoryIcons[category.name] || PdfIcon;
                         const style = categoryColors[category.name] || "text-gray-600 bg-gray-50 border-gray-100";
 
                         return (
@@ -98,6 +95,8 @@ export default function ToolsPage() {
                         );
                     })}
                 </div>
+
+                {/* The ToolsCTA component was moved to the Hero section, so it's removed from here. */}
             </div>
         </div>
     );

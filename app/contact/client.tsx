@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, CheckCircle2, Mail, User, Globe, Phone, MessageSquare, Search, X } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Loader2, CheckCircle2, Mail, User, Globe, Phone, MessageSquare, Search, X, Target } from "lucide-react"
 
 const COUNTRY_PHONE_CODES: { [key: string]: { code: string, digits: number } } = {
     "Afghanistan": { code: "+93", digits: 9 },
@@ -213,6 +214,7 @@ const COUNTRIES = Object.keys(COUNTRY_PHONE_CODES).sort()
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
+        lookingFor: "",
         name: "",
         email: "",
         country: "",
@@ -237,7 +239,8 @@ export default function ContactPage() {
     }, [countrySearch])
 
     const validateEmail = (email: string) => {
-        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
+        // Stricter regex: requires TLD to be at least 2 letters
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         return email.length > 0 && email.length <= 254 && emailRegex.test(email)
     }
 
@@ -318,22 +321,16 @@ export default function ContactPage() {
         e.preventDefault()
         const newErrors: { [key: string]: string } = {}
         const phoneConfig = getPhoneConfig()
-        const cleanedName = formData.name.replace(/[^a-zA-Z\s]/g, "").trim()
-        if (!cleanedName) {
-            newErrors.name = "Name is required"
-        } else if (cleanedName.length < 2) {
-            newErrors.name = "Name must be at least 2 characters"
-        } else if (hasInvalidNameChars(formData.name)) {
-            newErrors.name = "Name should contain only letters"
+
+        // Only validate lookingFor, country, and mobile (required fields)
+        if (!formData.lookingFor) {
+            newErrors.lookingFor = "Please select what you're looking for"
         }
-        if (!formData.email.trim()) {
-            newErrors.email = "Email is required"
-        } else if (!validateEmail(formData.email)) {
-            newErrors.email = "Please enter a valid email address"
-        }
+
         if (!formData.country) {
             newErrors.country = "Please select a country"
         }
+
         const cleanedMobile = formData.mobile.replace(/[^0-9]/g, "")
         if (!cleanedMobile) {
             newErrors.mobile = "Mobile number is required"
@@ -344,26 +341,43 @@ export default function ContactPage() {
         } else if (!phoneConfig.code && cleanedMobile.length < 7) {
             newErrors.mobile = "Please enter a valid mobile number"
         }
-        if (!formData.message.trim()) {
-            newErrors.message = "Message is required"
-        } else if (formData.message.trim().length < 10) {
-            newErrors.message = "Message must be at least 10 characters"
+
+        // Optional fields - validate only if filled
+        if (formData.name) {
+            const cleanedName = formData.name.replace(/[^a-zA-Z\s]/g, "").trim()
+            if (cleanedName.length < 2) {
+                newErrors.name = "Name must be at least 2 characters"
+            } else if (hasInvalidNameChars(formData.name)) {
+                newErrors.name = "Name should contain only letters"
+            }
         }
+
+        if (formData.email && !validateEmail(formData.email)) {
+            newErrors.email = "Please enter a valid email address"
+        }
+
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
             return
         }
 
+
         setSubmitting(true)
         try {
-            if (!executeRecaptcha) {
+            let token: string | null = null
+
+            if (executeRecaptcha) {
+                try {
+                    token = await executeRecaptcha("contact_form")
+                } catch (recaptchaError) {
+                    console.warn("reCAPTCHA execution failed (likely invalid key for localhost):", recaptchaError)
+                    // Continue without token in dev mode
+                }
+            } else {
                 console.warn("Execute recaptcha not available")
-                // Proceed without token if key missing (dev mode)
             }
 
-            const token = executeRecaptcha ? await executeRecaptcha("contact_form") : null
-
-            // Verify token first
+            // Verify token first (only if we got one)
             if (token) {
                 const verifyRes = await fetch("/api/verify-recaptcha", {
                     method: 'POST',
@@ -375,15 +389,17 @@ export default function ContactPage() {
                 }
             }
 
+
             const response = await fetch("/api/contact", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    name: cleanedName,
-                    email: formData.email,
+                    lookingFor: formData.lookingFor,
+                    name: formData.name || "Not provided",
+                    email: formData.email || "Not provided",
                     country: formData.country,
                     mobile: phoneConfig.code ? `'${phoneConfig.code} ${cleanedMobile}` : `'${cleanedMobile}`,
-                    message: formData.message
+                    message: formData.message || "Not provided"
                 })
             })
             if (!response.ok) {
@@ -391,6 +407,7 @@ export default function ContactPage() {
             }
             setSubmitted(true)
             setFormData({
+                lookingFor: "",
                 name: "",
                 email: "",
                 country: "",
@@ -404,18 +421,18 @@ export default function ContactPage() {
             setSubmitting(false)
         }
     }
-
+ 
     const phoneConfig = getPhoneConfig()
 
     return (
         <div className="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 py-12">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                        Contact Us
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                        Reach Out To The <span className="text-red-600">Experts</span>
                     </h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Have a question or need support? We're here to help!
+                    <p className="text-base text-gray-600 max-w-2xl mx-auto">
+                        Looking For Workflow Automation, AI Orchestration Or Agentic AI Integration And Deployment
                     </p>
                 </div>
 
@@ -440,16 +457,42 @@ export default function ContactPage() {
                         </Card>
                     ) : (
                         <Card>
-                            <CardHeader>
-                                <CardTitle className="text-2xl">Get in Touch</CardTitle>
-                            </CardHeader>
-                            <CardContent>
+                            <CardContent className="pt-6">
                                 <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                                            <Target className="w-4 h-4" />
+                                            Chose From *
+                                        </label>
+                                        <Select
+                                            value={formData.lookingFor}
+                                            onValueChange={(value) => {
+                                                setFormData(prev => ({ ...prev, lookingFor: value }))
+                                                if (errors.lookingFor) setErrors(prev => ({ ...prev, lookingFor: "" }))
+                                            }}
+                                        >
+                                            <SelectTrigger className={`w-full ${errors.lookingFor ? "border-red-500 ring-red-500" : "focus:ring-red-500"}`}>
+                                                <SelectValue placeholder="Select an option" />
+                                            </SelectTrigger>
+                                            <SelectContent className="z-[9999]">
+                                                <SelectItem value="Workflow Automation" className="focus:bg-red-50 focus:text-red-900 cursor-pointer">Workflow Automation</SelectItem>
+                                                <SelectItem value="AI Orchestration" className="focus:bg-red-50 focus:text-red-900 cursor-pointer">AI Orchestration</SelectItem>
+                                                <SelectItem value="Agentic AI Integration and Deployment" className="focus:bg-red-50 focus:text-red-900 cursor-pointer">Agentic AI Integration and Deployment</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        {errors.lookingFor && (
+                                            <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                                                <X className="w-3 h-3" />
+                                                {errors.lookingFor}
+                                            </p>
+                                        )}
+                                    </div>
+
                                     {/* Name */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                                             <User className="w-4 h-4" />
-                                            Name *
+                                            Name
                                         </label>
                                         <Input
                                             name="name"
@@ -475,7 +518,7 @@ export default function ContactPage() {
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                                             <Mail className="w-4 h-4" />
-                                            Email *
+                                            Email
                                         </label>
                                         <Input
                                             name="email"
@@ -623,7 +666,7 @@ export default function ContactPage() {
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                                             <MessageSquare className="w-4 h-4" />
-                                            Message *
+                                            Give us a hint about your requirement
                                         </label>
                                         <Textarea
                                             name="message"

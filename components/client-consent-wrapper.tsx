@@ -1,7 +1,5 @@
 "use client"
 
-"use client"
-
 import { useState, useEffect } from "react"
 import { useSession } from "@/hooks/use-session"
 import ConsentPopup from "@/components/consent-popup"
