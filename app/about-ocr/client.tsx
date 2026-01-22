@@ -1,5 +1,7 @@
 "use client"
 
+import SmartUploadZone from "@/components/smart-upload-zone"
+
 
 
 
@@ -125,14 +127,9 @@ export default function AboutOCRPage() {
                         </ul>
                     </div>
 
-                    <div className="mt-12 bg-red-50 p-8 rounded-2xl border border-red-100 text-center">
-                        <h2 className="text-2xl font-bold text-red-900 mb-4">Start Your First Extraction</h2>
-                        <p className="text-red-800 mb-6">
-                            Experience the power of AI-driven OCR with Infy Galaxy. Fast, secure, and completely free.
-                        </p>
-                        <a href="/" className="inline-block bg-red-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-700 transition-all shadow-lg hover:shadow-red-200">
-                            Go to OCR Tool
-                        </a>
+                    <div className="mt-12 bg-white p-8 rounded-2xl border border-gray-100 shadow-sm text-center">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Start Your First Extraction</h2>
+                        <SmartUploadZone />
                     </div>
                 </article>
             </div>

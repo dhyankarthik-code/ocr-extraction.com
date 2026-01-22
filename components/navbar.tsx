@@ -28,11 +28,11 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
   const [isToolsOpen, setIsToolsOpen] = useState(false)
 
   const navLinks = [
-    { label: 'About Us', href: '/about' },
+    { label: 'About Us', href: '/about/' },
     { label: 'OCR', href: '/' },
-    { label: 'Services', href: '/services' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Contact Us', href: '/contact' },
+    { label: 'Services', href: '/services/' },
+    { label: 'Blog', href: '/blog/' },
+    { label: 'Contact Us', href: '/contact/' },
   ]
 
 

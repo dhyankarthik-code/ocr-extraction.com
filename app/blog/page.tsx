@@ -76,7 +76,7 @@ export default async function BlogPage() {
 
                                     {/* Footer */}
                                     <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
-                                        <Link href={`/blog/${post.slug}`}>
+                                        <Link href={`/blog/${post.slug}/`}>
                                             <Button variant="ghost" className="p-0 h-auto font-semibold hover:bg-transparent hover:text-red-500 text-gray-900 flex items-center gap-2">
                                                 Read Article <ArrowRight className="w-4 h-4" />
                                             </Button>

@@ -32,12 +32,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         title: `${post.title.rendered} - OCR Extraction Blog`,
         description,
         alternates: {
-            canonical: `https://www.ocr-extraction.com/blog/${slug}`,
+            canonical: `https://www.ocr-extraction.com/blog/${slug}/`,
         },
         openGraph: {
             title: `${post.title.rendered} - OCR Extraction Blog`,
             description,
-            url: `https://www.ocr-extraction.com/blog/${slug}`,
+            url: `https://www.ocr-extraction.com/blog/${slug}/`,
             type: 'article',
             images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630 }] : [],
         },
@@ -86,7 +86,7 @@ export default async function BlogPostPage({ params }: PageProps) {
             <article className="container mx-auto px-4 max-w-4xl">
                 {/* Back Link */}
                 <div className="mb-8 flex justify-between items-center">
-                    <Link href="/blog">
+                    <Link href="/blog/">
                         <Button variant="ghost" size="sm" className="bg-gray-50 hover:bg-gray-100 text-gray-600 gap-2">
                             <ArrowLeft className="w-4 h-4" /> Back to Blog
                         </Button>
