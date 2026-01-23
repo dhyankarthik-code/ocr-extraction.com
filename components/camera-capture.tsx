@@ -57,17 +57,36 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
         }
     }, [facingMode, stopStream])
 
-    // Initial start
+    // Initial start with Timeout
     useEffect(() => {
         if (mounted) {
             startCamera()
         }
+        const timer = setTimeout(() => {
+            if (loading) {
+                setLoading(false)
+                setError(prev => prev || "Camera is taking too long to start. Please try refreshing or check permissions.")
+            }
+        }, 8000)
+
         return () => {
             stopStream()
+            clearTimeout(timer)
         }
     }, [mounted, startCamera, stopStream])
 
-    const handleCapture = () => {
+    // Handle stream ready explicitly
+    useEffect(() => {
+        if (stream && videoRef.current) {
+            const playPromise = videoRef.current.play()
+            if (playPromise !== undefined) {
+                playPromise.catch(e => console.log("Auto-play prevented:", e))
+            }
+        }
+    }, [stream])
+
+    const handleCapture = (e: React.MouseEvent) => {
+        e.stopPropagation()
         if (!videoRef.current || !canvasRef.current) return
 
         const video = videoRef.current
@@ -75,11 +94,14 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
         const context = canvas.getContext("2d")
 
         if (context) {
-            // Set canvas dimensions to match video stream
+            if (video.videoWidth === 0 || video.videoHeight === 0) {
+                setError("Video stream not ready yet.")
+                return
+            }
+
             canvas.width = video.videoWidth
             canvas.height = video.videoHeight
 
-            // Flip horizontal if using front camera (mirror effect)
             if (facingMode === 'user') {
                 context.translate(canvas.width, 0);
                 context.scale(-1, 1);
@@ -89,7 +111,7 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
 
             canvas.toBlob((blob) => {
                 if (blob) {
-                    stopStream() // Stop camera before handing off
+                    stopStream()
                     onCapture(blob)
                 } else {
                     setError("Failed to capture image")
@@ -98,11 +120,13 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
         }
     }
 
-    const switchCamera = () => {
+    const switchCamera = (e: React.MouseEvent) => {
+        e.stopPropagation()
         setFacingMode(prev => prev === "user" ? "environment" : "user")
     }
 
-    const handleClose = () => {
+    const handleClose = (e: React.MouseEvent) => {
+        e.stopPropagation()
         stopStream()
         onClose()
     }
@@ -110,27 +134,27 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
     if (!mounted) return null
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center animate-in fade-in duration-200">
+        <div
+            className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center animate-in fade-in duration-200"
+            onClick={(e) => e.stopPropagation()}
+        >
 
-            {/* Hidden Canvas for Capture */}
             <canvas ref={canvasRef} className="hidden" />
 
-            {/* Main Viewport */}
             <div className="relative w-full h-full flex flex-col">
 
-                {/* Top Bar */}
                 <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-10 bg-gradient-to-b from-black/50 to-transparent">
                     <button
                         onClick={handleClose}
                         className="p-2 rounded-full bg-black/20 text-white backdrop-blur-md hover:bg-black/40 transition-colors"
+                        type="button"
                     >
                         <X className="w-6 h-6" />
                     </button>
                     <div className="text-white font-medium text-sm drop-shadow-md">Take Photo</div>
-                    <div className="w-10" /> {/* Spacer for balance */}
+                    <div className="w-10" />
                 </div>
 
-                {/* Video Feed */}
                 <div className="flex-1 relative flex items-center justify-center bg-zinc-900 overflow-hidden">
                     {loading && (
                         <div className="absolute inset-0 flex items-center justify-center text-white/70">
@@ -142,14 +166,25 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
                     )}
 
                     {error && (
-                        <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
-                            <div className="max-w-xs text-red-400 bg-red-950/30 p-4 rounded-xl border border-red-900/50">
+                        <div className="absolute inset-0 flex items-center justify-center p-6 text-center z-20">
+                            <div className="max-w-xs text-red-400 bg-red-950/80 backdrop-blur p-4 rounded-xl border border-red-900/50">
                                 <p>{error}</p>
                                 <button
-                                    onClick={() => startCamera()}
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        startCamera()
+                                    }}
                                     className="mt-4 px-4 py-2 bg-red-900/50 rounded-lg text-white text-sm hover:bg-red-800 transition-colors"
+                                    type="button"
                                 >
                                     Retry
+                                </button>
+                                <button
+                                    onClick={handleClose}
+                                    className="mt-2 block w-full text-xs text-red-300 hover:text-white underline"
+                                    type="button"
+                                >
+                                    Close
                                 </button>
                             </div>
                         </div>
@@ -164,28 +199,26 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
                     />
                 </div>
 
-                {/* Bottom Controls */}
                 <div className="h-32 bg-black flex items-center justify-around px-8 pb-4 pt-2">
 
-                    {/* Gallery / Placeholder (Empty for now) */}
                     <div className="w-12 h-12" />
 
-                    {/* Shutter Button */}
                     <button
                         onClick={handleCapture}
                         disabled={loading || !!error}
                         className="relative group disabled:opacity-50 disabled:cursor-not-allowed"
+                        type="button"
                     >
                         <div className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center transition-transform group-active:scale-95">
                             <div className="w-16 h-16 rounded-full bg-white group-hover:bg-gray-200 transition-colors" />
                         </div>
                     </button>
 
-                    {/* Switch Camera */}
                     <button
                         onClick={switchCamera}
                         disabled={loading || !!error}
                         className="p-3 rounded-full bg-zinc-800 text-white hover:bg-zinc-700 transition-colors disabled:opacity-50"
+                        type="button"
                     >
                         <SwitchCamera className="w-6 h-6" />
                     </button>

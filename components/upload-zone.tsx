@@ -156,7 +156,10 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
               {/* Internal Custom Camera Trigger */}
               <div
                 className="w-full max-w-[200px]"
-                onClick={() => setShowCamera(true)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowCamera(true)
+                }}
               >
                 <InteractiveHoverButton
                   text={
@@ -191,7 +194,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
           </div>
         </div>
 
-        {/* Custom Camera Overlay */}
+        {/* Custom Camera Overlay - Portal */}
         {showCamera && (
           <CameraCapture
             onClose={() => setShowCamera(false)}
@@ -209,87 +212,81 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
         )}
 
         {/* Image Cropper Modal */}
-        {
-          imageToCrop && (
-            <ImageCropper
-              imageSrc={imageToCrop}
-              onCancel={() => setImageToCrop(null)}
-              onCropComplete={(croppedBlob) => {
-                const file = new File([croppedBlob], cropFileName, { type: "image/jpeg" })
-                onDrop([file])
-                setImageToCrop(null)
-              }}
-            />
-          )
-        }
+        {imageToCrop && (
+          <ImageCropper
+            imageSrc={imageToCrop}
+            onCancel={() => setImageToCrop(null)}
+            onCropComplete={(croppedBlob) => {
+              const file = new File([croppedBlob], cropFileName, { type: "image/jpeg" })
+              onDrop([file])
+              setImageToCrop(null)
+            }}
+          />
+        )}
 
         {/* Processing Overlay / Steps */}
-        {
-          uploading && (
-            <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-2xl z-10 flex flex-col items-center justify-center p-4 md:p-8 border border-gray-200 shadow-xl overflow-y-auto">
-              <div className="w-full max-w-md space-y-6">
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Processing Image</h3>
-                  <p className="text-gray-500 text-sm">Please wait while we work our magic...</p>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-red-500 transition-all duration-500 ease-out"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-
-                {/* Steps Log */}
-                <div className="space-y-3 mt-4">
-                  {processingSteps.map((step, index) => {
-                    // Determine if this step is likely a "Processing image X..." step which might contain a filename
-                    const displayStep = step.length > 50 ? truncateFilename(step, 45) : step
-
-                    const isCompleted = index < processingSteps.length - 1;
-                    const isCurrent = index === processingSteps.length - 1;
-
-                    return (
-                      <div key={index} className="flex items-center gap-3 text-sm">
-                        {isCompleted ? (
-                          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                        ) : (
-                          <Loader2 className="w-5 h-5 text-red-500 animate-spin flex-shrink-0" />
-                        )}
-                        <span className={`break-all ${isCurrent ? "font-semibold text-gray-900" : "text-gray-600"}`}>
-                          {displayStep}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
+        {uploading && (
+          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-2xl z-10 flex flex-col items-center justify-center p-4 md:p-8 border border-gray-200 shadow-xl overflow-y-auto">
+            <div className="w-full max-w-md space-y-6">
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Processing Image</h3>
+                <p className="text-gray-500 text-sm">Please wait while we work our magic...</p>
               </div>
-            </div>
-          )
-        }
-      </div >
 
-      {/* Quota Usage Bar (Shown for all logged-in users where quota data is loaded) */}
-      {
-        !hideUsage && quota && (
-          <div className="w-full bg-gray-50 rounded-lg p-3 border border-gray-200 flex items-center gap-4 text-xs md:text-sm">
-            <span className="text-gray-600 font-medium whitespace-nowrap">Usage Limit:</span>
-            <div className="flex-1 space-y-1">
-              <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+              {/* Progress Bar */}
+              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                 <div
-                  className={`h-full ${usageColor} transition-all duration-500`}
-                  style={{ width: `${usagePercent}%` }}
+                  className="h-full bg-red-500 transition-all duration-500 ease-out"
+                  style={{ width: `${progress}%` }}
                 />
               </div>
-              <div className="flex justify-between text-gray-500 text-[10px]">
-                <span>{usedMB} MB used</span>
-                <span>10 MB limit</span>
+
+              {/* Steps Log */}
+              <div className="space-y-3 mt-4">
+                {processingSteps.map((step, index) => {
+                  // Determine if this step is likely a "Processing image X..." step which might contain a filename
+                  const displayStep = step.length > 50 ? truncateFilename(step, 45) : step
+
+                  const isCompleted = index < processingSteps.length - 1;
+                  const isCurrent = index === processingSteps.length - 1;
+
+                  return (
+                    <div key={index} className="flex items-center gap-3 text-sm">
+                      {isCompleted ? (
+                        <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      ) : (
+                        <Loader2 className="w-5 h-5 text-red-500 animate-spin flex-shrink-0" />
+                      )}
+                      <span className={`break-all ${isCurrent ? "font-semibold text-gray-900" : "text-gray-600"}`}>
+                        {displayStep}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
-        )
-      }
-    </div >
+        )}
+      </div>
+
+      {/* Quota Usage Bar (Shown for all logged-in users where quota data is loaded) */}
+      {!hideUsage && quota && (
+        <div className="w-full bg-gray-50 rounded-lg p-3 border border-gray-200 flex items-center gap-4 text-xs md:text-sm">
+          <span className="text-gray-600 font-medium whitespace-nowrap">Usage Limit:</span>
+          <div className="flex-1 space-y-1">
+            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                className={`h-full ${usageColor} transition-all duration-500`}
+                style={{ width: `${usagePercent}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-gray-500 text-[10px]">
+              <span>{usedMB} MB used</span>
+              <span>10 MB limit</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
