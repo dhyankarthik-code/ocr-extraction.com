@@ -18,12 +18,12 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navLinks = [
-    { label: 'About Us', href: '/about/' },
+    { label: 'About Us', href: '/about' },
     { label: 'OCR', href: '/' },
-    { label: 'Services', href: '/services/' },
-    { label: 'Tools', href: '/tools/' },
-    { label: 'Blog', href: '/blog/' },
-    { label: 'Contact Us', href: '/contact/' },
+    { label: 'Services', href: '/services' },
+    { label: 'Tools', href: '/tools' },
+    { label: 'Blog', href: '/blog' },
+    { label: 'Contact Us', href: '/contact' },
   ]
 
   return (

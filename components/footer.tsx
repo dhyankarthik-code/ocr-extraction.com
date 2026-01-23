@@ -94,7 +94,7 @@ export default function Footer() {
                         </h3>
                         <ul className="space-y-2 text-sm">
                             <li>
-                                <Link href="/about-ocr/" className="hover:text-red-500 transition-colors">
+                                <Link href="/about-ocr" className="hover:text-red-500 transition-colors">
                                     About OCR
                                 </Link>
                             </li>
@@ -124,17 +124,17 @@ export default function Footer() {
                         </h3>
                         <ul className="space-y-2 text-sm">
                             <li>
-                                <Link href="/mission/" className="hover:text-red-500 transition-colors">
+                                <Link href="/mission" className="hover:text-red-500 transition-colors">
                                     Our Mission
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/company-profile/" className="hover:text-red-500 transition-colors">
+                                <Link href="/company-profile" className="hover:text-red-500 transition-colors">
                                     Company Profile
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/about/" className="hover:text-red-500 transition-colors">
+                                <Link href="/about" className="hover:text-red-500 transition-colors">
                                     About Us
                                 </Link>
                             </li>
@@ -154,7 +154,7 @@ export default function Footer() {
                         </h3>
                         <ul className="space-y-2 text-sm">
                             <li>
-                                <Link href="/services/" className="hover:text-red-500 transition-colors">
+                                <Link href="/services" className="hover:text-red-500 transition-colors">
                                     Our Services
                                 </Link>
                             </li>
@@ -169,22 +169,22 @@ export default function Footer() {
                         </h3>
                         <ul className="space-y-2 text-sm">
                             <li>
-                                <Link href="/contact/" className="hover:text-red-500 transition-colors">
+                                <Link href="/contact" className="hover:text-red-500 transition-colors">
                                     Contact Us
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/feedback/" className="hover:text-red-500 transition-colors">
+                                <Link href="/feedback" className="hover:text-red-500 transition-colors">
                                     Your Feedback is Appreciated
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/privacy/" className="hover:text-red-500 transition-colors">
+                                <Link href="/privacy" className="hover:text-red-500 transition-colors">
                                     Privacy Policy
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/terms/" className="hover:text-red-500 transition-colors">
+                                <Link href="/terms" className="hover:text-red-500 transition-colors">
                                     Terms and Conditions
                                 </Link>
                             </li>

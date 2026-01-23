@@ -54,10 +54,11 @@ export async function POST(request: NextRequest) {
         const resend = getResendClient()
         if (resend) {
             try {
+                const replyToEmail = (email && typeof email === 'string' && email.includes('@')) ? email : undefined;
                 await resend.emails.send({
                     from: "Contact Form <onboarding@resend.dev>",
                     to: "admin@ocr-extraction.com",
-                    replyTo: email || undefined,
+                    replyTo: replyToEmail,
                     subject: `📩 New Contact: ${name} - OCR-Extraction.com`,
                     html: `
                         <!DOCTYPE html>
