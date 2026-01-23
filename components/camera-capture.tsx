@@ -16,6 +16,7 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
     const [error, setError] = useState<string | null>(null)
     const [debugInfo, setDebugInfo] = useState<string>("")
     const [needsManualStart, setNeedsManualStart] = useState(false)
+    const [focusPoint, setFocusPoint] = useState<{ x: number; y: number } | null>(null)
 
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -47,6 +48,7 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
         stopTracks()
 
         const constraintsList = [
+            { video: { facingMode: facingMode, focusMode: 'continuous' }, audio: false },
             { video: { facingMode: facingMode }, audio: false },
             { video: { facingMode: facingMode === 'environment' ? 'user' : 'environment' }, audio: false },
             { video: true, audio: false }
@@ -131,6 +133,51 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [facingMode])
 
+    const handleTapToFocus = useCallback((e: React.MouseEvent<HTMLVideoElement>) => {
+        e.stopPropagation()
+
+        if (!videoRef.current || loading || error) return
+
+        const video = videoRef.current
+        const rect = video.getBoundingClientRect()
+
+        // Calculate tap position relative to video element
+        const x = ((e.clientX - rect.left) / rect.width) * 100
+        const y = ((e.clientY - rect.top) / rect.height) * 100
+
+        // Show visual feedback
+        setFocusPoint({ x, y })
+
+        // Clear focus indicator after animation
+        setTimeout(() => setFocusPoint(null), 1000)
+
+        // Attempt to trigger autofocus/refocus on the camera
+        if (streamRef.current) {
+            const track = streamRef.current.getVideoTracks()[0]
+
+            if (track) {
+                // Try to apply focus constraints if supported
+                const capabilities = track.getCapabilities() as any
+
+                if (capabilities?.focusMode) {
+                    // Toggle between single-shot and continuous to trigger refocus
+                    track.applyConstraints({
+                        advanced: [{ focusMode: 'single-shot' } as any]
+                    }).then(() => {
+                        // Switch back to continuous after a brief moment
+                        setTimeout(() => {
+                            track.applyConstraints({
+                                advanced: [{ focusMode: 'continuous' } as any]
+                            }).catch(err => console.log('Focus toggle failed:', err))
+                        }, 100)
+                    }).catch(err => {
+                        console.log('Focus constraint not supported:', err)
+                    })
+                }
+            }
+        }
+    }, [loading, error])
+
     const handleCapture = (e: React.MouseEvent) => {
         e.stopPropagation()
         if (!videoRef.current || !canvasRef.current) return
@@ -206,7 +253,34 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
                         playsInline
                         muted
                         className={`w-full h-full object-cover transition-opacity duration-300 ${loading ? 'opacity-0' : 'opacity-100'} ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}
+                        onClick={handleTapToFocus}
                     />
+
+                    {/* Tap to Focus Indicator */}
+                    {focusPoint && (
+                        <div
+                            className="absolute pointer-events-none z-30 animate-ping"
+                            style={{
+                                left: `${focusPoint.x}%`,
+                                top: `${focusPoint.y}%`,
+                                transform: 'translate(-50%, -50%)'
+                            }}
+                        >
+                            <div className="w-20 h-20 border-2 border-yellow-400 rounded-sm" />
+                        </div>
+                    )}
+                    {focusPoint && (
+                        <div
+                            className="absolute pointer-events-none z-30"
+                            style={{
+                                left: `${focusPoint.x}%`,
+                                top: `${focusPoint.y}%`,
+                                transform: 'translate(-50%, -50%)'
+                            }}
+                        >
+                            <div className="w-16 h-16 border-2 border-yellow-400 rounded-sm" />
+                        </div>
+                    )}
 
                     {loading && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-20">
