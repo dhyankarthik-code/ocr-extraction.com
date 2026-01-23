@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Cookie } from "lucide-react"
+import { updateConsent } from "@/lib/gtag"
 
 interface CookieBannerProps {
     termsAccepted: boolean
@@ -22,6 +23,7 @@ export default function CookieBanner({ termsAccepted }: CookieBannerProps) {
 
     const handleAccept = () => {
         localStorage.setItem("cookies_accepted", "true")
+        updateConsent(true)
         setShow(false)
         // Optionally reload to unblock tools immediately without refresh, 
         // but React state in tools might not update instantly unless we use a context.
@@ -52,6 +54,7 @@ export default function CookieBanner({ termsAccepted }: CookieBannerProps) {
                         <Button
                             onClick={() => {
                                 localStorage.setItem("cookies_rejected", "true")
+                                updateConsent(false)
                                 setShow(false)
                             }}
                             variant="outline"

@@ -22,6 +22,12 @@ export default function ClientConsentWrapper() {
         if (accepted) {
             updateConsent(true)
         }
+
+        // Check separate cookie consent
+        const cookiesAccepted = localStorage.getItem("cookies_accepted") === "true"
+        if (cookiesAccepted) {
+            updateConsent(true)
+        }
     }, [])
 
     const handleTermsAccepted = () => {
@@ -37,7 +43,7 @@ export default function ClientConsentWrapper() {
     return (
         <>
             {/* <ConsentPopup session={session} onAccept={handleTermsAccepted} /> */}
-            {/* <CookieBanner termsAccepted={termsAccepted} /> */}
+            <CookieBanner termsAccepted={termsAccepted} />
         </>
     )
 }
