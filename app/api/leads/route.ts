@@ -54,9 +54,12 @@ export async function POST(request: NextRequest) {
 
         // Send email notification
         const resend = getResendClient()
+        console.log("📨 Leads Route: Resend client initialized?", !!resend);
+
         if (resend) {
             try {
-                await resend.emails.send({
+                console.log("📨 Leads Route: Attempting to send email to admin@ocr-extraction.com");
+                const data = await resend.emails.send({
                     from: "Leads - OCR Extraction <onboarding@resend.dev>",
                     to: "admin@ocr-extraction.com",
                     replyTo: email || undefined,
@@ -104,9 +107,9 @@ export async function POST(request: NextRequest) {
                         </html>
                     `,
                 })
-                console.log("✅ Lead notification email sent")
+                console.log("✅ Lead notification email sent. Response:", data)
             } catch (emailError) {
-                console.error("❌ Failed to send lead email:", emailError)
+                console.error("❌ Failed to send lead email. Error details:", emailError)
             }
         } else {
             console.warn("⚠️ RESEND_API_KEY not configured. Skipping lead email.")
