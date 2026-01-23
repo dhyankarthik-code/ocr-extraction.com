@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
                 await resend.emails.send({
                     from: "OCR Feedback <noreply@ocr-extraction.com>",
-                    to: ["admin@ocr-extraction.com", "prakashmalay@gmail.com"],
+                    to: "admin@ocr-extraction.com",
                     subject: `New Feedback: ${rating} Star${rating !== 1 ? 's' : ''} - OCR Extraction`,
                     html: `
                         <!DOCTYPE html>
