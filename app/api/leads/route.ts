@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         if (resend) {
             try {
                 await resend.emails.send({
-                    from: "Leads - OCR Extraction <noreply@ocr-extraction.com>",
+                    from: "Leads - OCR Extraction <onboarding@resend.dev>",
                     to: "admin@ocr-extraction.com",
                     replyTo: email || undefined,
                     subject: `🎯 New Lead: ${lookingFor} - OCR-Extraction.com`,
