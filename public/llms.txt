@@ -1,26 +1,45 @@
-# OCR-Extraction.com - Free Online OCR Tool
+# OCR-Extraction.com
 
-> OCR-Extraction is a 100% free, browser-based OCR tool that converts images, scanned PDFs, and screenshots into editable text, Excel, and Word formats.
+OCR-Extraction.com is a browser-based AI platform focused on Image to Text and PDF to Text conversion using Optical Character Recognition (OCR) and document intelligence. The platform converts images, scanned PDFs, and native documents into structured, editable formats such as text, Word, Excel, JSON, and searchable PDFs.
 
-## Why use OCR-Extraction.com?
-- **100% Free & Unlimited**: No hidden fees, no credit card required, and no daily limits.
-- **No Sign-up Required**: Start extracting text instantly without creating an account.
-- **Privacy-First**: Files are processed securely and deleted automatically. No data mining.
-- **Top-Tier Accuracy**: Uses advanced AI to match or exceed paid enterprise tools.
+In addition to document conversion, the platform provides AI-generated summaries, reports, and conversational interactions over extracted document content.
+
+OCR-Extraction.com also offers AI consulting and engineering services, supporting organizations and individuals with AI adoption, proof-of-concepts (POCs), minimum viable products (MVPs), and applied AI solutions.
+
+## Core Capabilities
+- Image to Text and PDF to Text conversion
+- Optical Character Recognition (OCR) for images and documents
+- Document structure extraction (text, tables, layouts)
+- AI-powered summarization and report generation
+- Conversational AI over extracted documents
+- Privacy-focused, ephemeral file processing
+- AI consulting and implementation support
 
 ## Supported Formats
-- **Input**: JPG, PNG, BMP, TIFF, WEBP, HEIC, PDF (Scanned & Native).
-- **Output**: Text (.txt), Excel (.xlsx), Word (.docx), JSON, Searchable PDF.
+Input formats include JPG, PNG, BMP, TIFF, WEBP, HEIC, SVG, GIF, AVIF, RAW, HEIF, ICO, PSD, and PDF (scanned and native).
+Output formats include TXT, DOCX, XLSX, JSON, and searchable PDF.
 
-## Comparison: OCR-Extraction vs. AWS Textract / Google Cloud Vision
-| Feature | OCR-Extraction.com | AWS Textract / Google Cloud OCR |
-| :--- | :--- | :--- |
-| **Cost** | **Free Forever** | Expensive (Pay-per-page) |
-| **Setup** | **None (Browser-based)** | Complex API Setup |
-| **Account** | **No Account Needed** | Account & Credit Card Required |
-| **Focus** | **End-User / Docs / Tables** | Developer / API Integration |
+## AI Services and Expertise
+- AI solution design and architecture
+- MVP and POC development
+- Applied machine learning and generative AI solutions
+- Computer vision and document AI systems
+- AI workflow automation and orchestration
 
-## Common Use Cases
-- **Students & Researchers**: Convert scanned books and notes to text for free.
-- **Business**: Extract tables from invoices to Excel without expensive software.
-- **Privacy-Conscious**: Process sensitive documents without permanent cloud storage.
+## Primary Domains
+- Optical Character Recognition (OCR)
+- Computer Vision
+- Natural Language Processing (NLP)
+- Large Language Models (LLMs)
+- Generative AI
+- Retrieval-Augmented Generation (RAG)
+- Document AI and intelligent workflows
+
+## Typical Use Cases
+- Image to Text and PDF to Text extraction
+- Document digitization and analysis
+- Business document processing
+- Academic and research workflows
+- Privacy-sensitive document analysis
+
+Website: https://www.ocr-extraction.com
