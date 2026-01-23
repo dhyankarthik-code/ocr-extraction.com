@@ -48,13 +48,13 @@ const nextConfig = {
               // Styles
               "style-src 'self' 'unsafe-inline'",
               // Images: All Google domains including DoubleClick for GA4
-              "img-src 'self' blob: data: https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://*.google.com https://*.google.co.in https://*.doubleclick.net https://lh3.googleusercontent.com https://ui-avatars.com https://api.dicebear.com https://flagcdn.com",
+              "img-src 'self' blob: data: https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://*.google.com https://*.google.co.in https://*.doubleclick.net https://lh3.googleusercontent.com https://ui-avatars.com https://api.dicebear.com https://flagcdn.com https://pagead2.googlesyndication.com",
               // Fonts
               "font-src 'self' data:",
               // Connect: Critical - includes stats.g.doubleclick.net, analytics endpoints, Upstash Redis, Inngest
-              "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://*.doubleclick.net https://*.google.com https://*.google.co.in https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.upstash.io https://api.inngest.com https://*.inngest.com",
+              "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://*.doubleclick.net https://*.google.com https://*.google.co.in https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.upstash.io https://api.inngest.com https://*.inngest.com https://pagead2.googlesyndication.com",
               // Frames: reCAPTCHA
-              "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/"
+              "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://www.googletagmanager.com"
             ].join('; ')
           },
           // Anti-Indexing for Vercel Preview/Dev environments

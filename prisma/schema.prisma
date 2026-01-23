@@ -70,6 +70,20 @@ model ChatMessage {
 
 model ContactSubmission {
   id         String   @id @default(cuid())
+  name       String
+  email      String
+  country    String
+  mobile     String
+  message    String
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([email])
+  @@index([createdAt])
+}
+
+model LeadSubmission {
+  id         String   @id @default(cuid())
   lookingFor String
   name       String
   email      String
@@ -81,6 +95,7 @@ model ContactSubmission {
 
   @@index([email])
   @@index([createdAt])
+  @@index([lookingFor])
 }
 
 model Visitor {

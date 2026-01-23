@@ -16,6 +16,7 @@ import {
     Radio,
     Briefcase
 } from "lucide-react";
+import { ToolsCTA } from "@/components/tools/tools-cta";
 
 export const metadata = {
     title: "Industry Solutions | Free OCR Services",
@@ -395,6 +396,9 @@ export default function ServicesPage() {
                         You get the real time analytics. Production is improvised, sales is increased, profits are
                         rationalized and people are determined more than ever.
                     </p>
+
+                    {/* Contact CTA */}
+                    <ToolsCTA />
                 </div>
 
                 {/* Industry Grid */}
