@@ -59,10 +59,11 @@ export async function POST(request: NextRequest) {
         if (resend) {
             try {
                 console.log("📨 Leads Route: Attempting to send email to admin@ocr-extraction.com");
-                const data = await resend.emails.send({
+                const replyToEmail = (email && typeof email === 'string' && email.includes('@')) ? email : undefined;
+                const { data, error } = await resend.emails.send({
                     from: "Leads - OCR Extraction <onboarding@resend.dev>",
                     to: "admin@ocr-extraction.com",
-                    replyTo: email || undefined,
+                    replyTo: replyToEmail,
                     subject: `🎯 New Lead: ${lookingFor} - OCR-Extraction.com`,
                     html: `
                         <!DOCTYPE html>
@@ -107,6 +108,12 @@ export async function POST(request: NextRequest) {
                         </html>
                     `,
                 })
+
+                if (error) {
+                    console.error("❌ Resend returned error:", error)
+                    throw error
+                }
+
                 console.log("✅ Lead notification email sent. Response:", data)
             } catch (emailError) {
                 console.error("❌ Failed to send lead email. Error details:", emailError)
