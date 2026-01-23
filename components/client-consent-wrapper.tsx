@@ -43,7 +43,7 @@ export default function ClientConsentWrapper() {
     return (
         <>
             {/* <ConsentPopup session={session} onAccept={handleTermsAccepted} /> */}
-            <CookieBanner termsAccepted={termsAccepted} />
+            {/* <CookieBanner termsAccepted={termsAccepted} /> */}
         </>
     )
 }
