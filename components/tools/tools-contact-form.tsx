@@ -157,7 +157,7 @@ export default function ToolsContactForm() {
                 if (!verifyData.success) throw new Error("Bot verification failed")
             }
 
-            const response = await fetch("/api/contact", {
+            const response = await fetch("/api/leads", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
