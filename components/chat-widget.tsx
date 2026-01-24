@@ -167,11 +167,43 @@ export default function ChatWidget() {
                 })
             });
 
-            const data = await response.json();
+            // Handle SSE stream response
+            if (!response.ok) {
+                throw new Error('API request failed');
+            }
+
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+            let fullReply = '';
+
+            if (reader) {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') continue;
+                            try {
+                                const parsed = JSON.parse(data);
+                                if (parsed.content) {
+                                    fullReply += parsed.content;
+                                }
+                            } catch {
+                                // Skip invalid JSON lines
+                            }
+                        }
+                    }
+                }
+            }
 
             const botResponse: Message = {
                 id: (Date.now() + 1).toString(),
-                text: data.reply || "I'm having trouble connecting right now.",
+                text: fullReply || "I'm having trouble connecting right now.",
                 sender: 'bot',
                 timestamp: new Date()
             }
@@ -210,7 +242,7 @@ export default function ChatWidget() {
                     <div className="bg-red-600 p-4 flex items-center justify-between text-white">
                         <div className="flex items-center gap-4">
                             <div className="bg-white p-2 rounded-xl shadow-sm">
-                                <img src="/logo.png" alt="Infy Galaxy" className="w-9 h-9 rounded-lg" />
+                                <img src="/logo.png" alt="Infy Galaxy" className="w-9 h-9 rounded-lg object-contain" />
                             </div>
                             <span className="font-semibold text-lg">Infy Galaxy Support</span>
                         </div>
