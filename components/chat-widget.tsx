@@ -174,9 +174,18 @@ export default function ChatWidget() {
 
             const reader = response.body?.getReader();
             const decoder = new TextDecoder();
-            let fullReply = '';
+            const botMessageId = (Date.now() + 1).toString();
+
+            // Add empty bot message immediately for streaming effect
+            setMessages(prev => [...prev, {
+                id: botMessageId,
+                text: '',
+                sender: 'bot',
+                timestamp: new Date()
+            }]);
 
             if (reader) {
+                let fullReply = '';
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
@@ -192,6 +201,12 @@ export default function ChatWidget() {
                                 const parsed = JSON.parse(data);
                                 if (parsed.content) {
                                     fullReply += parsed.content;
+                                    // Update message in real-time for streaming effect
+                                    setMessages(prev => prev.map(msg =>
+                                        msg.id === botMessageId
+                                            ? { ...msg, text: fullReply }
+                                            : msg
+                                    ));
                                 }
                             } catch {
                                 // Skip invalid JSON lines
@@ -199,15 +214,16 @@ export default function ChatWidget() {
                         }
                     }
                 }
-            }
 
-            const botResponse: Message = {
-                id: (Date.now() + 1).toString(),
-                text: fullReply || "I'm having trouble connecting right now.",
-                sender: 'bot',
-                timestamp: new Date()
+                // Final update if empty
+                if (!fullReply) {
+                    setMessages(prev => prev.map(msg =>
+                        msg.id === botMessageId
+                            ? { ...msg, text: "I'm having trouble connecting right now." }
+                            : msg
+                    ));
+                }
             }
-            setMessages(prev => [...prev, botResponse])
             resetInactivityTimer()
         } catch (error) {
             console.error(error);
@@ -268,17 +284,25 @@ export default function ChatWidget() {
                                     .replaceAll("\"", "&quot;")
                                     .replaceAll("'", "&#039;");
 
-                                // 2. Apply Basic Markdown Formatting
+                                // 2. Apply Markdown Formatting
                                 let html = safeText
+                                    // Headers (must be before bold to avoid conflicts)
+                                    .replace(/^### (.*)$/gm, '<h4 class="font-semibold text-gray-900 mt-3 mb-1">$1</h4>')
+                                    .replace(/^## (.*)$/gm, '<h3 class="font-bold text-gray-900 mt-3 mb-1">$1</h3>')
+                                    .replace(/^# (.*)$/gm, '<h2 class="font-bold text-lg text-gray-900 mt-3 mb-1">$1</h2>')
                                     // Bold
                                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                                     // Italic
                                     .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                                    // Inline code
+                                    .replace(/`([^`]+)`/g, '<code class="bg-gray-200 px-1 rounded text-sm">$1</code>')
                                     // Lists
-                                    .replace(/^\s*-\s+(.*)$/gm, '<li>$1</li>')
-                                    .replace(/((?:<li>.*?<\/li>\s*)+)/g, '<ul class="list-disc pl-4 my-2">$1</ul>')
-                                    // Newlines
-                                    .replaceAll("\n", '<br />');
+                                    .replace(/^\s*-\s+(.*)$/gm, '<li class="ml-4">$1</li>')
+                                    .replace(/((?:<li[^>]*>.*?<\/li>\s*)+)/g, '<ul class="list-disc pl-4 my-2 space-y-1">$1</ul>')
+                                    // Numbered lists
+                                    .replace(/^\s*\d+\.\s+(.*)$/gm, '<li class="ml-4">$1</li>')
+                                    // Newlines (but not after block elements)
+                                    .replace(/\n(?!<)/g, '<br />');
                                 return html;
                             };
 
