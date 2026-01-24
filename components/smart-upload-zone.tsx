@@ -16,7 +16,6 @@ export default function SmartUploadZone() {
     const [processingSteps, setProcessingSteps] = useState<string[]>([])
     const [validationError, setValidationError] = useState<string | null>(null)
     const [showLimitWarning, setShowLimitWarning] = useState(false)
-    const [quota, setQuota] = useState<{ used: number, limit: number } | null>(null)
     const [lastUploadTime, setLastUploadTime] = useState<number>(0)
 
     // Sync with global store
@@ -112,17 +111,6 @@ export default function SmartUploadZone() {
     }
 
     const handleUpload = async (file: File) => {
-        // STRICT CONSENT CHECK (Omitted for now)
-        /*
-        const termsAccepted = typeof window !== 'undefined' && localStorage.getItem("terms_accepted") === "true"
-        const cookiesAccepted = typeof window !== 'undefined' && localStorage.getItem("cookies_accepted") === "true"
-
-        if (!termsAccepted || !cookiesAccepted) {
-            alert("Please accept both the Privacy Policy and Cookie Consent to use this tool.")
-            return
-        }
-        */
-
         // Basic file size check for single file > 10MB
         if (file.size > 10 * 1024 * 1024) {
             setShowLimitWarning(true)
@@ -144,7 +132,7 @@ export default function SmartUploadZone() {
 
         try {
             const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
-            const isExcel = file.name.match(/\.xls(x)?$/i) || file.type.includes('excel') || file.type.includes('spreadsheet')
+            const isExcel = /\.xls(x)?$/i.test(file.name) || file.type.includes('excel') || file.type.includes('spreadsheet')
             const formData = new FormData()
 
             if (isPDF || isExcel) {
@@ -154,8 +142,8 @@ export default function SmartUploadZone() {
                 // 1. Preprocess image (Client-side)
 
                 // Detect device type for optimization strategy
-                const isMobile = typeof window !== 'undefined' && (
-                    window.innerWidth < 768 ||
+                const isMobile = typeof globalThis !== 'undefined' && (
+                    globalThis.innerWidth < 768 ||
                     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
                 );
 
@@ -321,6 +309,12 @@ export default function SmartUploadZone() {
                 return
             }
 
+            // Check if no valid files were found at all
+            if (pdfFiles.length === 0 && excelFiles.length === 0 && imageFiles.length === 0) {
+                setValidationError("Unsupported file type. Please upload Images, PDFs, or Excel files.")
+                return
+            }
+
             // Total size check (max 10MB)
             const oversizedFile = acceptedFiles.find(file => file.size > 10 * 1024 * 1024)
             if (oversizedFile) {
@@ -440,7 +434,7 @@ export default function SmartUploadZone() {
                 setProgress(0)
             }
         },
-        [session, quota],
+        [session],
     )
 
 

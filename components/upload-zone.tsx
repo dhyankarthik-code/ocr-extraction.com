@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useDropzone } from "react-dropzone"
-import { Upload, Download, Settings, CheckCircle2, Loader2, Search } from "lucide-react"
+import { Upload, CheckCircle2, Loader2 } from "lucide-react"
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
 import ImageCropper from "@/components/image-cropper"
 import CameraCapture from "@/components/camera-capture"
@@ -23,7 +23,6 @@ const truncateFilename = (name: string, maxLength: number = 20) => {
 }
 
 export default function UploadZone({ onDrop, uploading, progress, processingSteps = [], accept, hideUsage = false, lastUploadTime = 0 }: UploadZoneProps & { accept?: Record<string, string[]>, hideUsage?: boolean }) {
-  const [isDragging, setIsDragging] = useState(false)
   const [quota, setQuota] = useState<{ used: number, limit: number } | null>(null)
   const [imageToCrop, setImageToCrop] = useState<string | null>(null)
   const [cropFileName, setCropFileName] = useState<string>("camera-capture.jpg")
@@ -49,8 +48,8 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
       const element = document.getElementById('upload-zone-container');
       if (element) {
         const yOffset = -100; // Offset for navbar
-        const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
+        const y = element.getBoundingClientRect().top + globalThis.scrollY + yOffset;
+        globalThis.scrollTo({ top: y, behavior: 'smooth' });
       }
     }
   }, [uploading, imageToCrop]);
@@ -60,7 +59,9 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
   const usedMB = quota ? quota.used.toFixed(1) : "0"
 
   // Color code usage: Green < 70%, Yellow < 90%, Red > 90%
-  const usageColor = usagePercent > 90 ? "bg-red-500" : usagePercent > 70 ? "bg-yellow-500" : "bg-green-500"
+  let usageColor = "bg-green-500"
+  if (usagePercent > 90) usageColor = "bg-red-500"
+  else if (usagePercent > 70) usageColor = "bg-yellow-500"
 
   const defaultAccept = {
     "image/jpeg": [".jpg", ".jpeg"],
@@ -104,6 +105,27 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
     return () => window.removeEventListener('trigger-file-upload', handleTrigger)
   }, [open])
 
+  // Listen for global paste events when this component is mounted
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      // Don't interfere if user is typing in an input
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
+        return
+      }
+
+      if (e.clipboardData && e.clipboardData.files.length > 0) {
+        e.preventDefault()
+        const files = Array.from(e.clipboardData.files)
+        if (files.length > 0) {
+          onDrop(files)
+        }
+      }
+    }
+
+    window.addEventListener('paste', handlePaste)
+    return () => window.removeEventListener('paste', handlePaste)
+  }, [onDrop])
+
   return (
     <div id="upload-zone-container" className="w-full max-w-2xl mx-auto space-y-6">
       <div className="relative w-full">
@@ -118,8 +140,6 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
           ${isDragActive ? "border-red-500 bg-red-50 scale-[1.02]" : "border-gray-300 hover:border-red-400 hover:bg-gray-50"}
           ${uploading ? "opacity-50 pointer-events-none border-gray-200" : ""}
         `}
-          onDragEnter={() => setIsDragging(true)}
-          onDragLeave={() => setIsDragging(false)}
         >
           <input {...getInputProps()} aria-label="File upload dropzone" />
 
@@ -156,6 +176,14 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
               {/* Internal Custom Camera Trigger */}
               <div
                 className="w-full max-w-[200px]"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setShowCamera(true)
+                  }
+                }}
                 onClick={(e) => {
                   e.stopPropagation()
                   setShowCamera(true)
@@ -251,7 +279,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
                   const isCurrent = index === processingSteps.length - 1;
 
                   return (
-                    <div key={index} className="flex items-center gap-3 text-sm">
+                    <div key={`${step}-${index}`} className="flex items-center gap-3 text-sm">
                       {isCompleted ? (
                         <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                       ) : (

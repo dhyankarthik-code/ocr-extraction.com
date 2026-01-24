@@ -67,6 +67,8 @@ export default function LocalResultPage() {
     const [showTranslation, setShowTranslation] = useState(false)
     const [isMobile, setIsMobile] = useState(false)
     const [showTranslationDownload, setShowTranslationDownload] = useState(false)
+    const [showMobileDownload, setShowMobileDownload] = useState(false)
+    const mobileDocDownloadRef = useRef<HTMLDivElement>(null)
 
     // Detect mobile viewport
     useEffect(() => {
@@ -86,6 +88,11 @@ export default function LocalResultPage() {
                 (!mobileDownloadRef.current || !mobileDownloadRef.current.contains(event.target as Node))
             ) {
                 setShowTranslationDownload(false)
+            }
+            if (showMobileDownload &&
+                (!mobileDocDownloadRef.current || !mobileDocDownloadRef.current.contains(event.target as Node))
+            ) {
+                setShowMobileDownload(false)
             }
         }
         document.addEventListener("mousedown", handleClickOutside)
@@ -823,6 +830,46 @@ export default function LocalResultPage() {
                     </div>
 
                     <div className="space-y-6">
+                        {/* Mobile Download Button - Interstitial */}
+                        <div className="md:hidden w-full relative z-30" ref={mobileDocDownloadRef}>
+                            <Button
+                                onClick={() => setShowMobileDownload(!showMobileDownload)}
+                                className="w-full bg-red-600 text-white hover:bg-red-700 shadow-md flex items-center justify-center gap-2 h-12 rounded-xl text-sm font-semibold transition-all hover:scale-[1.01] hover:shadow-lg border-none"
+                            >
+                                <div className="p-1 bg-white/20 rounded-full text-white">
+                                    <Download className="w-4 h-4" />
+                                </div>
+                                Download Extracted Data
+                            </Button>
+
+                            {showMobileDownload && (
+                                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-50 p-2 animate-in fade-in zoom-in-95 duration-200">
+                                    <div className="grid grid-cols-1 gap-1">
+                                        <button onClick={handleDownloadTxt} className="w-full text-left px-4 py-3 hover:bg-gray-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
+                                            <div className="p-1.5 rounded-lg bg-gray-100 text-gray-500"><LucideFileText className="w-4 h-4" /></div>
+                                            Text File (.txt)
+                                        </button>
+                                        <button onClick={handleDownloadDocx} className="w-full text-left px-4 py-3 hover:bg-blue-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
+                                            <div className="p-1.5 rounded-lg bg-blue-100 text-blue-600"><FileIcon className="w-4 h-4" /></div>
+                                            Word Document (.docx)
+                                        </button>
+                                        <button onClick={handleDownloadPdf} className="w-full text-left px-4 py-3 hover:bg-red-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
+                                            <div className="p-1.5 rounded-lg bg-red-100 text-red-600"><FileTypeIcon className="w-4 h-4" /></div>
+                                            PDF Document (.pdf)
+                                        </button>
+                                        <button onClick={handleDownloadXlsx} className="w-full text-left px-4 py-3 hover:bg-emerald-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
+                                            <div className="p-1.5 rounded-lg bg-emerald-100 text-emerald-600"><TableIcon className="w-4 h-4" /></div>
+                                            Excel Spreadsheet (.xlsx)
+                                        </button>
+                                        <button onClick={handleDownloadPpt} className="w-full text-left px-4 py-3 hover:bg-orange-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
+                                            <div className="p-1.5 rounded-lg bg-orange-100 text-orange-600"><PresentationIcon className="w-4 h-4" /></div>
+                                            PowerPoint (.pptx)
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         {/* AI Document Chat */}
                         <div className="h-[600px]">
                             <DocumentChat documentText={getFullText()} />

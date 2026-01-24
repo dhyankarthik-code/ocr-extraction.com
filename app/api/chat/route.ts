@@ -50,8 +50,9 @@ export async function POST(req: NextRequest) {
                 }
             });
             conversationId = conversation.id;
-        } catch (e) {
+        } catch (e: any) {
             console.error("DB Error (Chat):", e);
+            // Don't crash for DB error, just log and continue (conversationId will be null)
         }
 
         const mistralKey = process.env.MISTRAL_API_KEY;
@@ -83,7 +84,14 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        const client = new Mistral({ apiKey: mistralKey });
+        let client;
+        try {
+            client = new Mistral({ apiKey: mistralKey });
+            if (!client) throw new Error("Mistral client is null");
+        } catch (mistralError: any) {
+            console.error("Mistral Init Error:", mistralError);
+            return NextResponse.json({ error: 'Mistral Client Init Failed', details: mistralError.message }, { status: 500 });
+        }
 
         // Build messages array
         const systemPrompt = `You are 'Infy', the AI assistant for OCR-Extraction.com, a product of Infy Galaxy.
@@ -193,11 +201,17 @@ If OCR text is garbled, suggest: "The image quality seems low. Try retaking the 
 
         // Generate response
         // Use streaming for faster perceived response time
-        const stream = await client.chat.stream({
-            model: "mistral-large-latest",
-            messages: messagesForAI,
-            temperature: 0.7,
-        });
+        let stream;
+        try {
+            stream = await client.chat.stream({
+                model: "mistral-large-latest",
+                messages: messagesForAI,
+                temperature: 0.7,
+            });
+        } catch (streamError: any) {
+            console.error("Mistral Stream Error:", streamError);
+            return NextResponse.json({ error: 'Mistral Stream Failed', details: streamError.message }, { status: 500 });
+        }
 
         // Create a readable stream for the response
         const encoder = new TextEncoder();
