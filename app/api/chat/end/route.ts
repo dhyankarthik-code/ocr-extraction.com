@@ -70,19 +70,70 @@ export async function POST(request: NextRequest) {
             }
         })
 
+
+        // Format timestamps
+        const startedAt = new Date(conversation.startedAt)
+        const endedAt = new Date()
+
+        // Format IST Time (Indian Standard Time)
+        const istOptions: Intl.DateTimeFormatOptions = { timeZone: 'Asia/Kolkata', dateStyle: 'full', timeStyle: 'medium' }
+        const startedAtIST = new Intl.DateTimeFormat('en-IN', istOptions).format(startedAt)
+
+        // Format Local Time (Server Time / UTC usually)
+        const localOptions: Intl.DateTimeFormatOptions = { dateStyle: 'full', timeStyle: 'medium' }
+        const startedAtLocal = new Intl.DateTimeFormat('en-US', localOptions).format(startedAt)
+
         // Send email via Resend
         const emailHtml = `
-        <h2>New Customer Support Conversation</h2>
-        <p><strong>Session ID:</strong> ${sessionId}</p>
-        <p><strong>Customer Email:</strong> ${userEmail || 'N/A (Guest)'}</p>
-        <p><strong>Started:</strong> ${conversation.startedAt.toISOString()}</p>
-        <p><strong>Ended:</strong> ${new Date().toISOString()}</p>
-        
-        <h3>Summary</h3>
-        <p>${summary}</p>
-        
-        <h3>Full Conversation</h3>
-        <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; white-space: pre-wrap;">${chatLog}</pre>
+        <!DOCTYPE html>
+        <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                <h2 style="color: #d32f2f; margin-bottom: 20px;">New Chat Support Session</h2>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="padding: 10px; font-weight: bold; width: 140px;">Session ID:</td>
+                        <td style="padding: 10px;">${sessionId}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; font-weight: bold;">Customer Email:</td>
+                        <td style="padding: 10px;">${userEmail || 'N/A (Guest)'}</td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="padding: 10px; font-weight: bold;">Location:</td>
+                        <td style="padding: 10px;">
+                            ${conversation.city || 'Unknown City'}, ${conversation.region || 'Unknown Region'}, ${conversation.country || 'Unknown Country'}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; font-weight: bold;">IP Address:</td>
+                        <td style="padding: 10px;">${conversation.ipAddress || 'Unknown'}</td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="padding: 10px; font-weight: bold;">Time (IST):</td>
+                        <td style="padding: 10px;">${startedAtIST}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; font-weight: bold;">Time (Local):</td>
+                        <td style="padding: 10px;">${startedAtLocal}</td>
+                    </tr>
+                </table>
+                
+                <div style="background-color: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin-bottom: 20px;">
+                    <h3 style="margin-top: 0; color: #856404;">AI Summary</h3>
+                    <p style="margin-bottom: 0;">${summary}</p>
+                </div>
+                
+                <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">Full Conversation</h3>
+                <pre style="background: #f1f2f3; padding: 15px; border-radius: 5px; white-space: pre-wrap; font-family: Consolas, monospace; font-size: 13px; border: 1px solid #ddd;">${chatLog}</pre>
+                
+                <div style="margin-top: 20px; font-size: 12px; color: #777; text-align: center;">
+                    Sent from Infy Galaxy Chat Widget
+                </div>
+            </div>
+        </body>
+        </html>
         `
 
         // Send email via Resend
