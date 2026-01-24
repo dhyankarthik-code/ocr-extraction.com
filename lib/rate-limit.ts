@@ -14,36 +14,37 @@ import redis from './redis'
  */
 
 // Rate limiter for API routes (OCR, tools, etc.)
-export const apiRateLimiter = new Ratelimit({
+// Rate limiter for API routes (OCR, tools, etc.)
+export const apiRateLimiter = redis ? new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(10, '1 m'), // 10 requests per minute
     analytics: true,
     prefix: 'ratelimit:api',
-})
+}) : null
 
 // Rate limiter for heavy operations (OCR processing)
-export const ocrRateLimiter = new Ratelimit({
+export const ocrRateLimiter = redis ? new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(5, '1 m'), // 5 OCR requests per minute
     analytics: true,
     prefix: 'ratelimit:ocr',
-})
+}) : null
 
 // Rate limiter for tool conversions (image-to-pdf, etc.)
-export const toolRateLimiter = new Ratelimit({
+export const toolRateLimiter = redis ? new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(10, '1 m'), // 10 tool requests per minute
     analytics: true,
     prefix: 'ratelimit:tools',
-})
+}) : null
 
 // Rate limiter for authentication endpoints
-export const authRateLimiter = new Ratelimit({
+export const authRateLimiter = redis ? new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(100, '1 m'), // Relaxed for session polling
     analytics: true,
     prefix: 'ratelimit:auth',
-})
+}) : null
 
 /**
  * Helper to get IP address from request

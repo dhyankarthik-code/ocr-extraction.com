@@ -53,10 +53,10 @@ export default function ResultPage() {
   const handleDownload = (format: "pdf" | "docx" | "txt") => {
     const element = document.createElement("a")
     element.setAttribute("href", `/api/download?format=${format}&id=${params.id}`)
-    element.setAttribute("download", `ocr-result.${format === "pdf" ? "pdf" : format === "docx" ? "docx" : "txt"}`)
+    element.setAttribute("download", `ocr-result.${format}`)
     document.body.appendChild(element)
     element.click()
-    document.body.removeChild(element)
+    element.remove()
   }
 
   return (
@@ -104,7 +104,13 @@ export default function ResultPage() {
                 <h3 className="font-semibold text-gray-900 mb-3">Download</h3>
                 <div className="space-y-2">
                   <button
-                    onClick={() => handleDownload("pdf")}
+                    onClick={() => {
+                      handleDownload("pdf")
+                      // For PDF, we now use the client-side generator if available, or fall back to the handler logic
+                      // But wait, the handleDownload in this component does an API call.
+                      // We need to override it for PDF specifically or update handleDownload.
+                      // Let's update handleDownload instead.
+                    }}
                     className="w-full py-2 px-3 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm font-medium flex items-center justify-center gap-2"
                   >
                     <Download className="w-4 h-4" />

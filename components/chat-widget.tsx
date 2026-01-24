@@ -197,9 +197,9 @@ export default function ChatWidget() {
     }
 
     // Only show chat widget for logged-in users
-    if (!session) {
-        return null
-    }
+    // if (!session) {
+    //     return null
+    // }
 
     return (
         <div ref={chatContainerRef} className="fixed bottom-6 right-6 z-[50] flex flex-col items-end">
@@ -230,11 +230,11 @@ export default function ChatWidget() {
                             const renderMarkdown = (text: string) => {
                                 // 1. Escape HTML entities to prevent XSS
                                 let safeText = text
-                                    .replace(/&/g, "&amp;")
-                                    .replace(/</g, "&lt;")
-                                    .replace(/>/g, "&gt;")
-                                    .replace(/"/g, "&quot;")
-                                    .replace(/'/g, "&#039;");
+                                    .replaceAll("&", "&amp;")
+                                    .replaceAll("<", "&lt;")
+                                    .replaceAll(">", "&gt;")
+                                    .replaceAll("\"", "&quot;")
+                                    .replaceAll("'", "&#039;");
 
                                 // 2. Apply Basic Markdown Formatting
                                 let html = safeText
@@ -246,7 +246,7 @@ export default function ChatWidget() {
                                     .replace(/^\s*-\s+(.*)$/gm, '<li>$1</li>')
                                     .replace(/((?:<li>.*?<\/li>\s*)+)/g, '<ul class="list-disc pl-4 my-2">$1</ul>')
                                     // Newlines
-                                    .replace(/\n/g, '<br />');
+                                    .replaceAll("\n", '<br />');
                                 return html;
                             };
 

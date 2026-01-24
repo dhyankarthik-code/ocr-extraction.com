@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
             const resend = new Resend(resendApiKey);
             await resend.emails.send({
                 from: 'OCR Support <onboarding@resend.dev>',
-                to: 'dhyan@ocr-extraction.com',
+                to: 'admin@ocr-extraction.com',
                 subject: `[Support Chat] New Conversation - ${sessionId.slice(0, 8)}`,
                 html: emailHtml
             })

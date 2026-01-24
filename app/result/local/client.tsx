@@ -28,9 +28,9 @@ import { sendGAEvent } from "@/lib/gtag"
 
 import * as XLSX from "xlsx"
 import pptxgen from "pptxgenjs"
-import { jsPDF } from "jspdf"
 import ShinyText from "@/components/ui/shiny-text"
 import ReportChatModal from "@/components/report-chat-modal"
+import { generatePdfFromText } from "@/lib/pdf-utils"
 
 
 
@@ -228,36 +228,10 @@ export default function LocalResultPage() {
     }
 
     const handleDownloadPdf = () => {
-        try {
-            sendGAEvent({ action: 'file_download', category: 'Download', label: 'pdf' })
-            const doc = new jsPDF()
-            const fullText = getFullText()
-
-            const pageWidth = doc.internal.pageSize.getWidth()
-            const margin = 15
-            const maxLineWidth = pageWidth - (margin * 2)
-            const lineHeight = 7
-
-            // Clean text to remove characters that might cause issues (basic sanitization)
-            // jsPDF handles most things, but let's be safe against control chars
-            const cleanText = fullText.replaceAll(/[\x00-\x09\x0B\x0C\x0E-\x1F]/g, "")
-
-            const lines = doc.splitTextToSize(cleanText, maxLineWidth)
-            let cursorY = 20
-
-            // Add content
-            lines.forEach((line: string) => {
-                if (cursorY > doc.internal.pageSize.getHeight() - margin) {
-                    doc.addPage()
-                    cursorY = 20
-                }
-                doc.text(line, margin, cursorY)
-                cursorY += lineHeight
-            })
-
-            doc.save(`${fileName} ocr result.pdf`)
-        } catch (error) {
-            console.error("PDF generation failed:", error)
+        sendGAEvent({ action: 'file_download', category: 'Download', label: 'pdf' })
+        const fullText = getFullText()
+        const success = generatePdfFromText(fullText, `${fileName} ocr result`)
+        if (!success) {
             alert("Failed to generate PDF. Please try 'Word' or 'TXT' format if the issue persists.")
         }
     }
@@ -305,42 +279,10 @@ export default function LocalResultPage() {
             const blob = await Packer.toBlob(doc)
             saveAs(blob, `${fileName} AI Report.docx`)
         } else if (format === 'pdf') {
-            const pdfDoc = await PDFDocument.create()
-            const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
-            const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
-            let page = pdfDoc.addPage()
-            const { width, height } = page.getSize()
-            const fontSize = 11
-            const lineHeight = fontSize + 4
-            let y = height - 50
-
-            const lines = summary.split('\n')
-            for (const line of lines) {
-                if (y < 50) {
-                    page = pdfDoc.addPage()
-                    y = height - 50
-                }
-
-                const isBold = line.match(/^\*\*(.+?)\*\*:?/)
-                const text = isBold ? isBold[1] : line.replace(/^[•\-]\s*/, '')
-                const useFont = isBold ? boldFont : font
-                const useFontSize = isBold ? fontSize + 2 : fontSize
-
-                if (text.trim()) {
-                    page.drawText(text, {
-                        x: line.startsWith('-') || line.startsWith('•') ? 70 : 50,
-                        y,
-                        size: useFontSize,
-                        font: useFont,
-                        color: rgb(0, 0, 0)
-                    })
-                }
-                y -= lineHeight
+            const success = generatePdfFromText(summary, `${fileName} AI Report`)
+            if (!success) {
+                alert("Failed to generate PDF report.")
             }
-
-            const pdfBytes = await pdfDoc.save()
-            const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" })
-            saveAs(blob, `${fileName} AI Report.pdf`)
         } else if (format === 'xlsx') {
             const wb = XLSX.utils.book_new()
             const ws = XLSX.utils.aoa_to_sheet([[summary]])
@@ -441,10 +383,8 @@ export default function LocalResultPage() {
             const blob = await Packer.toBlob(doc);
             saveAs(blob, `${filename}.docx`);
         } else if (format === 'pdf') {
-            const pdf = new jsPDF();
-            const splitText = pdf.splitTextToSize(translatedText, 180);
-            pdf.text(splitText, 10, 10);
-            pdf.save(`${filename}.pdf`);
+            const filename = `Translation_${translateLanguage}_${timestamp}`
+            generatePdfFromText(translatedText, filename)
         } else if (format === 'xlsx') {
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet([[translatedText]]);
