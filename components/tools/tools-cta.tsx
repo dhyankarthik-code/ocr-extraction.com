@@ -23,7 +23,7 @@ export function ToolsCTA() {
                     onClick={() => setShowContact(true)}
                     className="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-full shadow hover:shadow-md transition-all"
                 >
-                    Get in Touch
+                    Try Our Live Demo
                 </Button>
             </div>
 
