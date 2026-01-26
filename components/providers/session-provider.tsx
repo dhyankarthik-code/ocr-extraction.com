@@ -54,7 +54,10 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
                 setSession(null)
             }
         } catch (error) {
-            console.error("Error checking session:", error)
+            // Only log non-network errors (TypeError = "Failed to fetch" is benign during dev/HMR)
+            if (!(error instanceof TypeError)) {
+                console.error("Error checking session:", error)
+            }
             setSession(null)
         } finally {
             setLoading(false)

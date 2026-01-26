@@ -29,6 +29,7 @@ import { sendGAEvent } from "@/lib/gtag"
 import * as XLSX from "xlsx"
 import pptxgen from "pptxgenjs"
 import ShinyText from "@/components/ui/shiny-text"
+import PremiumLoadingOverlay from "@/components/ui/premium-loading"
 import ReportChatModal from "@/components/report-chat-modal"
 import { generatePdfFromText } from "@/lib/pdf-utils"
 
@@ -884,31 +885,8 @@ export default function LocalResultPage() {
                     documentText={getFullText()}
                 />
 
-                {/* Shiny Loading Overlay */}
-                {generatingSummary && (
-                    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[1001] backdrop-blur-md">
-                        <div className="text-center">
-                            <ShinyText
-                                text="Generating..."
-                                className="text-4xl md:text-8xl font-black text-white drop-shadow-2xl px-4 text-center break-words"
-                                speed={1.5}
-                            />
-                        </div>
-                    </div>
-                )}
-
-                {/* Shiny Loading Overlay */}
-                {generatingSummary && (
-                    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[1001] backdrop-blur-md">
-                        <div className="text-center">
-                            <ShinyText
-                                text="Generating..."
-                                className="text-4xl md:text-8xl font-black text-white drop-shadow-2xl px-4 text-center break-words"
-                                speed={1.5}
-                            />
-                        </div>
-                    </div>
-                )}
+                {/* Premium Loading Overlay */}
+                {generatingSummary && <PremiumLoadingOverlay />}
 
                 {/* AI Report Modal */}
                 {summary && (

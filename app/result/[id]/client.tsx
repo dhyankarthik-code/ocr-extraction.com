@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { Search, Download, Plus, Sparkles } from "lucide-react"
 import SummaryModal from "@/components/summary-modal"
+import PremiumLoadingOverlay from "@/components/ui/premium-loading"
 
 export default function ResultPage() {
   const params = useParams()
@@ -13,6 +14,7 @@ export default function ResultPage() {
   const [loading, setLoading] = useState(true)
   const [showSummary, setShowSummary] = useState(false)
   const [summary, setSummary] = useState<string[] | null>(null)
+  const [generatingSummary, setGeneratingSummary] = useState(false)
 
   useEffect(() => {
     const fetchResult = async () => {
@@ -36,6 +38,7 @@ export default function ResultPage() {
     .join("\n")
 
   const handleGenerateSummary = async () => {
+    setGeneratingSummary(true)
     try {
       const response = await fetch("/api/summary", {
         method: "POST",
@@ -47,6 +50,8 @@ export default function ResultPage() {
       setShowSummary(true)
     } catch (error) {
       console.error("Error generating summary:", error)
+    } finally {
+      setGeneratingSummary(false)
     }
   }
 
@@ -154,6 +159,9 @@ export default function ResultPage() {
 
       {/* Summary Modal */}
       {showSummary && <SummaryModal summary={summary} onClose={() => setShowSummary(false)} />}
+
+      {/* Premium Loading Overlay */}
+      {generatingSummary && <PremiumLoadingOverlay />}
     </div>
   )
 }

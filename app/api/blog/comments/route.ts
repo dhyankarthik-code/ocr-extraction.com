@@ -9,18 +9,32 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
         }
 
-        // Verify ReCaptcha if token provided
-        if (recaptchaToken) {
-            const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`
-            const recaptchaRes = await fetch(verifyUrl, { method: 'POST' })
+        // Verify ReCaptcha v3 if token provided
+        if (recaptchaToken && process.env.RECAPTCHA_SECRET_KEY) {
+            const verifyUrl = `https://www.google.com/recaptcha/api/siteverify`
+            const recaptchaRes = await fetch(verifyUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`
+            })
             const recaptchaData = await recaptchaRes.json()
 
-            // Note: If secret key is not set, this might fail or we might skip. 
-            // For now, if secret is missing we proceed (dev mode) or fail? 
-            // The user provided site key, I assume secret is in env. 
-            // If verification fails:
-            if (!recaptchaData.success && process.env.RECAPTCHA_SECRET_KEY) {
-                return NextResponse.json({ error: 'ReCaptcha verification failed' }, { status: 400 })
+            // v3 returns success + score (0.0 to 1.0, higher = more likely human)
+            // Also verify the action matches what we expect
+            if (!recaptchaData.success) {
+                console.error('reCAPTCHA verification failed:', recaptchaData['error-codes'])
+                return NextResponse.json({ error: 'reCAPTCHA verification failed' }, { status: 400 })
+            }
+
+            // Check score threshold (0.5 is recommended default)
+            if (recaptchaData.score !== undefined && recaptchaData.score < 0.5) {
+                console.warn('reCAPTCHA score too low:', recaptchaData.score)
+                return NextResponse.json({ error: 'Suspicious activity detected' }, { status: 400 })
+            }
+
+            // Optionally verify action
+            if (recaptchaData.action && recaptchaData.action !== 'comment_submit') {
+                console.warn('reCAPTCHA action mismatch:', recaptchaData.action)
             }
         }
 

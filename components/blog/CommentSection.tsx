@@ -1,11 +1,10 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, MessageSquare, User } from "lucide-react"
-import ReCAPTCHA from "react-google-recaptcha"
+import { Loader2, MessageSquare, ShieldCheck } from "lucide-react"
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 import { toast } from "sonner"
 
 interface Comment {
@@ -27,10 +26,11 @@ export default function CommentSection({ slug }: CommentSectionProps) {
     // Form State
     const [content, setContent] = useState("")
     const [errors, setErrors] = useState<{ [key: string]: string }>({})
-    const [touched, setTouched] = useState<{ [key: string]: boolean }>({})
 
-    const recaptchaRef = useRef<ReCAPTCHA>(null)
     const formRef = useRef<HTMLDivElement>(null)
+
+    // reCAPTCHA v3 hook
+    const { executeRecaptcha } = useGoogleReCaptcha()
 
     // Load Comments
     useEffect(() => {
@@ -48,10 +48,6 @@ export default function CommentSection({ slug }: CommentSectionProps) {
             })
     }, [slug])
 
-    const handleBlur = (field: string) => {
-        setTouched(prev => ({ ...prev, [field]: true }))
-    }
-
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const value = e.target.value
         if (value.length <= 200) {
@@ -60,7 +56,7 @@ export default function CommentSection({ slug }: CommentSectionProps) {
         }
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault()
 
         const newErrors: { [key: string]: string } = {}
@@ -74,19 +70,20 @@ export default function CommentSection({ slug }: CommentSectionProps) {
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
-            setTouched({ content: true })
             return
         }
 
-        const token = recaptchaRef.current?.getValue()
-        if (!token) {
-            toast.error("Please verify you are human")
+        // Execute reCAPTCHA v3
+        if (!executeRecaptcha) {
+            toast.error("reCAPTCHA not ready. Please try again.")
             return
         }
 
         setSubmitting(true)
 
         try {
+            const token = await executeRecaptcha("comment_submit")
+
             const res = await fetch('/api/blog/comments', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -106,10 +103,10 @@ export default function CommentSection({ slug }: CommentSectionProps) {
             // Success
             toast.success("Comment posted successfully!")
 
-            // Append new comment to list (optimistic or from response)
+            // Append new comment to list
             const newComment = {
                 id: data.comment?.id || Date.now().toString(),
-                name: "Anonymous User", // UI fallback
+                name: "Anonymous User",
                 content: data.comment?.content || content,
                 createdAt: new Date().toISOString()
             }
@@ -118,8 +115,6 @@ export default function CommentSection({ slug }: CommentSectionProps) {
             // Reset form
             setContent("")
             setErrors({})
-            setTouched({})
-            recaptchaRef.current?.reset()
 
         } catch (error) {
             console.error("Comment submission error:", error)
@@ -127,7 +122,7 @@ export default function CommentSection({ slug }: CommentSectionProps) {
         } finally {
             setSubmitting(false)
         }
-    }
+    }, [content, executeRecaptcha, slug])
 
     return (
         <div className="mt-12 border-t border-gray-100 pt-10" ref={formRef}>
@@ -146,7 +141,6 @@ export default function CommentSection({ slug }: CommentSectionProps) {
                             id="comment"
                             value={content}
                             onChange={handleContentChange}
-                            onBlur={() => handleBlur('content')}
                             placeholder="Share your thoughts..."
                             required
                             className={`bg-white min-h-[100px] transition-all ${errors.content ? 'border-red-500 ring-red-500' : ''}`}
@@ -160,17 +154,10 @@ export default function CommentSection({ slug }: CommentSectionProps) {
                         </div>
                     </div>
 
-
-
-                    <div className="py-2 min-h-[78px] flex items-center justify-start bg-gray-100/50 rounded-lg border border-dashed border-gray-200 px-4">
-                        {touched.content ? (
-                            <ReCAPTCHA
-                                ref={recaptchaRef}
-                                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6Lc33R8sAAAAADprj7hnaPVxYBMGgzUEICm_TbBt"}
-                            />
-                        ) : (
-                            <p className="text-xs text-gray-400 italic">Verify you are human (loads on interaction)</p>
-                        )}
+                    {/* reCAPTCHA v3 Badge Info */}
+                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                        <ShieldCheck className="w-4 h-4" />
+                        <span>Protected by reCAPTCHA</span>
                     </div>
 
                     <Button
