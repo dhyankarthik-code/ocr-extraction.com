@@ -10,7 +10,7 @@ const nextConfig = {
   },
 
   images: {
-    unoptimized: true,
+    // Image optimization enabled for performance (Vercel handles this)
   },
   trailingSlash: false,
   async headers() {

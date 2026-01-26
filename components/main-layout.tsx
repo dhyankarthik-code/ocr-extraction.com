@@ -1,11 +1,14 @@
 "use client"
 
+import dynamic from 'next/dynamic'
 import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
-import ChatWidget from "@/components/chat-widget"
-import AuthModal from "@/components/auth-modal"
 import { useSession } from "@/hooks/use-session"
 import { useState } from "react"
+
+// Lazy load non-critical components for improved INP/FCP
+const Footer = dynamic(() => import("@/components/footer"), { ssr: true })
+const ChatWidget = dynamic(() => import("@/components/chat-widget"), { ssr: false })
+const AuthModal = dynamic(() => import("@/components/auth-modal"), { ssr: false })
 
 interface MainLayoutProps {
     children: React.ReactNode

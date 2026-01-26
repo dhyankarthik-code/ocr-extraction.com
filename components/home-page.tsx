@@ -1,15 +1,17 @@
 "use client"
-// Deployment update: 2026-01-16 21:28
-
+// Deployment update: 2026-01-26 - Performance optimized
 
 import { useState, useEffect, useRef } from "react"
 import dynamic from 'next/dynamic'
-import Flag from 'react-world-flags'
 import SmartUploadZone from "@/components/smart-upload-zone"
 import CtaSection from "@/components/cta-section"
-import { gsap } from "gsap"
 
-import { TypeAnimation } from 'react-type-animation'
+// Dynamic imports for performance (reduces initial JS bundle ~100KB)
+const TypeAnimation = dynamic(() => import('react-type-animation').then(mod => mod.TypeAnimation), {
+    ssr: false,
+    loading: () => <span>Free OCR Extraction tool</span>
+})
+const Flag = dynamic(() => import('react-world-flags'), { ssr: false }) as any
 
 export default function HomePage() {
     const [mounted, setMounted] = useState(false)
@@ -17,11 +19,14 @@ export default function HomePage() {
 
     useEffect(() => {
         setMounted(true)
+        // Dynamic import GSAP for reduced initial bundle
         if (heroRef.current) {
-            gsap.fromTo(heroRef.current,
-                { opacity: 0, y: 30 },
-                { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", delay: 0.5 }
-            )
+            import('gsap').then(({ gsap }) => {
+                gsap.fromTo(heroRef.current,
+                    { opacity: 0, y: 30 },
+                    { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", delay: 0.5 }
+                )
+            })
         }
     }, [])
 

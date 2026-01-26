@@ -90,35 +90,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const jsonLdGraph = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebSite",
-        "name": "Free OCR Extraction",
-        "url": "https://www.ocr-extraction.com",
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": "https://www.ocr-extraction.com/search?q={search_term_string}"
-          },
-          "query-input": "required name=search_term_string"
-        }
-      },
-      {
-        "@type": "SiteNavigationElement",
-        "name": ["Tools", "Services", "Blog", "Contact"],
-        "url": [
-          "https://www.ocr-extraction.com/tools",
-          "https://www.ocr-extraction.com/services",
-          "https://www.ocr-extraction.com/blog",
-          "https://www.ocr-extraction.com/contact"
-        ]
-      }
-    ]
-  };
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -155,7 +126,6 @@ export default function RootLayout({
           </SessionProvider>
         </ReCaptchaProvider>
         <Analytics />
-        <SpeedInsights />
         <SpeedInsights />
         <script
           type="application/ld+json"
