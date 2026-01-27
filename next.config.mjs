@@ -50,7 +50,7 @@ const nextConfig = {
               "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://va.vercel-scripts.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://cdn-in.pagesense.io https://googleads.g.doubleclick.net https://*.doubleclick.net",
               // Styles
               "style-src 'self' 'unsafe-inline'",
-              // Images: All Google domains including DoubleClick for GA4
+              // Images: All Google domains including DoubleClick for GA4 (Confirmed googleadservices included)
               "img-src 'self' blob: data: https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://*.google.com https://*.google.co.in https://*.doubleclick.net https://*.googleadservices.com https://lh3.googleusercontent.com https://ui-avatars.com https://api.dicebear.com https://flagcdn.com https://pagead2.googlesyndication.com",
               // Fonts
               "font-src 'self' data:",

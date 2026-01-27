@@ -50,7 +50,7 @@ export const authRateLimiter = redis ? new Ratelimit({
 // CRITICAL: Must be very lenient to support aggressive client-side polling during OCR processing
 export const statusRateLimiter = redis ? new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(100, '1 m'), // 100 requests per minute for status checks
+    limiter: Ratelimit.slidingWindow(300, '1 m'), // 300 requests per minute (~5 req/sec) - Increased for aggressive polling
     analytics: true,
     prefix: 'ratelimit:status',
 }) : null
