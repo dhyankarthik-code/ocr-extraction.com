@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Loader2, Download, X, Copy, Check, FileText, Bot, User, AlertCircle, Sparkles, ChevronLeft } from "lucide-react"
+import { Loader2, Download, X, Copy, Check, FileText, Bot, User, AlertCircle, Sparkles, ChevronLeft, Send } from "lucide-react"
 import {
     Bulb as Lightbulb,
     CreditCard01 as DollarSign,
@@ -16,8 +16,7 @@ import { saveAs } from "file-saver"
 import ReactMarkdown from 'react-markdown'
 import { Document, Packer, Paragraph, TextRun } from "docx"
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
-import * as XLSX from "xlsx"
-import html2canvas from "html2canvas"
+import { Input } from "@/components/ui/input"
 
 interface ReportChatModalProps {
     isOpen: boolean
@@ -40,6 +39,7 @@ export default function ReportChatModal({ isOpen, onClose, documentText }: Repor
     const [loading, setLoading] = useState(false)
     const [currentReport, setCurrentReport] = useState("")
     const [selectedCategory, setSelectedCategory] = useState<ReportCategory | null>(null)
+    const [input, setInput] = useState("")
     const scrollAreaRef = useRef<HTMLDivElement>(null)
 
     // Auto-scroll
@@ -127,6 +127,83 @@ export default function ReportChatModal({ isOpen, onClose, documentText }: Repor
         } finally {
             setLoading(false)
             setCurrentReport("") // Reset stream buffer, msg is saved
+        }
+    }
+
+    const handleSendChat = async () => {
+        if (!input.trim() || loading) return
+
+        const userMessage = { role: 'user' as const, content: input }
+        setMessages(prev => [...prev, userMessage])
+        setInput("")
+        setLoading(true)
+
+        // Add placeholder
+        setMessages(prev => [...prev, { role: 'assistant', content: '' }])
+
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: userMessage.content,
+                    documentText,
+                    chatHistory: messages
+                })
+            })
+
+            if (!response.ok) throw new Error('Chat failed')
+
+            const reader = response.body?.getReader()
+            const decoder = new TextDecoder()
+            let fullContent = ''
+
+            if (reader) {
+                while (true) {
+                    const { done, value } = await reader.read()
+                    if (done) break
+
+                    const chunk = decoder.decode(value)
+                    const lines = chunk.split('\n')
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6)
+                            if (data === '[DONE]') break
+
+                            try {
+                                const parsed = JSON.parse(data)
+                                if (parsed.content) {
+                                    fullContent += parsed.content
+                                    setMessages(prev => {
+                                        const newMsgs = [...prev]
+                                        const lastMsg = newMsgs[newMsgs.length - 1]
+                                        if (lastMsg.role === 'assistant') {
+                                            lastMsg.content = fullContent
+                                        }
+                                        return newMsgs
+                                    })
+                                }
+                            } catch (e) { }
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            setMessages(prev => {
+                const newMsgs = [...prev]
+                newMsgs[newMsgs.length - 1] = { role: 'assistant', content: "Sorry, I encountered an error. Please try again.", type: 'error' }
+                return newMsgs
+            })
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault()
+            handleSendChat()
         }
     }
 
@@ -263,7 +340,7 @@ export default function ReportChatModal({ isOpen, onClose, documentText }: Repor
                                                             {msg.content}
                                                         </ReactMarkdown>
                                                         {/* Action Buttons for Assistant Msgs */}
-                                                        {msg.type !== 'error' && !loading && idx === messages.length - 1 && (
+                                                        {msg.type !== 'error' && !loading && idx === messages.length - 1 && msg.type === 'report' && (
                                                             <div className="mt-5 pt-4 border-t border-gray-100 flex flex-wrap gap-2 text-[10px]">
                                                                 <Button size="sm" variant="outline" className="h-8 text-[11px] gap-1.5 rounded-lg border-gray-200 hover:bg-gray-50 font-bold" onClick={() => handleDownload('txt', msg.content)}>
                                                                     <Download className="w-3.5 h-3.5" /> Plain Text
@@ -292,13 +369,46 @@ export default function ReportChatModal({ isOpen, onClose, documentText }: Repor
                                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                                                     <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
                                                 </div>
-                                                <span className="text-sm text-gray-500 font-bold animate-pulse">Analyzing document data...</span>
+                                                <span className="text-sm text-gray-500 font-bold animate-pulse">
+                                                    {messages[messages.length - 1]?.role === 'user' ? 'Thinking...' : 'Analyzing document data...'}
+                                                </span>
                                             </div>
                                         </div>
                                     )}
                                 </div>
                             )}
                         </ScrollArea>
+
+                        {/* Input Area */}
+                        {messages.length > 0 && (
+                            <div className="p-4 bg-white border-t border-gray-100">
+                                <div className="relative flex items-center">
+                                    <Input
+                                        value={input}
+                                        onChange={(e) => setInput(e.target.value)}
+                                        onKeyPress={handleKeyPress}
+                                        placeholder="Ask follow-up questions about the report..."
+                                        disabled={loading}
+                                        className="pr-12 py-3 rounded-xl bg-gray-50 border-gray-200 focus-visible:ring-2 focus-visible:ring-blue-500/30 text-sm"
+                                    />
+                                    <Button
+                                        onClick={handleSendChat}
+                                        disabled={loading || !input.trim()}
+                                        size="icon"
+                                        className={`absolute right-1.5 h-9 w-9 rounded-lg transition-all ${input.trim()
+                                            ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+                                            : "bg-gray-200 text-gray-400"
+                                            }`}
+                                    >
+                                        {loading ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        ) : (
+                                            <Send className="w-4 h-4 ml-0.5" />
+                                        )}
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

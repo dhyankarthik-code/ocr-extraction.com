@@ -21,6 +21,33 @@ export async function GET(
             )
         }
 
+        // Apply lenient rate limiting for status checks
+        const { statusRateLimiter, getClientIp } = await import('@/lib/rate-limit')
+
+        if (statusRateLimiter) {
+            const ip = getClientIp(request.headers)
+            const { success, limit, remaining } = await statusRateLimiter.limit(ip)
+
+            if (!success) {
+                return NextResponse.json(
+                    {
+                        error: 'Too many status checks',
+                        limit,
+                        remaining,
+                        retryAfter: 60 // seconds
+                    },
+                    {
+                        status: 429,
+                        headers: {
+                            'Retry-After': '60',
+                            'X-RateLimit-Limit': limit.toString(),
+                            'X-RateLimit-Remaining': remaining.toString()
+                        }
+                    }
+                )
+            }
+        }
+
         const { default: redis } = await import('@/lib/redis')
 
         if (!redis) {

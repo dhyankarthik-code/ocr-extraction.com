@@ -46,6 +46,15 @@ export const authRateLimiter = redis ? new Ratelimit({
     prefix: 'ratelimit:auth',
 }) : null
 
+// Rate limiter for status polling endpoints (OCR job status checks)
+// CRITICAL: Must be very lenient to support aggressive client-side polling during OCR processing
+export const statusRateLimiter = redis ? new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(100, '1 m'), // 100 requests per minute for status checks
+    analytics: true,
+    prefix: 'ratelimit:status',
+}) : null
+
 /**
  * Helper to get IP address from request
  */

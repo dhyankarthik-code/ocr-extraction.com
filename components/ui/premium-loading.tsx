@@ -79,7 +79,7 @@ export default function PremiumLoadingOverlay() {
                                 {LOADING_STATES[currentState].text}
                             </motion.h3>
                         </AnimatePresence>
-                        <p className="text-white/60 text-sm mt-2 font-medium">Powered by AI</p>
+                        <p className="text-white/60 text-sm mt-2 font-medium">Powered by OCR Extraction AI Engine</p>
                     </div>
 
                     {/* Progress Bar */}
