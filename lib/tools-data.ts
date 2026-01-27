@@ -48,5 +48,15 @@ export const toolCategories = [
             { label: 'Convert Text to PPT', href: '/tools/text-to-ppt' },
             { label: 'Convert Excel to PPT', href: '/tools/excel-to-ppt' },
         ]
+    },
+    {
+        name: "Text Conversion Tools",
+        items: [
+            { label: 'Convert Image to Text', href: '/tools/image-to-text' },
+            { label: 'Convert PDF to Text', href: '/tools/pdf-to-text' },
+            { label: 'Convert Excel to Text', href: '/tools/excel-to-text' },
+            { label: 'Convert PPT to Text', href: '/tools/ppt-to-text' },
+            { label: 'Convert Word to Text', href: '/tools/word-to-text' },
+        ]
     }
 ]

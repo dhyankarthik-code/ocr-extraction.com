@@ -1,5 +1,6 @@
 "use client"
-
+import { useEffect, useState } from "react"
+import { createPortal } from "react-dom"
 import { X } from "lucide-react"
 
 interface LimitWarningModalProps {
@@ -7,8 +8,21 @@ interface LimitWarningModalProps {
 }
 
 export default function LimitWarningModal({ onClose }: LimitWarningModalProps) {
-    return (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+        // Prevent scrolling when modal is open
+        document.body.style.overflow = 'hidden'
+        return () => {
+            document.body.style.overflow = 'unset'
+        }
+    }, [])
+
+    if (!mounted) return null
+
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative animate-in zoom-in-95 duration-200">
                 <button
                     onClick={onClose}
@@ -46,6 +60,7 @@ export default function LimitWarningModal({ onClose }: LimitWarningModalProps) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     )
 }

@@ -244,13 +244,29 @@ export default function LocalResultPage() {
         }
     }
 
+    // Helper to parse text into a grid for Excel
+    const parseTextToGrid = (text: string): string[][] => {
+        if (!text) return [[]]
+        return text.split('\n').map(line =>
+            // Split by tabs or 2+ spaces
+            line.split(/\t|\s{2,}/).map(cell => cell.trim()).filter(cell => cell.length > 0)
+        ).filter(row => row.length > 0)
+    }
+
     const handleDownloadXlsx = () => {
         sendGAEvent({ action: 'file_download', category: 'Download', label: 'xlsx' })
         const fullText = getFullText()
         const wb = XLSX.utils.book_new()
-        const ws = XLSX.utils.aoa_to_sheet([[fullText]])
-        // Set column width for better readability
-        ws['!cols'] = [{ wch: 100 }];
+
+        const gridData = parseTextToGrid(fullText)
+        const ws = XLSX.utils.aoa_to_sheet(gridData)
+
+        // Auto-width columns based on content (max 50 chars width)
+        const colWidths = gridData[0]?.map((_, colIndex) => ({
+            wch: Math.min(50, Math.max(...gridData.map(row => (row[colIndex] || "").length)) + 2)
+        })) || [{ wch: 20 }]
+
+        ws['!cols'] = colWidths;
         XLSX.utils.book_append_sheet(wb, ws, "OCR Result")
         XLSX.writeFile(wb, `${fileName} ocr result.xlsx`)
     }
@@ -293,8 +309,14 @@ export default function LocalResultPage() {
             }
         } else if (format === 'xlsx') {
             const wb = XLSX.utils.book_new()
-            const ws = XLSX.utils.aoa_to_sheet([[summary]])
-            ws['!cols'] = [{ wch: 100 }];
+            const gridData = parseTextToGrid(summary)
+            const ws = XLSX.utils.aoa_to_sheet(gridData)
+            // Auto-width columns
+            const colWidths = gridData[0]?.map((_, colIndex) => ({
+                wch: Math.min(50, Math.max(...gridData.map(row => (row[colIndex] || "").length)) + 2)
+            })) || [{ wch: 20 }]
+
+            ws['!cols'] = colWidths;
             XLSX.utils.book_append_sheet(wb, ws, "AI Report")
             XLSX.writeFile(wb, `${fileName} AI Report.xlsx`)
         } else if (format === 'pptx') {
@@ -395,8 +417,15 @@ export default function LocalResultPage() {
             generatePdfFromText(translatedText, filename)
         } else if (format === 'xlsx') {
             const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet([[translatedText]]);
-            ws['!cols'] = [{ wch: 100 }];
+            const gridData = parseTextToGrid(translatedText);
+            const ws = XLSX.utils.aoa_to_sheet(gridData);
+
+            // Auto-width columns
+            const colWidths = gridData[0]?.map((_, colIndex) => ({
+                wch: Math.min(50, Math.max(...gridData.map(row => (row[colIndex] || "").length)) + 2)
+            })) || [{ wch: 20 }]
+
+            ws['!cols'] = colWidths;
             XLSX.utils.book_append_sheet(wb, ws, "Translation");
             XLSX.writeFile(wb, `${filename}.xlsx`);
         } else if (format === 'pptx') {

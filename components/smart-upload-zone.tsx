@@ -215,7 +215,7 @@ export default function SmartUploadZone() {
                 }
                 xhr.send(formData)
             }).catch(err => {
-                if (err.status === 403 && (err.data?.error === 'Daily Quota exceeded' || (err.data?.details && err.data?.details.includes('quote')))) {
+                if (err.status === 403 && (err.data?.error === 'Daily Quota exceeded' || (err.data?.details && err.data?.details.includes('limit')))) {
                     setShowLimitWarning(true)
                     setUploading(false)
                     throw new Error('QUOTA_EXCEEDED')

@@ -1,0 +1,43 @@
+sequenceDiagram
+    autonumber
+    participant User as 👤 User (Browser)
+    participant Edge as ⚡ Next.js (Edge/API)
+    participant Redis as 🔴 Upstash Redis (HLL)
+    participant Inngest as ⚙️ Inngest (Queue)
+    participant OCR as 🧠 OCR AI (Google/Mistral)
+    participant DB as 🟢 Supabase (Postgres)
+
+    Note over User, DB: STEP 1: VISIT & ANALYTICS (Real-time)
+    User->>Edge: Visits /tools/pdf-to-word
+    Edge--)Redis: PFADD visitors:daily (Fire & Forget)
+    Note right of Redis: ⚡ 5ms (User doesn't wait)
+    Edge-->>User: Returns Page HTML
+
+    Note over User, DB: STEP 2: UPLOAD & PROCESSING (Hybrid)
+    User->>Edge: Uploads Document (POST /api/process)
+    Edge--)Redis: INCR total_uploads (Counter)
+    
+    rect rgb(20, 20, 20)
+        Note right of Edge: PATH A (Small Images < 4MB)
+        Edge->>OCR: Send Base64 directly to AI
+        OCR-->>Edge: Returns Text
+        Edge->>DB: Save Usage Stats
+        Edge-->>User: Returns Text Result
+    end
+
+    rect rgb(40, 40, 40)
+        Note right of Edge: PATH B (PDFs / Large Files > 4MB)
+        Edge->>Inngest: Send Event with Base64 Payload
+        Edge-->>User: Returns { jobId: "xyz", status: "queued" }
+        Inngest->>Edge: Triggers Worker (process-ocr)
+        Edge->>OCR: Process with Mistral/Google
+        Edge->>DB: Save Result & status="completed"
+    end
+
+    Note over User, DB: STEP 3: ANALYTICS UPDATE
+    Edge--)Redis: PFADD documents:unique (HLL Analytics)
+
+    Note over User, DB: STEP 4: RESULT POLLING (If Async)
+    User->>Edge: Polls /api/status?id=xyz
+    Edge->>DB: SELECT * FROM jobs WHERE id=xyz
+    DB-->>Edge: Returns { status: "completed", result: "..." }

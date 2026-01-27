@@ -1,0 +1,10 @@
+graph LR
+    classDef default fill:#fff,stroke:#000,color:#000;
+    linkStyle default stroke:#d50000,stroke-width:4px,fill:none;
+
+    User -->|1. Solve| Captcha[ReCAPTCHA]
+    Captcha -->|2. Token| API
+    API -->|3. Validate| Google
+    Google -->|4. Score > 0.5| Allowed
+    Allowed -->|5. Check Limit| Redis[(Rate Limit)]
+    Redis -->|OK| Process

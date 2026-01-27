@@ -81,6 +81,8 @@ export interface ToolConfig {
   accept: Record<string, string[]>;
   type: ToolType;
   apiEndpoint?: string;
+  content?: React.ReactNode;
+  faq?: { question: string; answer: string }[];
 }
 
 export default function GenericTool({ config }: { config: ToolConfig }) {
@@ -1002,7 +1004,7 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
               <p className="text-sm text-gray-600 leading-relaxed">
                 No hidden fees, no limits, no sign-ups. Your files are processed
                 {config.type.includes("client") ||
-                config.type.includes("office")
+                  config.type.includes("office")
                   ? " locally in your browser for maximum privacy."
                   : " securely and deleted automatically."}
               </p>
@@ -1010,6 +1012,35 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
           </div>
         </section>
       </div>
+
+      {/* SEO Content Section */}
+      {config.content && (
+        <section className="mt-20 prose prose-lg max-w-4xl mx-auto text-gray-600">
+          {config.content}
+        </section>
+      )}
+
+      {/* FAQ Section */}
+      {config.faq && config.faq.length > 0 && (
+        <section className="mt-16 w-full max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-6">
+            {config.faq.map((item, index) => (
+              <div
+                key={index}
+                className="bg-gray-50 rounded-xl p-6 border border-gray-100"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {item.question}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

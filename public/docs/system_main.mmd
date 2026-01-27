@@ -1,0 +1,68 @@
+graph TD
+    %% Global Styles
+    classDef default fill:#fff,stroke:#000,stroke-width:2px,color:#000;
+    classDef cluster fill:#f9f9f9,stroke:#000,stroke-width:2px,color:#000;
+    classDef highlight fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000;
+    
+    %% FORCE RED CONNECTIONS
+    linkStyle default stroke:#d50000,stroke-width:4px,fill:none;
+
+    %% --- Actors ---
+    User[User / Client Device]
+    Crawler[Search Crawler]
+
+    %% --- Frontend Layer ---
+    subgraph Frontend [1. Client Layer]
+        direction TB
+        Page[Landing Page]
+        Upload[Smart Upload Zone]
+        Camera[Camera Capture]
+        Poll[Polling Loop]
+    end
+
+    %% --- API Layer ---
+    subgraph API [2. Serverless API Layer]
+        direction TB
+        Router{OCR Router /api/ocr}:::highlight
+        Status[Status Endpoint]
+        Middleware[Auth/RateLimit]
+    end
+
+    %% --- Async Process ---
+    subgraph Async [3. Async Engine]
+        direction TB
+        Inngest[Inngest Queue]
+        Worker[OCR Worker]:::highlight
+    end
+
+    %% --- Data Layer ---
+    subgraph Data [4. Data & AI Services]
+        direction TB
+        Redis[(Redis Cache)]
+        DB[(Supabase DB)]
+        Mistral[Mistral AI]
+    end
+
+    %% Flow Connections (Vertical Spine)
+    User -->|Action| Frontend
+    Crawler -->|Index| Page
+
+    Frontend -->|Request| Middleware
+    Middleware -->|Pass| API
+
+    %% Logic Split
+    Router -->|If Small| Mistral
+    Router -->|If Large/PDF| Inngest
+    
+    %% Async Loop
+    Inngest -->|Trigger| Worker
+    Worker -->|Process| Mistral
+    Worker -->|Update| Redis
+    
+    %% Polling Loop
+    Poll -.->|Check| Status
+    Status -->|Read| Redis
+    
+    %% Storage
+    Router --> DB
+    Worker --> DB

@@ -1,0 +1,19 @@
+graph TD
+    classDef default fill:#fff,stroke:#000,color:#000;
+    linkStyle default stroke:#d50000,stroke-width:4px,fill:none;
+    
+    Req(User Upload) -->|POST /api/ocr| Check{Size > 4MB <br/> OR PDF?}
+    
+    %% Fast Path
+    Check -- No (Small Img) --> Sync[Direct to Mistral]
+    Sync -->|Wait 3s| Res[Return JSON Result]
+    
+    %% Slow Path
+    Check -- Yes (Large/PDF) --> Async[Send to Inngest]
+    Async -->|Return 202| Queued[Return 'JobQueued']
+    
+    %% Feeback Loop
+    Queued -->|Client| Client[Client Polling Mode]
+    Client -->|GET /status| Redis[(Check Redis)]
+    Redis -->|'Processing'| Client
+    Redis -->|'Completed'| Done(Render Result)
