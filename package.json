@@ -96,6 +96,7 @@
     "react-world-flags": "^1.6.0",
     "recharts": "2.15.4",
     "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
     "remark-html": "^16.0.1",
     "resend": "^6.7.0",
     "sharp": "^0.34.5",

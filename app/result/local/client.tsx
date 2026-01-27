@@ -1,6 +1,8 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -822,16 +824,37 @@ export default function LocalResultPage() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="min-h-[500px] max-h-[700px] overflow-y-auto p-6 bg-gray-50 rounded-xl m-4 border border-gray-100 font-mono text-sm whitespace-pre-wrap leading-relaxed text-gray-800 shadow-inner">
-                                            {highlightedText()}
+                                        <div className="min-h-[500px] max-h-[700px] overflow-y-auto p-6 bg-gray-50 rounded-xl m-4 border border-gray-100 shadow-inner custom-scrollbar relative">
+                                            {/* Only use Highlight/Raw text if SEARCH is active. Otherwise render beautiful Markdown. */}
+                                            {searchTerm && searchTerm.length > 0 ? (
+                                                <div className="font-mono text-sm whitespace-pre-wrap leading-relaxed text-gray-800">
+                                                    {highlightedText()}
+                                                </div>
+                                            ) : (
+                                                <div className="prose prose-sm max-w-none text-gray-800 prose-headings:mt-4 prose-headings:mb-2 prose-p:my-2 prose-table:border-collapse prose-td:border prose-td:border-gray-300 prose-td:p-2 prose-th:bg-gray-100 prose-th:border prose-th:border-gray-300 prose-th:p-2">
+                                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                        {text}
+                                                    </ReactMarkdown>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
 
                                 {/* MOBILE VIEW */}
                                 <div className="md:hidden">
-                                    <div className="min-h-[400px] max-h-[600px] overflow-y-auto p-4 bg-gray-50 font-mono text-sm whitespace-pre-wrap leading-relaxed text-gray-800">
-                                        {highlightedText()}
+                                    <div className="min-h-[400px] max-h-[600px] overflow-y-auto p-4 bg-gray-50 shadow-inner">
+                                        {searchTerm && searchTerm.length > 0 ? (
+                                            <div className="font-mono text-sm whitespace-pre-wrap leading-relaxed text-gray-800">
+                                                {highlightedText()}
+                                            </div>
+                                        ) : (
+                                            <div className="prose prose-sm max-w-none text-gray-800 text-sm">
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                    {text}
+                                                </ReactMarkdown>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <Dialog open={showTranslation && isMobile} onOpenChange={(open) => {
