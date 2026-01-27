@@ -26,6 +26,49 @@ async function getMammoth() { return (await import('mammoth')); }
 async function getJSZip() { return (await import('jszip')).default; }
 
 
+// Helper to parse text into a grid for Excel (Shared Logic)
+const parseTextToGrid = (text: string): string[][] => {
+    if (!text) return [[]]
+
+    const lines = text.split('\n');
+
+    // Detect if it's a markdown table (checks if multiple lines contain pipes)
+    const isMarkdownTable = lines.filter(l => l.trim().includes('|')).length > 1;
+
+    const rows = lines.map(line => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) return [];
+
+        if (isMarkdownTable && trimmedLine.includes('|')) {
+            // Markdown Table Logic
+            const cells = trimmedLine.split('|').map(cell => {
+                // Clean Markdown formatting (bold, italics)
+                return cell.replace(/\*\*|__/g, '').trim();
+            });
+
+            // Remove empty start/end cells that result from | start | end | style
+            const validCells = cells.filter((cell, index, arr) => {
+                if (index === 0 && cell === '') return false;
+                if (index === arr.length - 1 && cell === '') return false;
+                return true;
+            });
+
+            // Check for separator line (e.g. "---", ":---", "---:")
+            const isSeparator = validCells.every(cell => cell.match(/^[-:]+$/));
+            if (isSeparator) return null; // Signal to filter this row out entirely
+
+            return validCells;
+        } else {
+            // Fallback: Split by tabs or 2+ spaces
+            return line.split(/\t|\s{2,}/).map(cell => cell.trim()).filter(cell => cell.length > 0);
+        }
+    });
+
+    // Filter out null rows (separator lines) and ensure we return string[][]
+    return rows.filter((row): row is string[] => row !== null && row.length > 0);
+}
+
+
 export const generateWord = async (text: string): Promise<Blob> => {
     const { Document, Packer, Paragraph, TextRun } = await getDocx();
     const doc = new Document({
@@ -70,11 +113,18 @@ export const generateMergedWord = async (fileStates: Array<{ file: File, result:
 export const generateExcel = async (text: string): Promise<Blob> => {
     const { utils, write } = await getXlsx();
     const wb = utils.book_new();
-    const rows = text.split('\n').map((line: string) => [line]);
-    const ws = utils.aoa_to_sheet(rows);
+
+    const gridData = parseTextToGrid(text);
+    const ws = utils.aoa_to_sheet(gridData);
+
     utils.book_append_sheet(wb, ws, "Sheet1");
+
     // Auto-width column
-    ws['!cols'] = [{ wch: 100 }];
+    const colWidths = gridData[0]?.map((_, colIndex) => ({
+        wch: Math.min(50, Math.max(...gridData.map(row => (row[colIndex] || "").length)) + 2)
+    })) || [{ wch: 20 }]
+    ws['!cols'] = colWidths;
+
     const wbout = write(wb, { bookType: 'xlsx', type: 'array' });
     return new Blob([wbout], { type: 'application/octet-stream' });
 }
@@ -85,9 +135,15 @@ export const generateMergedExcel = async (fileStates: Array<{ file: File, result
 
     fileStates.forEach((fs, index) => {
         const text = fs.result?.text || "";
-        const rows = text.split('\n').map((line: string) => [line]);
-        const ws = utils.aoa_to_sheet(rows);
-        ws['!cols'] = [{ wch: 100 }];
+        const gridData = parseTextToGrid(text);
+        const ws = utils.aoa_to_sheet(gridData);
+
+        // Auto-width column
+        const colWidths = gridData[0]?.map((_, colIndex) => ({
+            wch: Math.min(50, Math.max(...gridData.map(row => (row[colIndex] || "").length)) + 2)
+        })) || [{ wch: 20 }]
+        ws['!cols'] = colWidths;
+
         utils.book_append_sheet(wb, ws, `File ${index + 1}`);
     });
 
@@ -889,7 +945,7 @@ export const generateExcelFromPDF = async (file: File): Promise<Blob> => {
     }
 
     // Split into rows and filter empty lines
-    const rows = allText.split('\n').filter(line => line.trim()).map(line => [line]);
+    const rows = parseTextToGrid(allText);
 
     // Create Excel workbook
     const worksheet = utils.aoa_to_sheet(rows);
@@ -914,7 +970,7 @@ export const generateExcelFromWord = async (file: File): Promise<Blob> => {
     const text = result.value;
 
     // Split into rows and filter empty lines
-    const rows = text.split('\n').filter(line => line.trim()).map(line => [line]);
+    const rows = parseTextToGrid(text);
 
     // Create Excel workbook
     const worksheet = utils.aoa_to_sheet(rows);
@@ -950,7 +1006,7 @@ export const generateExcelFromPPT = async (file: File): Promise<Blob> => {
         const slideText = textMatches.map(match => match.replace(/<\/?a:t>/g, '')).join(' ');
 
         if (slideText.trim()) {
-            rows.push([slideText]);
+            rows.push(...parseTextToGrid(slideText));
         }
     }
 

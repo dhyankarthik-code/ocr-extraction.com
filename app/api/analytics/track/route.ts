@@ -97,6 +97,16 @@ export async function POST(req: NextRequest) {
 
         console.log(`[Analytics] ✅ Tracked visit: ${path} from ${ipAddress} (${city}, ${country}) - Log ID: ${visitLog.id}`);
 
+        // HYPERLOGLOG (HLL) TRACKING
+        // Track unique daily visitor using Redis HLL (Efficient & Private)
+        try {
+            const { trackUniqueEvent } = await import("@/lib/analytics");
+            // Fire and forget - do not await
+            trackUniqueEvent('visitors', ipAddress);
+        } catch (hllError) {
+            console.error("[Analytics] HLL Tracking failed", hllError);
+        }
+
         return NextResponse.json({ success: true, logId: visitLog.id });
 
     } catch (error) {

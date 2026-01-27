@@ -247,10 +247,47 @@ export default function LocalResultPage() {
     // Helper to parse text into a grid for Excel
     const parseTextToGrid = (text: string): string[][] => {
         if (!text) return [[]]
-        return text.split('\n').map(line =>
-            // Split by tabs or 2+ spaces
-            line.split(/\t|\s{2,}/).map(cell => cell.trim()).filter(cell => cell.length > 0)
-        ).filter(row => row.length > 0)
+
+        const lines = text.split('\n');
+
+        // Detect if it's a markdown table (checks if multiple lines contain pipes)
+        const isMarkdownTable = lines.filter(l => l.trim().includes('|')).length > 1;
+
+        const rows = lines.map(line => {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) return [];
+
+            if (isMarkdownTable && trimmedLine.includes('|')) {
+                // Markdown Table Logic
+                const cells = trimmedLine.split('|').map(cell => {
+                    // Clean Markdown formatting (bold, italics)
+                    return cell.replace(/\*\*|__/g, '').trim();
+                });
+
+                // Remove empty start/end cells that result from | start | end | style
+                // Usually split('|') on "| a | b |" gives ["", " a ", " b ", ""]
+                const validCells = cells.filter((cell, index, arr) => {
+                    // Keep cell if it has content, OR if it's inside the table structure
+                    // But usually we just want the content.
+                    // Let's filter out purely empty start/end artifacts.
+                    if (index === 0 && cell === '') return false;
+                    if (index === arr.length - 1 && cell === '') return false;
+                    return true;
+                });
+
+                // Check for separator line (e.g. "---", ":---", "---:")
+                const isSeparator = validCells.every(cell => cell.match(/^[-:]+$/));
+                if (isSeparator) return null; // Signal to filter this row out entirely
+
+                return validCells;
+            } else {
+                // Fallback: Split by tabs or 2+ spaces
+                return line.split(/\t|\s{2,}/).map(cell => cell.trim()).filter(cell => cell.length > 0);
+            }
+        });
+
+        // Filter out null rows (separator lines) and ensure we return string[][]
+        return rows.filter((row): row is string[] => row !== null && row.length > 0);
     }
 
     const handleDownloadXlsx = () => {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Mistral } from '@mistralai/mistralai';
 // PDF processing handled natively by Mistral OCR - no pdfjs needed
+import { trackUniqueEvent } from '@/lib/analytics';
 
 // Configure Vercel Serverless Function timeout (seconds)
 export const maxDuration = 60;
@@ -746,6 +747,25 @@ export async function POST(request: NextRequest) {
                 method: usedMethod
             });
         }
+
+        // HLL Analytics Tracking (Document Processed)
+        // We track a hash or simple unique string if available, or just random ID since distinct *files* are hard to dedupe perfectly without hashing content.
+        // For "Total Processed Documents", we can just use a random ID to increment the unique counter if we treat each request as unique, 
+        // OR better: use the HLL to count unique *Users* who processed documents vs unique *Documents*.
+        // Let's track unique *Documents* by assuming each successful request is a unique document for now (using random ID),
+        // effectively using HLL as a counter but one that allows "distinct" if we had good hashes.
+        // Actually, for "Total Documents Processed", a simple Counter (INCR) is better than HLL. 
+        // BUT user asked for "Total Unique Documents Processed" or similar.
+        // Let's stick to HLL for "Unique Users processing documents" OR just track the event.
+        // Re-reading plan: "Total Unique Documents Processed". 
+        // If we want "Unique", we need a hash of the file.
+        // We have `buffer`. Let's hash it quickly or just use file name + size + user IP as proxy?
+        // Hash is safer.
+        const crypto = require('crypto');
+        const fileHash = crypto.createHash('md5').update(buffer).digest('hex');
+
+        // Fire and forget HLL tracking
+        trackUniqueEvent('documents', fileHash).catch(e => console.error("HLL Doc Track Error", e));
 
     } catch (error: any) {
         logError(error, 'OCR Route');
