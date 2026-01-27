@@ -69,18 +69,10 @@ export default async function getCroppedImg(
     ctx.scale(flip.horizontal ? -1 : 1, flip.vertical ? -1 : 1)
     ctx.translate(-image.naturalWidth / 2, -image.naturalHeight / 2)
 
-    // draw rotated image
+    // Draw rotated image
     ctx.drawImage(image, 0, 0)
 
-    // If the image was scaled in the UI, we just need to know the scale factor.
-    // However, react-image-crop usually gives pixelCrop related to the *displayed* size if you pass the image ref.
-    // BUT, if we are doing this strictly with the coordinates passed, we assume the caller has already scaled them
-    // OR we can implement logic here if we had the display dimensions.
-    // simpler approach: The standard `react-image-crop` demo suggests passing the loaded image ref 
-    // and using `scaleX = image.naturalWidth / image.width`.
-
-    // For now, let's assume pixelCrop passed here is already in NATURAL coordinates or we correct it if imageElement is passed.
-
+    // ... (Scale correction logic) ...
     let cropX = pixelCrop.x
     let cropY = pixelCrop.y
     let cropWidth = pixelCrop.width
@@ -95,6 +87,13 @@ export default async function getCroppedImg(
         cropHeight = pixelCrop.height * scaleY
     }
 
+    // --- OPTIMIZATION: Logic moved to end of function (Post-Process) ---
+    // We allow the standard crop to happen, then Resize the result if needed.
+    // This is more robust as it handles rotation correctly first.
+    // -------------------------------------------------------------------
+
+    // Standard path (simplified for robustness):
+    // Get data from the potentially rotated context
     const data = ctx.getImageData(
         cropX,
         cropY,
@@ -102,14 +101,30 @@ export default async function getCroppedImg(
         cropHeight
     )
 
-    // set canvas width to final desired crop size - this will clear existing context
+    // Resize canvas to final crop size
     canvas.width = cropWidth
     canvas.height = cropHeight
 
-    // paste generated rotate image at the top left corner
+    // Paste data
     ctx.putImageData(data, 0, 0)
 
-    // As Blob
+    // SAFETY: Downscale output if still too large (e.g. 4k crop)
+    if (canvas.width > 2500 || canvas.height > 2500) {
+        const scaleRaw = Math.min(2500 / canvas.width, 2500 / canvas.height);
+        const finalW = canvas.width * scaleRaw;
+        const finalH = canvas.height * scaleRaw;
+
+        const tempC = document.createElement('canvas');
+        tempC.width = finalW;
+        tempC.height = finalH;
+        const tCtx = tempC.getContext('2d');
+        if (tCtx) {
+            tCtx.drawImage(canvas, 0, 0, finalW, finalH);
+            return new Promise((resolve) => tempC.toBlob(blob => resolve(blob), 'image/jpeg', 0.9));
+        }
+    }
+
+    // As Blob (Standard)
     return new Promise((resolve, reject) => {
         canvas.toBlob((file) => {
             if (file) {
@@ -117,6 +132,6 @@ export default async function getCroppedImg(
             } else {
                 reject(new Error('Canvas is empty'))
             }
-        }, 'image/jpeg')
+        }, 'image/jpeg', 0.95)
     })
 }

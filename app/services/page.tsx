@@ -21,6 +21,9 @@ import { ToolsCTA } from "@/components/tools/tools-cta";
 export const metadata = {
     title: "Industry Solutions | Free OCR Services",
     description: "AI-powered OCR solutions for Healthcare, Retail, Finance, Legal, and more. Transform your business documentation with our advanced text extraction services.",
+    alternates: {
+        canonical: '/services',
+    },
 };
 
 interface ServiceSection {

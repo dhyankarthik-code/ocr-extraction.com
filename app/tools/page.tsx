@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRightMd as ArrowRight, Settings as Wrench } from "react-coolicons";
 import { toolCategories } from "@/lib/tools-data";
-import { Button } from "@/components/ui/button";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PdfIcon, WordIcon, ExcelIcon, PptIcon, ImageFileIcon } from "@/components/icons/file-type-icons";
 import { ToolsCTA } from "@/components/tools/tools-cta";
@@ -9,6 +9,9 @@ import { ToolsCTA } from "@/components/tools/tools-cta";
 export const metadata = {
     title: "All Free OCR & PDF Tools | InfyGalaxy",
     description: "Access our complete collection of free online OCR and document conversion tools. Convert between PDF, Word, Excel, PPT, and Image formats instantly.",
+    alternates: {
+        canonical: '/tools',
+    },
 };
 
 const categoryIcons: Record<string, any> = {

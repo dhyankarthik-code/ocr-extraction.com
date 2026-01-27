@@ -141,7 +141,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
           ${uploading ? "opacity-50 pointer-events-none border-gray-200" : ""}
         `}
         >
-          <input {...getInputProps()} aria-label="File upload dropzone" />
+          <input {...getInputProps()} id="dropzone-file-input" name="file-upload" aria-label="File upload dropzone" />
 
           {/* Icon & Text */}
           <div className={`

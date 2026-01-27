@@ -17,6 +17,17 @@ export const processOcrJob = inngest.createFunction(
     async ({ event, step }) => {
         const { fileBuffer, fileName, fileType, userId, jobId } = event.data
 
+        // Step 0: Initialize Status in Redis
+        await step.run('init-status', async () => {
+            const { default: redis } = await import('@/lib/redis')
+            if (redis) {
+                await redis.set(`job:${jobId}`, JSON.stringify({
+                    status: 'processing',
+                    updatedAt: Date.now()
+                }), { ex: 3600 }) // Expire in 1 hour
+            }
+        })
+
         // Step 1: Validate input
         const validation = await step.run('validate-input', async () => {
             if (!fileBuffer || !fileName) {
@@ -95,12 +106,23 @@ export const processOcrJob = inngest.createFunction(
             }
         })
 
-        // Step 3: Store result in database
+        // Step 3: Store result in Redis & Database
         const stored = await step.run('store-result', async () => {
-            const { default: prisma } = await import('@/lib/db')
+            const { default: redis } = await import('@/lib/redis')
 
-            // Store OCR result (you'll need to add an OcrJob model to your schema)
-            // For now, we'll just return the result
+            // Store final result in Redis for polling
+            if (redis) {
+                await redis.set(`job:${jobId}`, JSON.stringify({
+                    status: 'completed',
+                    result: ocrResult,
+                    updatedAt: Date.now()
+                }), { ex: 86400 }) // Keep for 24h
+            }
+
+            // Optional: Store in Postgres if you have a Job table
+            const { default: prisma } = await import('@/lib/db')
+            // ... DB logic here if needed ...
+
             return {
                 jobId,
                 status: 'completed',

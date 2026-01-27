@@ -21,22 +21,40 @@ export async function GET(
             )
         }
 
-        // TODO: Query Inngest or database for job status
-        // For now, return a placeholder response
-        // You'll need to implement actual job tracking in your database
+        const { default: redis } = await import('@/lib/redis')
 
-        const { default: prisma } = await import('@/lib/db')
+        if (!redis) {
+            return NextResponse.json(
+                { error: 'Redis not configured for status checks' },
+                { status: 503 }
+            )
+        }
 
-        // Example: Query job status from database
-        // const job = await prisma.ocrJob.findUnique({
-        //   where: { id: jobId }
-        // })
+        // Fetch job status from Redis
+        const jobData = await redis.get(`job:${jobId}`) as any;
+
+        if (!jobData) {
+            // If job ID is valid format (nanoid) but not in Redis, it might be:
+            // 1. Not started yet (queue lag)
+            // 2. Expired
+            // 3. Invalid
+            return NextResponse.json({
+                jobId,
+                status: 'pending', // Assume pending if recently queued
+                message: 'Job waiting to start or not found',
+            })
+        }
+
+        // If stored as string, parse it (Redis usually returns object if using Upstash SDK with JSON, but safer to check)
+        const job = typeof jobData === 'string' ? JSON.parse(jobData) : jobData;
 
         return NextResponse.json({
             jobId,
-            status: 'processing', // 'pending' | 'processing' | 'completed' | 'failed'
-            message: 'Job status endpoint - implement database tracking',
+            status: job.status || 'unknown',
+            result: job.result || null,
+            updatedAt: job.updatedAt
         })
+
     } catch (error: any) {
         console.error('[Job Status] Error:', error)
         return NextResponse.json(

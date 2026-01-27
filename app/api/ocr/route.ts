@@ -364,6 +364,52 @@ export async function POST(request: NextRequest) {
         // Check if PDF
         const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 
+        // --- HYBRID ROUTING LOGIC ---
+        // Vercel Serverless has 60s timeout. Large files/PDFs risk hitting this.
+        // We offload them to Inngest (Background Queue) to be safe.
+        const ASYNC_THRESHOLD_MB = 4.0;
+        const useAsyncQueue = isPDF || fileSizeMB > ASYNC_THRESHOLD_MB;
+
+        if (useAsyncQueue) {
+            console.log(`[Hybrid Route] Offloading to Inngest (Reason: ${isPDF ? 'PDF' : 'Large File ' + fileSizeMB.toFixed(2) + 'MB'})`);
+
+            try {
+                const { inngest } = await import("@/lib/inngest/client");
+                const { nanoid } = await import("nanoid");
+
+                const jobId = nanoid();
+
+                // Convert file to base64 for transport
+                const base64 = buffer.toString('base64');
+
+                await inngest.send({
+                    name: "ocr/process.requested",
+                    data: {
+                        jobId,
+                        fileBuffer: base64, // Inngest supports up to 6MB payload usually, assume within limits or use S3 in future
+                        fileName: file.name,
+                        fileType: file.type,
+                        userId: userGoogleId || 'anonymous',
+                        userEmail: userEmail
+                    }
+                });
+
+                return NextResponse.json({
+                    success: true,
+                    status: 'queued',
+                    jobId: jobId,
+                    message: "File queued for background processing",
+                    method: 'async_inngest'
+                }, { status: 202 });
+
+            } catch (queueError: any) {
+                console.error("Failed to queue Inngest job:", queueError);
+                // Fallback to sync processing if queue fails
+                console.warn("[Hybrid Route] Fallback to Synchronous processing...");
+            }
+        }
+        // --- END HYBRID LOGIC ---
+
         // Check if Excel
         const isExcel = file.name.match(/\.xls(x)?$/i) ||
             file.type.includes('excel') ||

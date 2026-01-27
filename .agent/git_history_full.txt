@@ -1,0 +1,4500 @@
+﻿COMMIT:eaecdc20bfd9697f6e14c9bdb9fcc9411d02fd42
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 11:36:05 2025 +0530
+SUBJECT:Initial commit - clean repository
+BODY:
+
+ .gitignore                                 |   37 +
+ README.md                                  |   30 +
+ app/api/auth/callback/facebook/route.ts    |   35 +
+ app/api/auth/callback/google/route.ts      |   72 +
+ app/api/auth/facebook/route.ts             |   16 +
+ app/api/auth/google/route.ts               |   17 +
+ app/api/auth/logout/route.ts               |    6 +
+ app/api/auth/session/route.ts              |   16 +
+ app/api/chat/route.ts                      |   53 +
+ app/api/download/route.ts                  |   46 +
+ app/api/ocr/route.ts                       |  127 +
+ app/api/result/[id]/route.ts               |   25 +
+ app/api/search/route.ts                    |  127 +
+ app/api/summary/route.ts                   |   38 +
+ app/api/upload/route.ts                    |   28 +
+ app/globals.css                            |  133 +
+ app/layout.tsx                             |   49 +
+ app/page.tsx                               |  140 +
+ app/result/[id]/loading.tsx                |    3 +
+ app/result/[id]/page.tsx                   |  164 +
+ app/result/local/page.tsx                  |  333 ++
+ components.json                            |   21 +
+ components/auth-modal.tsx                  |  132 +
+ components/bubble-menu.tsx                 |  382 +++
+ components/document-chat.tsx               |  341 ++
+ components/footer.tsx                      |  125 +
+ components/navbar.tsx                      |  151 +
+ components/summary-modal.tsx               |   46 +
+ components/theme-provider.tsx              |   11 +
+ components/ui/avatar.tsx                   |   50 +
+ components/ui/button.tsx                   |   55 +
+ components/ui/card.tsx                     |   79 +
+ components/ui/dropdown-menu.tsx            |  200 ++
+ components/ui/input.tsx                    |   25 +
+ components/ui/interactive-hover-button.tsx |   37 +
+ components/ui/messaging-conversation.tsx   |  342 ++
+ components/ui/scroll-area.tsx              |   48 +
+ components/ui/separator.tsx                |   31 +
+ components/ui/tabs.tsx                     |   53 +
+ components/ui/textarea.tsx                 |   24 +
+ components/upload-zone.tsx                 |  124 +
+ hooks/use-session.ts                       |   34 +
+ lib/image-preprocessing.ts                 |  190 ++
+ lib/ocr-validator.ts                       |  181 ++
+ lib/search-display-fix.txt                 |   61 +
+ lib/utils.ts                               |    6 +
+ next.config.mjs                            |   11 +
+ package-lock.json                          | 4867 ++++++++++++++++++++++++++++
+ package.json                               |   85 +
+ postcss.config.mjs                         |    8 +
+ public/apple-icon.png                      |  Bin 0 -> 2626 bytes
+ public/icon-dark-32x32.png                 |  Bin 0 -> 585 bytes
+ public/icon-light-32x32.png                |  Bin 0 -> 566 bytes
+ public/icon.svg                            |   26 +
+ public/logo.png                            |  Bin 0 -> 685993 bytes
+ public/placeholder-logo.png                |  Bin 0 -> 568 bytes
+ public/placeholder-logo.svg                |    1 +
+ public/placeholder-user.jpg                |  Bin 0 -> 1635 bytes
+ public/placeholder.jpg                     |  Bin 0 -> 1064 bytes
+ public/placeholder.svg                     |    1 +
+ styles/globals.css                         |  125 +
+ tsconfig.json                              |   41 +
+ types/auth.ts                              |    8 +
+ types/file-saver.d.ts                      |    1 +
+ 64 files changed, 9418 insertions(+)
+
+COMMIT:ae3e849885649106c0581f2925fc06302e8efcb8
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 12:15:39 2025 +0530
+SUBJECT:Rebrand to Infygalaxy-OCR
+BODY:
+
+ README.md                | 2 +-
+ app/layout.tsx           | 5 ++---
+ app/page.tsx             | 2 +-
+ app/result/[id]/page.tsx | 2 +-
+ components/footer.tsx    | 8 ++++----
+ components/navbar.tsx    | 4 ++--
+ package.json             | 4 ++--
+ 7 files changed, 13 insertions(+), 14 deletions(-)
+
+COMMIT:db7a4d2ce370f5cdddbd841ef77b3f78ed63980e
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 12:35:36 2025 +0530
+SUBJECT:Fix OAuth redirect - use NEXTAUTH_URL instead of NEXT_PUBLIC_APP_URL
+BODY:
+
+ app/api/auth/callback/google/route.ts | 2 +-
+ app/api/auth/facebook/route.ts        | 2 +-
+ app/api/auth/google/route.ts          | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+COMMIT:1749697b711137e46ce0c3652c7e43c96ae94a51
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 12:47:29 2025 +0530
+SUBJECT:Rebrand to Infy Galaxy - OCR with new tagline and description
+BODY:
+
+ app/layout.tsx            |   4 +-
+ app/page.tsx              |   9 ++--
+ components/auth-modal.tsx |   6 +--
+ components/footer.tsx     | 108 +++++-----------------------------------------
+ components/navbar.tsx     |   8 ++--
+ 5 files changed, 26 insertions(+), 109 deletions(-)
+
+COMMIT:600c5233e25ee37f96eb536dc09792f650c890a6
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 12:49:45 2025 +0530
+SUBJECT:Add Image Tools, Format Converter, and Resources pages
+BODY:
+
+ app/converter/page.tsx | 165 +++++++++++++++++++++++++++++++++++++++++++++
+ app/resources/page.tsx | 179 +++++++++++++++++++++++++++++++++++++++++++++++++
+ app/tools/page.tsx     | 123 +++++++++++++++++++++++++++++++++
+ 3 files changed, 467 insertions(+)
+
+COMMIT:a1314d95f7575fbd58adf7c9dba1cdf9cce4afa6
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 12:59:39 2025 +0530
+SUBJECT:Add footer links, top-left branding, and floating logout button
+BODY:
+
+ app/result/local/page.tsx | 22 ++++++++++++++++++++++
+ components/footer.tsx     | 27 ++++++++++++++++++++++++---
+ 2 files changed, 46 insertions(+), 3 deletions(-)
+
+COMMIT:036d9e3d3aa6f7621208c15c0106196cb39f4922
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 13:06:46 2025 +0530
+SUBJECT:Restore navbar menu, reposition logout button, make AI Summary floating
+BODY:
+
+ app/result/local/page.tsx | 156 ++++++++++++++++++++++------------------------
+ components/navbar.tsx     |  11 +++-
+ 2 files changed, 82 insertions(+), 85 deletions(-)
+
+COMMIT:79b19f92cef6853793b3cf45ce691ebb8c49379e
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 13:16:32 2025 +0530
+SUBJECT:Fix duplicate logo overlap and hide menu temporarily
+BODY:
+
+ app/result/local/page.tsx | 7 -------
+ components/navbar.tsx     | 5 +++--
+ 2 files changed, 3 insertions(+), 9 deletions(-)
+
+COMMIT:bc6e96c15ec876567b8b89280073768f613bc9d4
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 13:19:24 2025 +0530
+SUBJECT:Apply InteractiveHoverButton effect to Login and Logout buttons
+BODY:
+
+ components/navbar.tsx | 27 ++++++++++++---------------
+ 1 file changed, 12 insertions(+), 15 deletions(-)
+
+COMMIT:511677f25a680684df9061f47f7c5c76d6627e82
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 13:46:43 2025 +0530
+SUBJECT:Add fixed Infy Galaxy branding visible on all pages
+BODY:
+
+ components/navbar.tsx | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+COMMIT:55808f627edeec447120e9c0a7a517383e86f1fe
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 14:00:32 2025 +0530
+SUBJECT:Remove floating buttons, add WIP messages to tools, create contact page with GSheets integration
+BODY:
+
+ app/api/contact/route.ts   |  44 ++++++++
+ app/contact/page.tsx       | 254 +++++++++++++++++++++++++++++++++++++++++++++
+ app/converter/page.tsx     | 139 +++++--------------------
+ app/resources/page.tsx     |  93 +++--------------
+ app/tools/page.tsx         |  34 +++---
+ components/upload-zone.tsx |  10 --
+ 6 files changed, 359 insertions(+), 215 deletions(-)
+
+COMMIT:84dc136e1caa92d18b004d867a17ead0311ffd29
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 14:13:07 2025 +0530
+SUBJECT:Enhanced contact form with strict validation, country dropdown, and IP tracking
+BODY:
+
+ app/api/contact/route.ts |  11 +++-
+ app/contact/page.tsx     | 158 ++++++++++++++++++++++++++++++++++++++++-------
+ 2 files changed, 143 insertions(+), 26 deletions(-)
+
+COMMIT:9baa074981ccc104fdd50ea362ab7d24bc139dd9
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 14:28:15 2025 +0530
+SUBJECT:Add Select component for contact form country dropdown
+BODY:
+
+ components/ui/select.tsx | 160 +++++++++++++++++++++++++++++++++++++++++++++++
+ package-lock.json        |   6 +-
+ package.json             |   4 +-
+ 3 files changed, 165 insertions(+), 5 deletions(-)
+
+COMMIT:7bb6caddaae91d1796c61d3f78887c8477501381
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 14:31:01 2025 +0530
+SUBJECT:Trigger Vercel rebuild with Select component
+BODY:
+
+COMMIT:797c7fea3f190f45bb934a172e7f8cd67fd7ea9c
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 14:38:21 2025 +0530
+SUBJECT:Fix contact form API with no-cors mode and better logging
+BODY:
+
+ app/api/contact/route.ts | 29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
+
+COMMIT:6904634121cb88d2ce3ee47e4db5e2ab95b38226
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 4 15:03:47 2025 +0530
+SUBJECT:Simplify contact API - Google Sheets working
+BODY:
+
+ app/api/contact/route.ts | 37 ++++++-------------------------------
+ 1 file changed, 6 insertions(+), 31 deletions(-)
+
+COMMIT:8e58da28f274dc91bf179db8effab9fb729c5718
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 5 09:50:23 2025 +0530
+SUBJECT:Enhanced contact form, auth flow, and mobile UI
+BODY:- Implemented real-time validation with red highlighting for invalid input
+- Added working searchable country dropdown with phone code validation
+- Fixed logout session persistence across page navigation
+- Implemented deferred upload authentication (select file before login)
+- Removed unnecessary auth modal options for cleaner UX
+- Added Contact Us link to footer and updated Resources page
+- Fixed navbar positioning for mobile devices
+- Added UI components: dialog, command, popover
+
+
+ app/api/auth/logout/route.ts |   5 +-
+ app/contact/page.tsx         | 395 +++++++++++++++++++++++++++++++++----------
+ app/page.tsx                 | 161 ++++++++++--------
+ app/resources/page.tsx       |   2 +-
+ components/auth-modal.tsx    |  23 +--
+ components/footer.tsx        |   5 +
+ components/navbar.tsx        |   4 +-
+ components/ui/command.tsx    | 155 +++++++++++++++++
+ components/ui/dialog.tsx     | 122 +++++++++++++
+ components/ui/popover.tsx    |  31 ++++
+ package-lock.json            |   6 +-
+ package.json                 |   6 +-
+ 12 files changed, 717 insertions(+), 198 deletions(-)
+
+COMMIT:f1ec40d8de60bd23ca988b964bcbcb3709f23d8d
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 5 14:07:39 2025 +0530
+SUBJECT:Enhanced OCR accuracy with Pixtral Vision model
+BODY:- Implemented Pixtral Vision model as primary OCR engine for better accuracy
+- Added detailed prompt engineering for exact text preservation
+- Improved handling of rotated images and complex layouts
+- Added robust garbage text filtering
+- Preserved document structure and line breaks
+
+
+ app/api/ocr/route.ts       | 338 ++++++++++++++++++++++++++++++---------------
+ app/page.tsx               |   6 +-
+ env_hex.txt                |   7 +
+ lib/image-preprocessing.ts | 211 ++++++++++++++++++++++++----
+ package-lock.json          |  18 ++-
+ package.json               |   3 +-
+ 6 files changed, 442 insertions(+), 141 deletions(-)
+
+COMMIT:9f6220b0ec305f35d5618227e61d3b731fcd5fc8
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 6 10:01:12 2025 +0530
+SUBJECT:Security Update: Bump Next.js to latest version
+BODY:- Updated next, react, and react-dom to latest stable versions to resolve security vulnerability reported by Vercel.
+
+
+ package-lock.json | 98 +++++++++++++++++++++++++++----------------------------
+ package.json      |  6 ++--
+ 2 files changed, 52 insertions(+), 52 deletions(-)
+
+COMMIT:0e2624b441230b549b1a01af458dcbf473502025
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 6 10:59:38 2025 +0530
+SUBJECT:Added new content pages: Mission, Company Profile, About Us
+BODY:- Created /mission, /company-profile, and /about pages with provided content
+- Updated Footer with 'Company' section links
+- Ensured consistent layout and responsive design
+
+
+ app/about/page.tsx           |  61 +++++++++++++++++++
+ app/api/ocr/route.ts         |  29 +--------
+ app/company-profile/page.tsx | 114 +++++++++++++++++++++++++++++++++++
+ app/mission/page.tsx         | 140 +++++++++++++++++++++++++++++++++++++++++++
+ components/footer.tsx        |  25 ++++++++
+ 5 files changed, 343 insertions(+), 26 deletions(-)
+
+COMMIT:285a1bef449c9c1d084dc5228ddbf28f04be016b
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 6 13:29:22 2025 +0530
+SUBJECT:UI & Content Update: Redesigned Navbar, Updated Home/Footer, Added New Pages
+BODY:- Redesigned Navbar (Static, 20px, Sign in)
+- Updated Home Page Title
+- Updated Footer Links and Title
+- Updated Content: Mission, Company Profile, About Us
+- Created New Pages: About OCR (/about-ocr), FAQs (/faqs)
+
+
+ app/about-ocr/page.tsx       | 106 +++++++++++++++++++
+ app/about/page.tsx           |   2 +-
+ app/company-profile/page.tsx |   2 +-
+ app/faqs/page.tsx            |  58 +++++++++++
+ app/mission/page.tsx         |  92 -----------------
+ app/page.tsx                 |   4 +-
+ components/footer.tsx        |  35 +++++--
+ components/navbar.tsx        | 238 +++++++++++++++++++------------------------
+ 8 files changed, 301 insertions(+), 236 deletions(-)
+
+COMMIT:d5eddb9176016e7c82d91bb9ba7bfbd8bf8bb61d
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 6 13:36:57 2025 +0530
+SUBJECT:UI Polish: Navbar Scroll Behavior & Content Fixes
+BODY:- Navbar: Implemented hide-on-scroll/show-on-up behavior
+- Navbar: Removed 'Blog' link
+- Content: Fixed typo in 'About OCR' page heading
+
+
+ app/about-ocr/page.tsx |  2 +-
+ components/navbar.tsx  | 26 +++++++++++++++++++++++---
+ 2 files changed, 24 insertions(+), 4 deletions(-)
+
+COMMIT:4ecb6568b7c60e373b335259357ea7f42ac76d47
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 6 13:53:26 2025 +0530
+SUBJECT:Content Updates: Removed Home subheading, Fixed Casing in About OCR
+BODY:- Removed 'Free OCR Extraction and Report Generation Tool' subheading from Home page
+- Changed 'WHAT IS INFY GALAXY OCR' to Title Case in About OCR page
+
+
+ app/about-ocr/page.tsx | 2 +-
+ app/page.tsx           | 4 +---
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+COMMIT:8b5b0ea0b128706b5ff3ed0572513e21649b748d
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 6 14:00:50 2025 +0530
+SUBJECT:UI Feature: Added Text Typing Animation to Home Title
+BODY:- Created TextType component (components/text-type.tsx)
+- Integrated animation into Home page H1
+
+
+ app/page.tsx             |  17 ++++-
+ components/text-type.tsx | 194 +++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 208 insertions(+), 3 deletions(-)
+
+COMMIT:b83e8a274341f82e8e16a6613e57577ac3278ba5
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 8 13:16:22 2025 +0530
+SUBJECT:Fix: Improve error reporting on frontend to show specific backend errors
+BODY:
+
+ app/blog/[slug]/page.tsx   |  119 ++++
+ app/blog/page.tsx          |   96 ++++
+ app/page.tsx               |    7 +-
+ components/chat-widget.tsx |  140 +++++
+ components/navbar.tsx      |    2 +-
+ package-lock.json          | 1282 +++++++++++++++++++++++++++++++++++++++++---
+ package.json               |    5 +-
+ posts/getting-started.md   |   29 +
+ 8 files changed, 1602 insertions(+), 78 deletions(-)
+
+COMMIT:34f7f8cec1a36bb20097e6ec1eaa9eb0cf1c7219
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 8 13:50:04 2025 +0530
+SUBJECT:Fix: Corrected Mistral model to 'mistral-ocr-latest' and configured maxDuration
+BODY:
+
+ app/api/ocr/route.ts | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+COMMIT:fb4d7b6f0ac5f1a82c64df89e04a04a2453887b0
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 8 16:58:48 2025 +0530
+SUBJECT:Refactor: Blog implementation with Server Components and ISR
+BODY:
+
+ app/blog/[slug]/page.tsx   | 115 ++++++++++++++++++---------------------------
+ app/blog/page.tsx          |  68 ++++++++++-----------------
+ components/blog-navbar.tsx |  27 +++++++++++
+ components/navbar.tsx      |   2 +-
+ 4 files changed, 100 insertions(+), 112 deletions(-)
+
+COMMIT:75a1110bda768f39c943eb4edc26dacb5b8bbe6e
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 16:15:11 2025 +0530
+SUBJECT:feat: Restore Mistral OCR, Add Google Analytics, Fix Navbar & Modal Styling
+BODY:
+
+ app/api/chat/route.ts      |   42 +-
+ app/api/ocr/route.ts       |  265 ++++-----
+ app/api/summary/route.ts   |   18 +-
+ app/blog/[slug]/page.tsx   |   12 +-
+ app/blog/page.tsx          |    2 +-
+ app/icon.tsx               |   34 ++
+ app/layout.tsx             |   56 +-
+ app/robots.ts              |   12 +
+ app/sitemap.ts             |   62 ++
+ app/tools/page.tsx         |  129 -----
+ components/auth-modal.tsx  |    2 +-
+ components/chat-widget.tsx |   64 ++-
+ components/footer.tsx      |   10 -
+ components/navbar.tsx      |   18 +-
+ next.config.mjs            |   15 +
+ package-lock.json          | 1363 +++++++++++++++++++++++++++++++++++++++++++-
+ package.json               |    2 +
+ 17 files changed, 1739 insertions(+), 367 deletions(-)
+
+COMMIT:79352142f0abdbbb9f10deb2451b21e47b55bd5b
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 16:53:46 2025 +0530
+SUBJECT:fix: Delete SEO files, increase auth overlay opacity to 90%
+BODY:
+
+ app/robots.ts             | 12 ---------
+ app/sitemap.ts            | 62 -----------------------------------------------
+ components/auth-modal.tsx |  2 +-
+ 3 files changed, 1 insertion(+), 75 deletions(-)
+
+COMMIT:c14b072960d058b4ca0196b0eeea0282c8d1adc1
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 17:13:45 2025 +0530
+SUBJECT:feat: Complete PDF processing and multi-page display implementation
+BODY:- Created lib/pdf-processor.ts for PDF page extraction using pdfjs-dist
+- Rewrote app/api/ocr/route.ts to detect PDFs and process each page
+- Added multi-page carousel to app/result/local/page.tsx with page navigation
+- Updated components/upload-zone.tsx to accept PDFs and multiple files
+- Implemented file validation (max 5 files, 10MB per file, 10MB total batch)
+- Updated app/page.tsx to handle PDF JSON responses
+- Installed canvas package for PDF rendering
+- Auth modal overlay increased to 90% opacity
+- Deleted robots.ts and sitemap.ts
+
+
+ app/api/ocr/route.ts       | 245 +++++++++++++++++++------------
+ app/page.tsx               |  39 ++++-
+ app/result/local/page.tsx  |  80 ++++++++--
+ components/upload-zone.tsx |   9 +-
+ lib/pdf-processor.ts       |  67 +++++++++
+ package-lock.json          | 353 ++++++++++++++++++++++++++++++++++++++++++++-
+ package.json               |   1 +
+ 7 files changed, 682 insertions(+), 112 deletions(-)
+
+COMMIT:4438441ce22f5b616ff92b61b09a6a43d6395d8e
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 18:07:43 2025 +0530
+SUBJECT:fix: Downgrade pdfjs-dist to v3 for stable Node.js build
+BODY:
+
+ build_log.txt        | Bin 0 -> 4758 bytes
+ build_log_v2.txt     | Bin 0 -> 4522 bytes
+ lib/pdf-processor.ts |  10 +-
+ package-lock.json    | 750 +++++++++++++++++++++++++++++++++++++++------------
+ package.json         |   2 +-
+ 5 files changed, 588 insertions(+), 174 deletions(-)
+
+COMMIT:a194974efa322a9774e7f08ab836bb1d44685f4f
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 18:13:18 2025 +0530
+SUBJECT:fix: Skip client-side image optimization for PDF uploads
+BODY:
+
+ app/page.tsx | 28 +++++++++++++++++-----------
+ 1 file changed, 17 insertions(+), 11 deletions(-)
+
+COMMIT:bd03a288ca71481fd52b177607c8e4a348f02de7
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 18:19:03 2025 +0530
+SUBJECT:fix: Convert PDF buffer to Uint8Array for pdfjs-dist compatibility
+BODY:
+
+ lib/pdf-processor.ts | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+COMMIT:02ba24d1c99796391535723e0e9aee0780da8f3c
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 18:26:51 2025 +0530
+SUBJECT:fix: explicit worker path resolution for pdfjs
+BODY:
+
+ lib/pdf-processor.ts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+COMMIT:63e6b0092442e787e02258e586774d0570ac3fe6
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 18:36:35 2025 +0530
+SUBJECT:refactor: Use Mistral native PDF support, remove pdfjs-dist and canvas
+BODY:
+
+ app/api/ocr/route.ts |   73 ++--
+ lib/pdf-processor.ts |   71 ----
+ package-lock.json    | 1047 +++-----------------------------------------------
+ package.json         |    2 -
+ 4 files changed, 84 insertions(+), 1109 deletions(-)
+
+COMMIT:ea87452eb723c50943db6482285ae2ec33808304
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 18:42:11 2025 +0530
+SUBJECT:fix: Use file upload workflow for Mistral OCR PDF processing
+BODY:
+
+ app/api/ocr/route.ts | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
+
+COMMIT:37b65c5dcfe02973d9de3b51e9f242de10586b57
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 18:51:20 2025 +0530
+SUBJECT:feat: On-screen validation errors, PDF/image restrictions, enhanced carousel
+BODY:
+
+ app/page.tsx              | 59 ++++++++++++++++++++++++++++++++++++++++-------
+ app/result/local/page.tsx | 47 +++++++++++++++++++++----------------
+ 2 files changed, 78 insertions(+), 28 deletions(-)
+
+COMMIT:a40e8f5197c2279c51b18304d36b281f6ef54b6d
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 18:56:24 2025 +0530
+SUBJECT:fix: Add missing closing div tag in result page
+BODY:
+
+ app/result/local/page.tsx | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:dd43ecc4b22e025dc9d4b0b3bad95fb6bc50260f
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 18:59:52 2025 +0530
+SUBJECT:fix: Remove dropzone maxFiles to enable on-screen file count warning
+BODY:
+
+ components/upload-zone.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:2148f81c9488030cd162be7cdbe77f31318ce403
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 9 19:03:09 2025 +0530
+SUBJECT:feat: Batch image processing with carousel showing image names
+BODY:
+
+ app/page.tsx              | 70 ++++++++++++++++++++++++++++++++++++++++++++++-
+ app/result/local/page.tsx | 13 +++++++--
+ 2 files changed, 79 insertions(+), 4 deletions(-)
+
+COMMIT:cd2ff5fc59590bc00cef09640dc5b85ca4cdb83d
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 11:14:37 2025 +0530
+SUBJECT:feat: Add homepage content, user database with Prisma, profile modal, and UI fixes
+BODY:
+
+ .gitignore                            |   2 +
+ app/api/auth/callback/google/route.ts |  42 +-
+ app/api/user/profile/route.ts         | 104 +++++
+ app/blog/[slug]/page.tsx              |   2 +-
+ app/faqs/page.tsx                     |   2 +-
+ app/globals.css                       | 243 ++++++++++
+ app/page.tsx                          | 204 ++++++++-
+ components/navbar.tsx                 |  10 +-
+ components/profile-modal.tsx          | 143 ++++++
+ lib/db.ts                             |  15 +
+ package-lock.json                     | 811 +++++++++++++++++++++++++++++++++-
+ package.json                          |   2 +
+ prisma.config.ts                      |  14 +
+ prisma/schema.prisma                  |  26 ++
+ types/auth.ts                         |   4 +
+ 15 files changed, 1608 insertions(+), 16 deletions(-)
+
+COMMIT:cda9e1dabfe398079d8531f0deffef9521ddaa7d
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 11:20:25 2025 +0530
+SUBJECT:fix: Remove database integration for now, add homepage content
+BODY:
+
+ app/api/auth/callback/google/route.ts |  36 ------------
+ app/api/user/profile/route.ts         | 104 ----------------------------------
+ app/page.tsx                          |  25 +-------
+ 3 files changed, 2 insertions(+), 163 deletions(-)
+
+COMMIT:4586bcea796d43a90649b1147cd2b11a8a79a989
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 11:40:33 2025 +0530
+SUBJECT:chore: trigger Vercel rebuild
+BODY:
+
+COMMIT:7957b114136263e7de510ace4115c70e9240574a
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 13:00:46 2025 +0530
+SUBJECT:feat: Implement 10MB lifetime quota per email and fix upload UI
+BODY:
+
+ app/api/auth/callback/google/route.ts |  29 ++++++
+ app/api/ocr/route.ts                  |  66 +++++++++++++
+ app/api/user/usage/route.ts           |  27 ++++++
+ components/upload-zone.tsx            | 168 ++++++++++++++++++++++------------
+ prisma/schema.prisma                  |   7 +-
+ 5 files changed, 233 insertions(+), 64 deletions(-)
+
+COMMIT:bc27226a306396aef1ae705d2fcbbad68116c304
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 15:38:34 2025 +0530
+SUBJECT:feat: finalize quota ui and contact info
+BODY:
+
+ app/contact/page.tsx | 28 +++++++++++++++++-----------
+ app/layout.tsx       |  2 +-
+ package-lock.json    | 11 +++++++++++
+ package.json         |  1 +
+ 4 files changed, 30 insertions(+), 12 deletions(-)
+
+COMMIT:6dc05e088c78af028d9189f7fa3fbf00b3c97f10
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 15:51:18 2025 +0530
+SUBJECT:feat: add Antigravity hero animation
+BODY:
+
+ app/page.tsx                  |  22 +++-
+ components/ui/Antigravity.tsx | 198 +++++++++++++++++++++++++++++++
+ package-lock.json             | 270 ++++++++++++++++++++++++++++++++++++++++++
+ package.json                  |   3 +
+ 4 files changed, 491 insertions(+), 2 deletions(-)
+
+COMMIT:1e0c46f0f9c870019185360c82e0e8dc7650c9c2
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 16:00:24 2025 +0530
+SUBJECT:fix: relocate antigravity animation to main hero section
+BODY:
+
+ app/page.tsx | 42 +++++++++++++++++++++---------------------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
+
+COMMIT:42bc24f59983d5f4b50df207588cefa4031f1898
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 16:19:46 2025 +0530
+SUBJECT:fix(ui): show quota bar for new users and add RLS instructions
+BODY:
+
+ app/page.tsx                  |  22 +----
+ components/ui/Antigravity.tsx | 198 ------------------------------------------
+ components/upload-zone.tsx    |   4 +-
+ prisma/enable_rls.sql         |  13 +++
+ 4 files changed, 17 insertions(+), 220 deletions(-)
+
+COMMIT:b65f6762961c5286e575172566139a43190ed931
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 16:33:22 2025 +0530
+SUBJECT:fix(api): lazily create user in OCR route to ensure quota tracking
+BODY:
+
+ app/api/ocr/route.ts | 28 ++++++++++++++++++++++------
+ 1 file changed, 22 insertions(+), 6 deletions(-)
+
+COMMIT:1a0dfa6916702b4f16d213f78022379284e55e22
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 16:48:28 2025 +0530
+SUBJECT:feat(ui): add upload more files button to result page
+BODY:
+
+ app/result/local/page.tsx | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+COMMIT:46c005d1032d6bc154db1fbbc5e8e2bd30b8dad8
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 16:55:31 2025 +0530
+SUBJECT:feat: add db debug route and enhance upload button ui
+BODY:
+
+ app/api/db-test/route.ts  | 39 +++++++++++++++++++++++++++++++++++++++
+ app/result/local/page.tsx |  5 ++++-
+ 2 files changed, 43 insertions(+), 1 deletion(-)
+
+COMMIT:2697fb6c4a5a060f9bb0a760cc5e8cf3df9eb697
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 16:58:51 2025 +0530
+SUBJECT:build: add postinstall script to generate prisma client on vercel
+BODY:
+
+ package.json | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+COMMIT:e3097f25d34acfe5a7d7814bec859b565e0c2220
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 17:04:00 2025 +0530
+SUBJECT:fix(prisma): add missing url to datasource config
+BODY:
+
+ prisma/schema.prisma | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:387f68e47d52ad1b760bb473ad01d4eab78e0a82
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 17:06:03 2025 +0530
+SUBJECT:fix(prisma): update config for v7 compliance (remove url from schema, add to client)
+BODY:
+
+ lib/db.ts            | 1 +
+ prisma/schema.prisma | 1 -
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:6387e2196909c2866bf6b1208498fd1b77d74de4
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 17:34:37 2025 +0530
+SUBJECT:fix(prisma): use correct datasources config for v7 client
+BODY:
+
+ lib/db.ts | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+COMMIT:86001f7c02191077aee57d277ffc125b40c6614c
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 10 18:31:48 2025 +0530
+SUBJECT:fix(prisma): implement driver adapter for v7 serverless compatibility
+BODY:
+
+ lib/db.ts            |  13 ++--
+ package-lock.json    | 191 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ package.json         |   5 +-
+ prisma/schema.prisma |   1 +
+ 4 files changed, 204 insertions(+), 6 deletions(-)
+
+COMMIT:de1957de2c6bf4da3c5655c7716ff0cfa3ae39ff
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 09:38:14 2025 +0530
+SUBJECT:fix(db): add SSL configuration for Supabase connection
+BODY:
+
+ lib/db.ts | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+COMMIT:4b19b1fc7cabf1093bfa9817ef28d3deda9ffde4
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 09:43:25 2025 +0530
+SUBJECT:fix(db): add pgbouncer=true for Supavisor transaction pooler compatibility
+BODY:
+
+ lib/db.ts | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+COMMIT:89ff0bcff6e406f041cac97be7da6c0414986f5c
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 10:02:30 2025 +0530
+SUBJECT:debug: enhanced db-test with raw pg pool diagnostics
+BODY:
+
+ app/api/db-test/route.ts | 102 +++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 81 insertions(+), 21 deletions(-)
+
+COMMIT:f1b794f848a24b23e3cac34cd1625348ad4d0829
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 11:34:00 2025 +0530
+SUBJECT:feat: add IP-based location tracking (country, city, region) on login
+BODY:
+
+ app/api/auth/callback/google/route.ts | 26 +++++++++--
+ lib/geolocation.ts                    | 81 +++++++++++++++++++++++++++++++++++
+ prisma/schema.prisma                  |  7 +++
+ 3 files changed, 110 insertions(+), 4 deletions(-)
+
+COMMIT:8ed7fd1a262f324a1a2186fef7c59a43df142cbe
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 14:01:30 2025 +0530
+SUBJECT:feat: privacy, consent popup, contact form enhancements
+BODY:
+
+ app/api/user/consent/route.ts         |  30 ++++++++++
+ app/api/user/status/route.ts          |  31 ++++++++++
+ app/contact/page.tsx                  |  16 ++---
+ app/layout.tsx                        |   2 +
+ app/page.tsx                          |  12 ++--
+ app/privacy/page.tsx                  |  97 ++++++++++++++++++++++++++++++
+ components/client-consent-wrapper.tsx |  12 ++++
+ components/consent-popup.tsx          | 109 ++++++++++++++++++++++++++++++++++
+ components/footer.tsx                 |   8 ++-
+ components/upload-zone.tsx            |   2 +-
+ prisma/schema.prisma                  |   4 ++
+ 11 files changed, 308 insertions(+), 15 deletions(-)
+
+COMMIT:b6ee6960c817c35fe0e0476d59521f9e75b5c360
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 14:21:22 2025 +0530
+SUBJECT:fix: strict contact form validation and consent popup z-index
+BODY:
+
+ app/contact/page.tsx         | 38 ++++++++++++++++++++++++++------------
+ components/consent-popup.tsx |  8 ++++++--
+ 2 files changed, 32 insertions(+), 14 deletions(-)
+
+COMMIT:4938206ebd7c28abde10a00386dec710e7d9f919
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 14:30:32 2025 +0530
+SUBJECT:fix: stricter mobile validation and consent popup debug route
+BODY:
+
+ app/api/debug-consent/route.ts | 58 ++++++++++++++++++++++++++++++++++++++++++
+ app/contact/page.tsx           |  9 ++++++-
+ components/consent-popup.tsx   |  6 +++--
+ 3 files changed, 70 insertions(+), 3 deletions(-)
+
+COMMIT:4569456b0b1b17bdc969725209cd601b1e5619de
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 14:47:03 2025 +0530
+SUBJECT:fix: dialog z-index and consent error messages
+BODY:
+
+ app/api/user/consent/route.ts | 34 ++++++++++++++++++++++++++++++----
+ components/ui/dialog.tsx      |  4 ++--
+ 2 files changed, 32 insertions(+), 6 deletions(-)
+
+COMMIT:9fb3eaad75792c9f607debb1c7744a58889579ce
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 14:53:27 2025 +0530
+SUBJECT:fix: async cookies, navbar z-index, regenerated prisma client
+BODY:
+
+ app/api/debug-consent/route.ts | 2 +-
+ app/api/user/consent/route.ts  | 2 +-
+ components/navbar.tsx          | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+COMMIT:c139ba8728ee249c01c4ce44beca8563454bc9a1
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 15:36:33 2025 +0530
+SUBJECT:feat: AI chatbot with DB storage, email summaries, privacy footer link
+BODY:
+
+ app/api/chat/end/route.ts  | 105 +++++++++++++++++++++++++++++++++++++++++++++
+ app/api/chat/route.ts      |  93 +++++++++++++++++++++++----------------
+ components/chat-widget.tsx | 103 ++++++++++++++++++++++++++++++++++++++------
+ components/footer.tsx      |   5 +++
+ package-lock.json          |  88 +++++++++++++++++++++++++++++++++++++
+ package.json               |   1 +
+ prisma/schema.prisma       |  22 ++++++++++
+ 7 files changed, 369 insertions(+), 48 deletions(-)
+
+COMMIT:fe522f0b0b15e893e487ffd219abf7d9e21ba9b7
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 15:39:42 2025 +0530
+SUBJECT:fix: real-time email validation in contact form
+BODY:
+
+ app/contact/page.tsx | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+COMMIT:12a785a85b87233032200eeb2a91b809b9f6785d
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 15:49:53 2025 +0530
+SUBJECT:fix: comprehensive email validation with structure and TLD checks
+BODY:
+
+ app/contact/page.tsx | 44 ++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 42 insertions(+), 2 deletions(-)
+
+COMMIT:68a75fbb56c3ac9494d5f9c34ff0ade1c32a1967
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 16:07:56 2025 +0530
+SUBJECT:fix: email error only shows after @ is typed
+BODY:
+
+ app/contact/page.tsx | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+COMMIT:92c2e73e1508d25f5c649694646cc0d4b6688eb9
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 16:16:19 2025 +0530
+SUBJECT:fix: footer order, blog page session, blog link in footer
+BODY:
+
+ app/blog/page.tsx          | 65 ++++++++++++++++++----------------------------
+ components/blog-layout.tsx | 44 +++++++++++++++++++++++++++++++
+ components/footer.tsx      | 15 +++++++----
+ 3 files changed, 79 insertions(+), 45 deletions(-)
+
+COMMIT:b0d8561e25a600f377366ee093e3f03bf26b9473
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 16:40:40 2025 +0530
+SUBJECT:feat: chat for logged-in only, blog in OCR section, email validation
+BODY:
+
+ app/contact/page.tsx       | 45 +++------------------------------------------
+ components/chat-widget.tsx |  5 +++++
+ components/footer.tsx      | 10 +++++-----
+ 3 files changed, 13 insertions(+), 47 deletions(-)
+
+COMMIT:b03e593d5bfad02fac687258a5f3166e396b37ff
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 17:03:36 2025 +0530
+SUBJECT:fix: validate email on blur even if @ is missing
+BODY:
+
+ app/contact/page.tsx | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+COMMIT:c47f6fb1278f69f640bd19301cda7ce3ab1c1d33
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 17:06:13 2025 +0530
+SUBJECT:docs: update privacy policy content, add disclaimers
+BODY:
+
+ app/privacy/page.tsx | 102 ++++++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 68 insertions(+), 34 deletions(-)
+
+COMMIT:5aa400eef55101c3aad3d2df6ff6c96afeeecc23
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 17:25:20 2025 +0530
+SUBJECT:fix: email regex needs dot, privacy policy formatting, remove footer email
+BODY:
+
+ app/contact/page.tsx  |  5 +++--
+ app/privacy/page.tsx  | 11 ++++++-----
+ components/footer.tsx |  6 ------
+ 3 files changed, 9 insertions(+), 13 deletions(-)
+
+COMMIT:1f37dac4d89b1ea34c7c378593508c1707586fcb
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 17:30:46 2025 +0530
+SUBJECT:style: remove email from contact page
+BODY:
+
+ app/contact/page.tsx | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
+
+COMMIT:ddbca958a8cd80418c6429f45cc6978969a57af6
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 18:01:55 2025 +0530
+SUBJECT:feat: add systemIp tracking, rename AI Summary to Report, add download
+BODY:
+
+ app/api/auth/callback/google/route.ts |  1 +
+ app/result/local/page.tsx             | 45 ++++++++++++++++++++++-------------
+ components/summary-modal.tsx          |  2 +-
+ prisma/schema.prisma                  |  1 +
+ 4 files changed, 31 insertions(+), 18 deletions(-)
+
+COMMIT:20c69d1375c5d8999d4f3d5666230e990e8f498c
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 18:14:32 2025 +0530
+SUBJECT:feat: migrate all AI features (Summary, Chat, Search) to Mistral
+BODY:
+
+ app/api/chat/end/route.ts |  19 +++---
+ app/api/chat/route.ts     | 166 ++++++++++++++++++++++------------------------
+ app/api/search/route.ts   |  41 +++++++-----
+ app/api/summary/route.ts  |  43 ++++++++----
+ 4 files changed, 140 insertions(+), 129 deletions(-)
+
+COMMIT:63fe94959d0e33720d9bb82c00671ffe268b109c
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 18:25:34 2025 +0530
+SUBJECT:feat: add terms and conditions page and footer link
+BODY:
+
+ app/privacy/page.tsx  |  59 +++++++-------
+ app/terms/page.tsx    | 207 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ components/footer.tsx |   5 ++
+ 3 files changed, 240 insertions(+), 31 deletions(-)
+
+COMMIT:70760901a2c6599d25b293d1614d5e4842d59788
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 18:32:01 2025 +0530
+SUBJECT:style: quote 'Most Accurate OCR' in homepage heading
+BODY:
+
+ app/page.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:1987672c81211e392d8e6ef42b13130f9e43f14c
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 19:01:30 2025 +0530
+SUBJECT:chore: cleanup project and update SEO metadata
+BODY:
+
+ app/api/db-test/route.ts       |  99 -----------------------------------------
+ app/api/debug-consent/route.ts |  58 ------------------------
+ app/layout.tsx                 |  38 +++++++++-------
+ build_log.txt                  | Bin 4758 -> 0 bytes
+ build_log_v2.txt               | Bin 4522 -> 0 bytes
+ env_hex.txt                    |   7 ---
+ 6 files changed, 22 insertions(+), 180 deletions(-)
+
+COMMIT:cb955ff09074865c3b5e9aaf6287716141da6851
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 11 20:07:18 2025 +0530
+SUBJECT:feat: add robots.ts and sitemap.ts for SEO
+BODY:
+
+ app/robots.ts  | 12 ++++++++++++
+ app/sitemap.ts | 27 +++++++++++++++++++++++++++
+ 2 files changed, 39 insertions(+)
+
+COMMIT:7e587e5718572900634a00596b31cd18c5d200cf
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 12 10:41:19 2025 +0530
+SUBJECT:chore: verify metadata and sync
+BODY:
+
+ app/contact/page.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:fe76ce7add208220c6cc9c9153747101d3b1d10d
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 12 11:18:15 2025 +0530
+SUBJECT:feat: complete daily quota, gtm, and contact form updates
+BODY:
+
+ app/api/auth/callback/google/route.ts |   2 +
+ app/api/ocr/route.ts                  |  41 +++++-
+ app/contact/page.tsx                  | 242 ++++++++++++++++++++++++++--------
+ app/layout.tsx                        |  26 ++++
+ lib/geolocation.ts                    |   5 +-
+ prisma/schema.prisma                  |   4 +
+ 6 files changed, 260 insertions(+), 60 deletions(-)
+
+COMMIT:d038969bc760f9479c6315572d065e4fde119587
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 13 11:12:49 2025 +0530
+SUBJECT:Remove blog section from navigation and update blog API source
+BODY:
+
+ app/blog/[slug]/page.tsx | 2 +-
+ app/blog/page.tsx        | 2 +-
+ components/footer.tsx    | 6 +-----
+ components/navbar.tsx    | 2 +-
+ 4 files changed, 4 insertions(+), 8 deletions(-)
+
+COMMIT:2667eca504d397d0322621c0e13db9361572aa98
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 15 11:15:43 2025 +0530
+SUBJECT:Enable blog, add Vercel Analytics, and add custom 404 page
+BODY:
+
+ app/layout.tsx        |  2 ++
+ app/not-found.tsx     | 25 +++++++++++++++++++++++++
+ components/footer.tsx |  5 +++++
+ components/navbar.tsx |  1 +
+ package-lock.json     |  2 +-
+ package.json          |  2 +-
+ 6 files changed, 35 insertions(+), 2 deletions(-)
+
+COMMIT:2528fe53d2508eef7a0f3e92568ec1e4a0356d1a
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 15 11:20:22 2025 +0530
+SUBJECT:Fix Prisma deprecation warning
+BODY:
+
+ prisma/schema.prisma | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:ddfe3dd4354109ee18fd408156a7c90bd1a41a83
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 15 11:32:25 2025 +0530
+SUBJECT:Security Update: Patch CVE-2025-66478 and CVE-2025-55182 (Next.js 16.0.10, React 19.2.3)
+BODY:
+
+ package-lock.json | 2759 +++++++++++++++++++++++++++++++++++++++++------------
+ package.json      |    6 +-
+ 2 files changed, 2163 insertions(+), 602 deletions(-)
+
+COMMIT:eadc1fd2b255f9ba09d4231af0f6f5cdae947c2a
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 15 11:38:08 2025 +0530
+SUBJECT:Fix build errors: Lazy Resend init in chat API and make Not Found page client-side
+BODY:
+
+ app/api/chat/end/route.ts | 24 ++++++++++++++++--------
+ app/not-found.tsx         |  2 ++
+ 2 files changed, 18 insertions(+), 8 deletions(-)
+
+COMMIT:da8a1e1173a5a318e4fa33fb6cc40bcbcfd48d69
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 18 09:33:16 2025 +0530
+SUBJECT:Fix daily usage reset logic (timezone aware) and 404 page title
+BODY:
+
+ app/api/ocr/route.ts        | 34 ++++---------------
+ app/api/user/usage/route.ts | 19 +++++++++--
+ app/not-found.tsx           |  8 +++++
+ lib/usage-limit.ts          | 79 +++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 110 insertions(+), 30 deletions(-)
+
+COMMIT:2237143175f38a993765e20b92cc18ddaea309a5
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 18 09:36:30 2025 +0530
+SUBJECT:Fix build error: Convert 404 to Server Component and relax Navbar props
+BODY:
+
+ app/not-found.tsx     | 6 ++----
+ components/navbar.tsx | 6 +++---
+ 2 files changed, 5 insertions(+), 7 deletions(-)
+
+COMMIT:f073d4c2fb9de61590395d0eae0b1f2ab5c0f42f
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 18 11:25:23 2025 +0530
+SUBJECT:feat: add domain redirect middleware
+BODY:
+
+ middleware.ts | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+
+COMMIT:906e95639e9e70f63ba81b826e20648c3c4126f3
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 18 11:57:07 2025 +0530
+SUBJECT:chore: add google search console verification file and update middleware
+BODY:
+
+ middleware.ts                      | 3 ++-
+ public/googled9dde47a61914ba1.html | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+COMMIT:8263fafc16bf5094f348a7d67ecbcbd342f89183
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 18 18:53:00 2025 +0530
+SUBJECT:Add llms.txt and update gitignore for weights and secrets
+BODY:
+
+ .gitignore      | 16 ++++++++++++++++
+ public/llms.txt | 14 ++++++++++++++
+ 2 files changed, 30 insertions(+)
+
+COMMIT:b19f106211246cccc390295f9ce833d552346246
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 10:29:17 2025 +0530
+SUBJECT:Add debug route
+BODY:
+
+ app/api/debug/route.ts | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+COMMIT:39ab7efeba6ca6dd9d14fee529c940519e0a1c2f
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 10:41:58 2025 +0530
+SUBJECT:Force Hostinger Rebuild: Trigger new build to load env vars
+BODY:
+
+ package.json | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:08c2a2450e50e1c2212c5fc20ee5f40a3fa7bebc
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 11:02:57 2025 +0530
+SUBJECT:Enhance SEO: metadata and viewport optimization
+BODY:
+
+ app/layout.tsx | 30 +++++++++++++++++++-----------
+ 1 file changed, 19 insertions(+), 11 deletions(-)
+
+COMMIT:1638de95331ab8f9dd21b509fc5f45904c46f746
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 11:05:08 2025 +0530
+SUBJECT:Fix Auth: Add reliable fallback for ClientID
+BODY:
+
+ app/api/auth/google/route.ts | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
+COMMIT:2b80559d63090c102b86023bcea47a359d122cb3
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 11:05:57 2025 +0530
+SUBJECT:Revert title change
+BODY:
+
+ app/layout.tsx | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+COMMIT:47a7085d7486ed56a0e0854456a9ae5703906b7c
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 11:51:22 2025 +0530
+SUBJECT:Fix Auth: Hardcode credentials for Hostinger deployment (Obfuscated)
+BODY:
+
+ app/api/auth/callback/google/route.ts | 29 +++++++++++++++++++++++------
+ app/api/debug/route.ts                | 15 ---------------
+ public/icon.svg                       | 26 --------------------------
+ 3 files changed, 23 insertions(+), 47 deletions(-)
+
+COMMIT:88c31e464914b29b234a328ce2d607f3c3385111
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 12:06:46 2025 +0530
+SUBJECT:Fix Auth: Use new client secret and solidify redirect logic
+BODY:
+
+ app/api/auth/callback/google/route.ts | 19 +++++++++++--------
+ app/api/auth/google/route.ts          |  8 +++++---
+ 2 files changed, 16 insertions(+), 11 deletions(-)
+
+COMMIT:d823fcf1d38d9ecb151f4af5c86a0cc173d696fa
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 12:31:15 2025 +0530
+SUBJECT:fix: OAuth build-time env injection for Hostinger deployment
+BODY:
+
+ app/api/auth/callback/google/route.ts | 122 +++++++++++++++++++---------------
+ app/api/auth/google/route.ts          |  39 ++++++-----
+ next.config.mjs                       |   7 ++
+ 3 files changed, 96 insertions(+), 72 deletions(-)
+
+COMMIT:42486f0933285567c3d58cabb1a444adcb9566d5
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 13:35:15 2025 +0530
+SUBJECT:fix: add detailed OCR error reporting for debugging
+BODY:
+
+ app/api/ocr/route.ts | 96 ++++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 60 insertions(+), 36 deletions(-)
+
+COMMIT:1ac40fc789a0526eac4da9db6590b3220790ccdd
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 13:53:28 2025 +0530
+SUBJECT:chore: add all used env vars to build-time injection list
+BODY:
+
+ next.config.mjs | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+COMMIT:9a0f1acb6a5a89db1781f5b6644b4e7e8fddc478
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 13:59:03 2025 +0530
+SUBJECT:chore: add debug-env endpoint
+BODY:
+
+ app/api/debug-env/route.ts | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+COMMIT:367c45d171ba7e11796ab294bc47a658037cbaf9
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 14:10:41 2025 +0530
+SUBJECT:chore: add visible version timestamp to footer for debug
+BODY:
+
+ app/page.tsx | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+COMMIT:982986c025e006fb27115bcbe32ef45aa0767881
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 14:13:40 2025 +0530
+SUBJECT:fix: resolve hydration mismatch by using static version string
+BODY:
+
+ app/page.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:8269e707038b3709cfe99a7ca56eac2c785cedba
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 18:22:11 2025 +0530
+SUBJECT:chore: force rebuild to clear stale cache
+BODY:
+
+ next.config.mjs | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:7582a4d8ea8acb4348c6d302557a4a0c762648af
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 19 18:49:40 2025 +0530
+SUBJECT:chore: cleanup unused assets in public directory
+BODY:
+
+ .agent/implementation_plan.md |  22 ++++++++++++++++++++++
+ .agent/task.md                |  20 ++++++++++++++++++++
+ next.config.mjs               |   1 -
+ public/apple-icon.png         | Bin 2626 -> 0 bytes
+ public/icon-dark-32x32.png    | Bin 585 -> 0 bytes
+ public/icon-light-32x32.png   | Bin 566 -> 0 bytes
+ public/placeholder-logo.png   | Bin 568 -> 0 bytes
+ public/placeholder-logo.svg   |   1 -
+ public/placeholder-user.jpg   | Bin 1635 -> 0 bytes
+ public/placeholder.jpg        | Bin 1064 -> 0 bytes
+ public/placeholder.svg        |   1 -
+ 11 files changed, 42 insertions(+), 3 deletions(-)
+
+COMMIT:46a392a0ec471d5e0837bb8e380b50505085d183
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 12:15:23 2025 +0530
+SUBJECT:feat: performance, AI chat context, report enhancements, and SEO fixes
+BODY:
+
+ app/about-ocr/page.tsx       |  61 +++++++++++++++++++++++++-
+ app/api/chat/route.ts        |  41 +++++++++++++----
+ app/layout.tsx               |  27 +++++++++---
+ app/page.tsx                 |   9 +++-
+ app/result/local/page.tsx    | 102 +++++++++++++++++++++++++++++++------------
+ components/chat-widget.tsx   |  61 ++++++++++++++++++++------
+ components/document-chat.tsx |  26 ++++++++++-
+ components/text-type.tsx     |  17 ++------
+ next.config.mjs              |  41 ++++++++++++++---
+ package.json                 |  11 -----
+ 10 files changed, 301 insertions(+), 95 deletions(-)
+
+COMMIT:5296f2deb4a43de127d9d8b659dc01eb8925d4c5
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 12:18:57 2025 +0530
+SUBJECT:fix: restore missing dependencies removed during pruning
+BODY:
+
+ package.json | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+COMMIT:f2a851cb6f035aecff5368079cf9f8e36875f5df
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 12:25:23 2025 +0530
+SUBJECT:fix: update CSP for reCAPTCHA and improve security by removing server secrets from next.config.mjs
+BODY:
+
+ next.config.mjs | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
+
+COMMIT:82a4634528f114102c1f5ffddb73150e3f898071
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 14:57:15 2025 +0530
+SUBJECT:Fix chatbot UI/behavior and revert logo to text
+BODY:
+
+ app/api/chat/route.ts      | 17 +++++++++++------
+ components/chat-widget.tsx |  2 +-
+ 2 files changed, 12 insertions(+), 7 deletions(-)
+
+COMMIT:46eda778adff7336e25e4fda5bdba4862a708210
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 15:03:28 2025 +0530
+SUBJECT:Polish: Fix chat fonts and improve logo visibility
+BODY:
+
+ components/chat-widget.tsx |  4 ++--
+ components/navbar.tsx      | 24 ++----------------------
+ 2 files changed, 4 insertions(+), 24 deletions(-)
+
+COMMIT:3eec399c6e20cc8d301059f2033adeb8626d6a45
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 15:08:08 2025 +0530
+SUBJECT:Fix: Add PDF download and improve AI Report formatting
+BODY:
+
+ app/result/local/page.tsx    | 75 ++++++++++++++++++++++++++++++++++----------
+ components/document-chat.tsx |  6 ++--
+ 2 files changed, 62 insertions(+), 19 deletions(-)
+
+COMMIT:8fdb52dcc0d3c5026d2bb12b403a196ce42dcfb5
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 15:08:29 2025 +0530
+SUBJECT:Fix: TypeScript error in PDF generation
+BODY:
+
+ app/result/local/page.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:00bec1e823e7a5de84945489015343717235b392
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 15:09:01 2025 +0530
+SUBJECT:Fix: Resolve PDF blob type error
+BODY:
+
+ app/result/local/page.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:ad7f00890fe3813c872c81086b008c4624c17ff2
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 15:12:27 2025 +0530
+SUBJECT:All fixes: PDF download, formatting improvements
+BODY:
+
+ app/result/local/page.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:d4a01eb5398466e000dda15b42f125ca9afb65a8
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 15:16:05 2025 +0530
+SUBJECT:Fix: Add fallback for broken profile images
+BODY:
+
+ components/navbar.tsx | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
+
+COMMIT:1ee8d69e01e17fd8234f814a704f9ea465963ba3
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 15:18:45 2025 +0530
+SUBJECT:Fix: Download all OCR pages as one document
+BODY:
+
+ app/result/local/page.tsx | 78 ++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 63 insertions(+), 15 deletions(-)
+
+COMMIT:e1fb81ccc46861232b1ec51a2a51e639ba0bdde6
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 15:21:08 2025 +0530
+SUBJECT:Fix: Add Google profile image domain to CSP
+BODY:
+
+ next.config.mjs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:eaa6aab7b2042b3a077264161551eca4ecb0e40d
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 15:59:39 2025 +0530
+SUBJECT:Cleanup: Remove personal WordPress references and use env variables
+BODY:
+
+ app/blog/[slug]/page.tsx | 3 ++-
+ app/blog/page.tsx        | 3 ++-
+ next.config.mjs          | 8 --------
+ 3 files changed, 4 insertions(+), 10 deletions(-)
+
+COMMIT:5e976f5100f446a968d553abc58dc643ede0dc0b
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 17:38:38 2025 +0530
+SUBJECT:Cleanup: Delete local blog code and components
+BODY:
+
+ app/blog/[slug]/page.tsx   | 99 ----------------------------------------------
+ app/blog/page.tsx          | 66 -------------------------------
+ components/blog-layout.tsx | 44 ---------------------
+ components/blog-navbar.tsx | 27 -------------
+ 4 files changed, 236 deletions(-)
+
+COMMIT:2e974d57030f300e6c0fa314159a341a02fb2470
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 17:46:04 2025 +0530
+SUBJECT:Setup: Proxy /blog to Hostinger IP for SEO-friendly subfolder blog
+BODY:
+
+ next.config.mjs | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+COMMIT:b16de74e80afbd7eb39645bb2942dfd9ee76cca4
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 17:55:52 2025 +0530
+SUBJECT:Fix: Remove proxy rewrites - let Hostinger serve /blog directly
+BODY:
+
+ next.config.mjs | 12 ------------
+ 1 file changed, 12 deletions(-)
+
+COMMIT:3e7411cafa55ec5fdbb175fae83fe09e32eae8e0
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 18:04:07 2025 +0530
+SUBJECT:Fix: Exclude /blog from middleware to allow Hostinger WordPress
+BODY:
+
+ middleware.ts | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+COMMIT:f397663c8c61274a705f3116f1f2c7bca6599906
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Dec 20 18:42:29 2025 +0530
+SUBJECT:Update blog links to point to subdomain blog.ocr-extraction.com
+BODY:
+
+ components/footer.tsx | 4 ++--
+ components/navbar.tsx | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+COMMIT:dca59113e119905f88457da120b39682111c4dd9
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 22 12:44:38 2025 +0530
+SUBJECT:Fix GTM data sending - Add googletagmanager.com to CSP connect-src
+BODY:
+
+ next.config.mjs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:deb38d069323bd5ccc499909ae117ea7a3dc7d37
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 22 12:52:38 2025 +0530
+SUBJECT:Install Vercel Speed Insights and broaden CSP for Tag Manager and Analytics
+BODY:
+
+ app/layout.tsx    |   2 +
+ next.config.mjs   |   2 +-
+ package-lock.json | 762 +++---------------------------------------------------
+ package.json      |   3 +-
+ 4 files changed, 41 insertions(+), 728 deletions(-)
+
+COMMIT:56efa256a3443df03226e4822bb9a996f44635c7
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 22 12:55:35 2025 +0530
+SUBJECT:Optimize GTM: Switch to official component and broaden CSP
+BODY:
+
+ app/layout.tsx  | 28 ++--------------------------
+ next.config.mjs |  2 +-
+ 2 files changed, 3 insertions(+), 27 deletions(-)
+
+COMMIT:299074da3d542c670542417510c910a0f6f87a72
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 22 15:13:02 2025 +0530
+SUBJECT:fix: update CSP to allow Google Analytics and GTM data collection
+BODY:
+
+ next.config.mjs | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+COMMIT:840a364fc35022da1b373a2396f6796a46b97b49
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 22 15:38:26 2025 +0530
+SUBJECT:feat: Integrate WordPress blog functionality
+BODY:- Add lib/wordpress.ts for API fetching
+- Create /blog listing page
+- Create /blog/[slug] dynamic post page
+- Update Navbar and Footer links
+
+
+ app/blog/[slug]/page.tsx | 109 +++++++++++++++++++++++++++++++++++++++++++++++
+ app/blog/page.tsx        | 103 ++++++++++++++++++++++++++++++++++++++++++++
+ components/footer.tsx    |   4 +-
+ components/navbar.tsx    |   2 +-
+ lib/wordpress.ts         |  53 +++++++++++++++++++++++
+ middleware.ts            |   4 +-
+ 6 files changed, 270 insertions(+), 5 deletions(-)
+
+COMMIT:1f89ab5413e98f3b8d2e6e6908bfc89d2c6fa298
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Dec 22 15:52:06 2025 +0530
+SUBJECT:fix: Add Navbar and Footer to blog pages
+BODY:- Create app/blog/layout.tsx with navigation shell
+- Remove redundant wrappers from blog pages
+- Ensure consistent site navigation across all routes
+
+
+ app/blog/[slug]/page.tsx |  2 +-
+ app/blog/layout.tsx      | 43 +++++++++++++++++++++++++++++++++++++++++++
+ app/blog/page.tsx        |  2 +-
+ 3 files changed, 45 insertions(+), 2 deletions(-)
+
+COMMIT:9fc18a0b8bc6800445058f441b77fbcb55c38eca
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 10:18:23 2025 +0530
+SUBJECT:feat: implement dynamic sitemap and 404 redirect system
+BODY:
+
+ .agent/404-fix-guide.md | 149 ++++++++++++++++++++++++++++++++++++++++++++++++
+ app/blog/page.tsx       |  32 +++++++++++
+ app/sitemap.ts          |  26 +++++++--
+ next.config.mjs         |  18 ++++++
+ 4 files changed, 221 insertions(+), 4 deletions(-)
+
+COMMIT:9b6b0bb50f91bc3762097363ac8a347c0bc245f3
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 10:22:34 2025 +0530
+SUBJECT:feat: add on-demand revalidation webhook for instant blog updates
+BODY:
+
+ app/api/revalidate/route.ts | 38 ++++++++++++++++++++++++++++++++++++++
+ lib/wordpress.ts            |  4 ++--
+ 2 files changed, 40 insertions(+), 2 deletions(-)
+
+COMMIT:5849942c5832c107e008c818b4490a58cd1de8cb
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 10:51:49 2025 +0530
+SUBJECT:chore: remove resources page and fix image 404s
+BODY:
+
+ app/resources/page.tsx   | 116 -----------------------------------------------
+ app/sitemap.ts           |   1 -
+ public/og-image.png      | Bin 0 -> 685993 bytes
+ public/twitter-image.png | Bin 0 -> 685993 bytes
+ 4 files changed, 117 deletions(-)
+
+COMMIT:6783a23a54fa114bc8aca66933318e5f8e80cce5
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 10:58:35 2025 +0530
+SUBJECT:fix: remove old logo images, update blog banner and styling
+BODY:
+
+ app/blog/page.tsx        |  21 ++++-----------------
+ public/logo.png          | Bin 685993 -> 0 bytes
+ public/og-image.png      | Bin 685993 -> 0 bytes
+ public/twitter-image.png | Bin 685993 -> 0 bytes
+ 4 files changed, 4 insertions(+), 17 deletions(-)
+
+COMMIT:4017a70a18db72cc08dba0d51333b0cd6699b488
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 11:11:12 2025 +0530
+SUBJECT:feat: delay tagline animation and update blog banner
+BODY:
+
+ app/blog/page.tsx            | 33 ++-----------------------
+ components/blog-banner.tsx   | 46 +++++++++++++++++++++++++++++++++++
+ components/ui/shiny-text.tsx | 57 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 105 insertions(+), 31 deletions(-)
+
+COMMIT:b66d3e6019a77b84695aab7b0a1070ef0504e578
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 11:16:21 2025 +0530
+SUBJECT:fix: blog banner layout and animation timing
+BODY:
+
+ components/blog-banner.tsx | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+COMMIT:2ee582c02134c58447a716cdec166eb3ee192033
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 11:22:48 2025 +0530
+SUBJECT:fix: restore blog banner syntax and refine styles
+BODY:
+
+ app/blog/[slug]/page.tsx     |  6 +-----
+ components/blog-banner.tsx   | 14 +++++++-------
+ components/ui/shiny-text.tsx | 34 ++++++++++++++++------------------
+ 3 files changed, 24 insertions(+), 30 deletions(-)
+
+COMMIT:ded33700933c9629d26f987a00b0800a0db0040e
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 11:25:59 2025 +0530
+SUBJECT:fix: shiny text animation and reassurance on SEO
+BODY:
+
+ components/ui/shiny-text.tsx | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+COMMIT:a4615b52ddc47f1c79fe64674fb8c863aad679ed
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 11:28:22 2025 +0530
+SUBJECT:fix: ensure shiny text animation works by using transparent text fill
+BODY:
+
+ components/ui/shiny-text.tsx | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+COMMIT:e89995c6809ff61521e54f5955556f306bf04d89
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 11:32:35 2025 +0530
+SUBJECT:fix: rewrite shiny text with global styles for reliable animation
+BODY:
+
+ components/ui/shiny-text.tsx | 54 +++++++++++++++++++++++---------------------
+ 1 file changed, 28 insertions(+), 26 deletions(-)
+
+COMMIT:658c670fb3be555de1471605108e557c916dd045
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 12:05:22 2025 +0530
+SUBJECT:feat: setup daily login report automation
+BODY:
+
+ ALTERNATIVE_CRON_SOLUTIONS.md            | 216 ++++++++++++++++++++++++++
+ DAILY_LOGIN_REPORT_SETUP.md              | 224 +++++++++++++++++++++++++++
+ DAILY_LOGIN_REPORT_SUMMARY.md            | 177 +++++++++++++++++++++
+ app/api/cron/daily-login-report/route.ts | 257 +++++++++++++++++++++++++++++++
+ test-login-report.js                     |  66 ++++++++
+ vercel.json                              |   8 +
+ 6 files changed, 948 insertions(+)
+
+COMMIT:6de442e3424fcf79ff081e34c86640ac082641f8
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 12:14:33 2025 +0530
+SUBJECT:chore: update demo time to 12:20 PM IST
+BODY:
+
+ vercel.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:60ce1fc70ce4b84e51a21e4b6b0ea17038cfe248
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 12:16:21 2025 +0530
+SUBJECT:fix: move Prisma and Resend init inside function to fix build
+BODY:
+
+ app/api/cron/daily-login-report/route.ts | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+COMMIT:3ab2e5b2d274b2a4e7b75feaa197435a1a03da4b
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 12:27:15 2025 +0530
+SUBJECT:fix: use pre-configured Prisma client from lib/db and revert to 6 AM IST
+BODY:
+
+ app/api/cron/daily-login-report/route.ts | 7 ++-----
+ vercel.json                              | 2 +-
+ 2 files changed, 3 insertions(+), 6 deletions(-)
+
+COMMIT:e249b6f0c03711703236ea5dc52d1326fe14751c
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 12:36:14 2025 +0530
+SUBJECT:chore: final code review - ready for production
+BODY:
+
+ app/api/cron/daily-login-report/route.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:d024a0afd7beef6877a4dd9c6692346c04c737d4
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 13:01:03 2025 +0530
+SUBJECT:fix: add API key validation and use Resend verified domain
+BODY:
+
+ app/api/cron/daily-login-report/route.ts | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+
+COMMIT:260e456cb7fb720c56d472aa2f31c2ca4a268e06
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 13:18:40 2025 +0530
+SUBJECT:refactor: hybrid approach - Vercel returns JSON, Zapier sends email
+BODY:
+
+ app/api/cron/daily-login-report/route.ts | 248 +++++--------------------------
+ vercel.json                              |   7 +-
+ 2 files changed, 39 insertions(+), 216 deletions(-)
+
+COMMIT:f391a1c101aec566e442cff699ef8a6ba29d783c
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 13:31:42 2025 +0530
+SUBJECT:feat: Vercel cron sends data to Zapier webhook for email
+BODY:
+
+ app/api/cron/daily-login-report/route.ts | 31 +++++++++++++++++++++++--------
+ vercel.json                              |  7 ++++++-
+ 2 files changed, 29 insertions(+), 9 deletions(-)
+
+COMMIT:13d989331acd8369ce3453e2223e1c86a5cc3828
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 13:48:29 2025 +0530
+SUBJECT:docs: finalize setup guides for hybrid Vercel + Zapier workflow
+BODY:
+
+ DAILY_LOGIN_REPORT_SETUP.md   | 231 ++++++++----------------------------------
+ DAILY_LOGIN_REPORT_SUMMARY.md | 191 ++++++----------------------------
+ 2 files changed, 73 insertions(+), 349 deletions(-)
+
+COMMIT:90f9314a6b53febf5575a74d73d26b84bf15aafb
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 23 15:36:26 2025 +0530
+SUBJECT:feat: save contact form submissions to Supabase via Prisma
+BODY:
+
+ app/api/contact/route.ts | 18 ++++++++++++++++++
+ prisma/schema.prisma     | 14 ++++++++++++++
+ 2 files changed, 32 insertions(+)
+
+COMMIT:628ea07fbcc8864191512e88fddb3a56fdf71bcb
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 24 09:44:11 2025 +0530
+SUBJECT:SEO: Fix mobile viewport, add unique metadata to all pages, and delete legacy converter page
+BODY:
+
+ app/about-ocr/page.tsx       |  5 +++
+ app/about/page.tsx           |  5 +++
+ app/api/chat/route.ts        | 16 ++++++---
+ app/blog/page.tsx            |  4 +--
+ app/company-profile/page.tsx |  5 +++
+ app/contact/page.tsx         |  5 +++
+ app/converter/page.tsx       | 78 --------------------------------------------
+ app/layout.tsx               |  2 --
+ app/mission/page.tsx         |  5 +++
+ app/page.tsx                 | 19 +++--------
+ app/privacy/page.tsx         |  5 +++
+ app/result/local/page.tsx    | 31 ++++++++++++------
+ app/terms/page.tsx           |  5 +++
+ components/blog-banner.tsx   | 32 ++----------------
+ components/chat-widget.tsx   |  8 ++---
+ 15 files changed, 80 insertions(+), 145 deletions(-)
+
+COMMIT:5723088ed8687c145ebea609a6d67d7d6959830d
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 24 09:56:04 2025 +0530
+SUBJECT:Fix: Refactor pages to separate client logic and server metadata to resolve Vercel build errors
+BODY:
+
+ app/about-ocr/client.tsx       | 164 +++++++++
+ app/about-ocr/page.tsx         | 162 +--------
+ app/about/client.tsx           |  62 ++++
+ app/about/page.tsx             |  60 +---
+ app/company-profile/client.tsx | 115 +++++++
+ app/company-profile/page.tsx   | 113 +------
+ app/contact/client.tsx         | 736 +++++++++++++++++++++++++++++++++++++++++
+ app/contact/page.tsx           | 734 +---------------------------------------
+ app/mission/client.tsx         |  49 +++
+ app/mission/page.tsx           |  47 +--
+ app/privacy/client.tsx         | 130 ++++++++
+ app/privacy/page.tsx           | 128 +------
+ app/result/local/client.tsx    | 566 +++++++++++++++++++++++++++++++
+ app/result/local/page.tsx      | 564 +------------------------------
+ app/terms/client.tsx           | 208 ++++++++++++
+ app/terms/page.tsx             | 206 +-----------
+ 16 files changed, 2046 insertions(+), 1998 deletions(-)
+
+COMMIT:5d9b2b74cd0a659e694eac988bd1df39a996bf62
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 24 10:04:17 2025 +0530
+SUBJECT:Fix: Move TypeAnimation import to top level and enable typing effect on homepage
+BODY:
+
+ app/page.tsx      | 14 +++++++++++++-
+ package-lock.json | 12 ++++++++++++
+ package.json      |  1 +
+ 3 files changed, 26 insertions(+), 1 deletion(-)
+
+COMMIT:a51a9eaa74551ff950431978d535734116c832cb
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 24 10:43:37 2025 +0530
+SUBJECT:Feature: Replace login with email capture for visitor tracking
+BODY:
+
+ app/api/visitor/route.ts           |  59 +++++++++++++++++
+ app/page.tsx                       |  41 +++++++-----
+ components/email-capture-modal.tsx | 125 +++++++++++++++++++++++++++++++++++++
+ prisma/schema.prisma               |  14 +++++
+ 4 files changed, 222 insertions(+), 17 deletions(-)
+
+COMMIT:8e78c97b1c73ed4b76673e45ea50a571e6954643
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 24 10:48:11 2025 +0530
+SUBJECT:Remove email popup, implement silent visitor tracking from session cookies
+BODY:
+
+ app/page.tsx | 60 ++++++++++++++++++++++++------------------------------------
+ 1 file changed, 24 insertions(+), 36 deletions(-)
+
+COMMIT:fcb4f4a3a274fd93f2218c3f33b69b100e5088d3
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 24 11:15:54 2025 +0530
+SUBJECT:Add 10MB daily quota limit for anonymous users with timezone-aware resets
+BODY:
+
+ app/api/ocr/route.ts     | 84 ++++++++++++++++++++++++++++++++++++++++++++++++
+ app/api/visitor/route.ts |  5 ++-
+ lib/usage-limit.ts       | 39 ++++++++++++++--------
+ prisma/schema.prisma     | 20 +++++++-----
+ 4 files changed, 125 insertions(+), 23 deletions(-)
+
+COMMIT:b6b1daadd211c669635991dea01574bf5a31c021
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 24 11:44:44 2025 +0530
+SUBJECT:Fix navigation button visibility and add usage tracking for anonymous users
+BODY:
+
+ app/api/user/usage/route.ts | 68 ++++++++++++++++++++++++++++++++++++---------
+ app/result/local/client.tsx |  8 +++---
+ 2 files changed, 59 insertions(+), 17 deletions(-)
+
+COMMIT:8c614c80c715ca95a608a01de3a6b5f20efb8807
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 24 13:24:58 2025 +0530
+SUBJECT:feat: add duplicate CTA on about page, usage limit warning modal, and excel file parsing support
+BODY:
+
+ app/about/client.tsx               |   4 +
+ app/api/ocr/route.ts               |  80 +++++++++
+ app/page.tsx                       | 282 +----------------------------
+ components/limit-warning-modal.tsx |  45 +++++
+ components/smart-upload-zone.tsx   | 351 +++++++++++++++++++++++++++++++++++++
+ package-lock.json                  | 104 +++++++++++
+ package.json                       |   1 +
+ 7 files changed, 587 insertions(+), 280 deletions(-)
+
+COMMIT:c05890967f127701809366a573b5ae4fc85f3a6f
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 24 13:32:19 2025 +0530
+SUBJECT:fix: replace misplaced upload zone on about page with CTA section and refactor CTA to reusable component
+BODY:
+
+ app/about/client.tsx       |  6 ++----
+ app/page.tsx               | 22 ++--------------------
+ components/cta-section.tsx | 39 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 43 insertions(+), 24 deletions(-)
+
+COMMIT:391cf6f6081b85a09601b10d675a003351302a84
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 24 13:37:14 2025 +0530
+SUBJECT:style: change CTA text to 'Free online OCR Engine' on About page
+BODY:
+
+ app/about/client.tsx       |  6 +++++-
+ components/cta-section.tsx | 30 ++++++++++++++++++++++--------
+ 2 files changed, 27 insertions(+), 9 deletions(-)
+
+COMMIT:6e9de6b070d4a173cc689eeb8bd4518de00c5dfc
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 24 13:53:02 2025 +0530
+SUBJECT:style: update About page CTA with brand color, larger font, and requested tagline
+BODY:
+
+ app/about/client.tsx       |  4 +++-
+ components/cta-section.tsx | 10 +++++++---
+ 2 files changed, 10 insertions(+), 4 deletions(-)
+
+COMMIT:b2af701c830f2ea57cfc1322200c0da979c2e0e0
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 24 14:06:44 2025 +0530
+SUBJECT:fix: make results page header responsive (stack on mobile)
+BODY:
+
+ app/result/local/client.tsx | 14 +++++++-------
+ components/cta-section.tsx  |  3 ++-
+ 2 files changed, 9 insertions(+), 8 deletions(-)
+
+COMMIT:8a6516e031df5dc54032f090a700caf99c4e3c2c
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 25 15:52:45 2025 +0530
+SUBJECT:Add Services page with tool categories and update navbar/footer navigation
+BODY:
+
+ app/services/page.tsx | 400 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ components/footer.tsx |  57 ++++++-
+ components/navbar.tsx | 306 +++++++++++++++++++++++++++++++-------
+ 3 files changed, 703 insertions(+), 60 deletions(-)
+
+COMMIT:99a0c108c3bb32d5d12bd9fd469c472decbbf48a
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 25 15:54:35 2025 +0530
+SUBJECT:Update sitemap to include services page
+BODY:
+
+ app/sitemap.ts | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:ecbe663db7fe031ac5c6e137a6a6e1e862534535
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 25 16:00:04 2025 +0530
+SUBJECT:Add Services link to footer navigation
+BODY:
+
+ components/footer.tsx | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+COMMIT:ab74b29063bda0cd3476a6e032c884a0d54131ee
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 25 16:04:08 2025 +0530
+SUBJECT:Add MainLayout wrapper to enable navbar and footer on all pages including services
+BODY:
+
+ app/layout.tsx             |  8 +++++++-
+ components/main-layout.tsx | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 51 insertions(+), 1 deletion(-)
+
+COMMIT:77a261a071fca32119c97b2db55811ab81505197
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 25 19:40:02 2025 +0530
+SUBJECT:Add 30 conversion tool pages with multi-file upload and merged PDF support
+BODY:
+
+ app/tools/excel-to-image/page.tsx              |  23 ++
+ app/tools/excel-to-pdf/excel-to-pdf-client.tsx | 127 ++++++
+ app/tools/excel-to-pdf/page.tsx                |  23 ++
+ app/tools/excel-to-ppt/page.tsx                |  23 ++
+ app/tools/excel-to-text/page.tsx               |  25 ++
+ app/tools/excel-to-word/page.tsx               |  25 ++
+ app/tools/image-to-excel/page.tsx              |  23 ++
+ app/tools/image-to-pdf/image-to-pdf-client.tsx |  95 +++++
+ app/tools/image-to-pdf/page.tsx                |  23 ++
+ app/tools/image-to-ppt/page.tsx                |  23 ++
+ app/tools/image-to-text/page.tsx               |  23 ++
+ app/tools/image-to-word/page.tsx               |  23 ++
+ app/tools/pdf-to-excel/page.tsx                |  23 ++
+ app/tools/pdf-to-excel/pdf-to-excel-client.tsx | 292 ++++++++++++++
+ app/tools/pdf-to-image/page.tsx                |  23 ++
+ app/tools/pdf-to-image/pdf-to-image-client.tsx | 120 ++++++
+ app/tools/pdf-to-ppt/page.tsx                  |  23 ++
+ app/tools/pdf-to-ppt/pdf-to-ppt-client.tsx     | 113 ++++++
+ app/tools/pdf-to-text/page.tsx                 |  23 ++
+ app/tools/pdf-to-text/pdf-to-text-client.tsx   |  90 +++++
+ app/tools/pdf-to-word/page.tsx                 |  23 ++
+ app/tools/ppt-to-excel/page.tsx                |  23 ++
+ app/tools/ppt-to-image/page.tsx                |  23 ++
+ app/tools/ppt-to-pdf/page.tsx                  |  23 ++
+ app/tools/ppt-to-pdf/ppt-to-pdf-client.tsx     | 165 ++++++++
+ app/tools/ppt-to-text/page.tsx                 |  23 ++
+ app/tools/ppt-to-word/page.tsx                 |  23 ++
+ app/tools/text-to-excel/page.tsx               |  23 ++
+ app/tools/text-to-image/page.tsx               |  23 ++
+ app/tools/text-to-pdf/page.tsx                 |  23 ++
+ app/tools/text-to-pdf/text-to-pdf-client.tsx   |  83 ++++
+ app/tools/text-to-ppt/page.tsx                 |  23 ++
+ app/tools/text-to-word/page.tsx                |  23 ++
+ app/tools/word-to-excel/page.tsx               |  23 ++
+ app/tools/word-to-image/page.tsx               |  23 ++
+ app/tools/word-to-pdf/page.tsx                 |  23 ++
+ app/tools/word-to-ppt/page.tsx                 |  23 ++
+ app/tools/word-to-text/page.tsx                |  23 ++
+ components/tools/ToolShell.tsx                 | 128 ++++++
+ components/tools/generic-tool.tsx              | 366 +++++++++++++++++
+ lib/client-generator.ts                        | 208 ++++++++++
+ package-lock.json                              | 534 +++++++++++++++++++++++++
+ package.json                                   |   5 +
+ 43 files changed, 3020 insertions(+)
+
+COMMIT:b4b29346316edd5ec2da6de93738a304b7581183
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 25 19:44:09 2025 +0530
+SUBJECT:Add file type validation with clear error messages for all conversion tools
+BODY:
+
+ components/tools/generic-tool.tsx | 39 ++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 36 insertions(+), 3 deletions(-)
+
+COMMIT:738bf611089f37ebd42c948149cd94cd8a391111
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 25 20:30:34 2025 +0530
+SUBJECT:chore: Remove non-client-side tools, keep only 6 working tools
+BODY:
+
+ app/about-ocr/client.tsx              |  31 +--
+ app/about/client.tsx                  |  30 +--
+ app/api/auth/callback/google/route.ts |   2 +-
+ app/api/ocr/route.ts                  |  32 ++-
+ app/api/user/usage/route.ts           |  20 +-
+ app/api/visitor/route.ts              |  69 +++++--
+ app/blog/layout.tsx                   |  34 +---
+ app/company-profile/client.tsx        |  30 +--
+ app/contact/client.tsx                |  84 +-------
+ app/faqs/page.tsx                     |  30 +--
+ app/mission/client.tsx                |  30 +--
+ app/not-found.tsx                     |  30 ++-
+ app/page.tsx                          | 363 ++++++++++++++++------------------
+ app/privacy/client.tsx                |  35 +---
+ app/result/[id]/page.tsx              | 162 +++++++--------
+ app/result/local/client.tsx           | 114 +++++++----
+ app/terms/client.tsx                  |  33 +---
+ app/tools/image-to-excel/page.tsx     |   2 +-
+ app/tools/image-to-word/page.tsx      |   2 +-
+ app/tools/pdf-to-excel/page.tsx       |   2 +-
+ app/tools/pdf-to-word/page.tsx        |   2 +-
+ components/client-consent-wrapper.tsx |  28 ++-
+ components/consent-popup.tsx          |  54 +++--
+ components/cookie-banner.tsx          |  75 +++++++
+ components/footer.tsx                 |  26 +--
+ components/limit-warning-modal.tsx    |   2 +-
+ components/navbar.tsx                 | 123 ++----------
+ components/smart-upload-zone.tsx      |  39 ++--
+ components/upload-zone.tsx            |  32 +--
+ hooks/use-visitor-tracker.ts          |  35 ++++
+ lib/usage-limit.ts                    |  14 +-
+ prisma/schema.prisma                  |  18 +-
+ public/pdf.worker.min.mjs             |  28 +++
+ scripts/cleanup-visitors.js           |  48 +++++
+ scripts/cleanup-visitors.ts           |  60 ++++++
+ scripts/debug-prisma.ts               |  16 ++
+ scripts/test-db.ts                    |  19 ++
+ 37 files changed, 880 insertions(+), 874 deletions(-)
+
+COMMIT:4f28848338bae844b90ddeba172e25d86f73e8a1
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 25 20:36:56 2025 +0530
+SUBJECT:fix: Add missing UI imports in contact page
+BODY:
+
+ app/contact/client.tsx | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+COMMIT:fca4af93d032a30434e23b5320eb264491e5cd67
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 25 20:41:54 2025 +0530
+SUBJECT:chore: Delete non-client-side tool pages from directory
+BODY:
+
+ app/tools/excel-to-image/page.tsx              |  23 --
+ app/tools/excel-to-pdf/excel-to-pdf-client.tsx | 127 -----------
+ app/tools/excel-to-pdf/page.tsx                |  23 --
+ app/tools/excel-to-ppt/page.tsx                |  23 --
+ app/tools/excel-to-text/page.tsx               |  25 ---
+ app/tools/excel-to-word/page.tsx               |  25 ---
+ app/tools/image-to-excel/page.tsx              |  23 --
+ app/tools/image-to-ppt/page.tsx                |  23 --
+ app/tools/image-to-word/page.tsx               |  23 --
+ app/tools/pdf-to-excel/page.tsx                |  23 --
+ app/tools/pdf-to-excel/pdf-to-excel-client.tsx | 292 -------------------------
+ app/tools/pdf-to-image/page.tsx                |  23 --
+ app/tools/pdf-to-image/pdf-to-image-client.tsx | 120 ----------
+ app/tools/pdf-to-ppt/page.tsx                  |  23 --
+ app/tools/pdf-to-ppt/pdf-to-ppt-client.tsx     | 113 ----------
+ app/tools/pdf-to-word/page.tsx                 |  23 --
+ app/tools/ppt-to-excel/page.tsx                |  23 --
+ app/tools/ppt-to-image/page.tsx                |  23 --
+ app/tools/ppt-to-pdf/page.tsx                  |  23 --
+ app/tools/ppt-to-pdf/ppt-to-pdf-client.tsx     | 165 --------------
+ app/tools/ppt-to-text/page.tsx                 |  23 --
+ app/tools/ppt-to-word/page.tsx                 |  23 --
+ app/tools/word-to-excel/page.tsx               |  23 --
+ app/tools/word-to-image/page.tsx               |  23 --
+ app/tools/word-to-pdf/page.tsx                 |  23 --
+ app/tools/word-to-ppt/page.tsx                 |  23 --
+ app/tools/word-to-text/page.tsx                |  23 --
+ 27 files changed, 1327 deletions(-)
+
+COMMIT:77c7d16cf60137d6cc12ca7f86db7ee6f64bd18d
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Dec 25 21:38:06 2025 +0530
+SUBJECT:fix: CodeRabbit XSS fixes and DB migration (Content changes reverted)
+BODY:
+
+ app/api/auth/callback/google/route.ts     |  3 +-
+ components/chat-widget.tsx                | 12 +++++--
+ components/document-chat.tsx              | 12 +++++--
+ prisma/migrations/convert-bytes-to-mb.sql | 21 ++++++++++++
+ scripts/check-columns.js                  | 39 +++++++++++++++++++++
+ scripts/convert-bytes-to-mb.ts            | 51 +++++++++++++++++++++++++++
+ scripts/convert-migration.js              | 57 +++++++++++++++++++++++++++++++
+ scripts/convert-user-table.js             | 53 ++++++++++++++++++++++++++++
+ scripts/list-tables.js                    | 41 ++++++++++++++++++++++
+ scripts/round-usage.js                    | 53 ++++++++++++++++++++++++++++
+ scripts/round-user.js                     | 39 +++++++++++++++++++++
+ 11 files changed, 375 insertions(+), 6 deletions(-)
+
+COMMIT:a0bb1a0bde3d9e5e22732cc788b52fbd06c86184
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 09:46:05 2025 +0530
+SUBJECT:Fix SEO canonicals, redirects, PDF image scaling, and implement merged document downloads
+BODY:
+
+ SEO_Analysis_Report.md            |   82 +
+ app/layout.tsx                    |    3 -
+ components/tools/generic-tool.tsx |   90 +-
+ implementation_plan.md            |   31 +
+ lib/client-generator.ts           |  178 +-
+ middleware.ts                     |    5 +-
+ package-lock.json                 | 7456 ++++++++++++++++++++++++++++++-------
+ package.json                      |    6 +
+ 8 files changed, 6529 insertions(+), 1322 deletions(-)
+
+COMMIT:2fb37b95183c74a48ec35f9ef3363281bfb96f73
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 09:47:54 2025 +0530
+SUBJECT:Fix deployment dependency conflicts and ensure build continues despite lint errors
+BODY:
+
+ .npmrc          | 1 +
+ next.config.mjs | 3 +++
+ package.json    | 6 +++---
+ 3 files changed, 7 insertions(+), 3 deletions(-)
+
+COMMIT:483b6a5ffb681995c1d0f2fd67ede36537173cad
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 09:55:39 2025 +0530
+SUBJECT:Fix build error: downgrade eslint-plugin-react-hooks to ^7.0.0
+BODY:
+
+ package-lock.json | 514 +++++++++++++++++++++---------------------------------
+ package.json      |   2 +-
+ 2 files changed, 200 insertions(+), 316 deletions(-)
+
+COMMIT:55763a4599cddf6ac8c1373c500919ac1d6e868c
+AUTHOR:Dhyaneshwaran Karthikeyan
+DATE:Fri Dec 26 10:06:05 2025 +0530
+SUBJECT:Revise README for clarity and additional features
+BODY:Updated the README to enhance project description, features, and setup instructions.
+
+ README.md | 64 ++++++++++++++++++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 47 insertions(+), 17 deletions(-)
+
+COMMIT:c8113b01f0bc5431e332ca12995444b77d5da4c5
+AUTHOR:Dhyaneshwaran Karthikeyan
+DATE:Fri Dec 26 10:06:41 2025 +0530
+SUBJECT:Update README.md
+BODY:
+
+ README.md | 2 --
+ 1 file changed, 2 deletions(-)
+
+COMMIT:aca23e17ea15584714d420a0365ed006f6e6941f
+AUTHOR:Dhyaneshwaran Karthikeyan
+DATE:Fri Dec 26 10:10:42 2025 +0530
+SUBJECT:Update README to remove contributing section
+BODY:Removed contributing section and updated license information.
+
+ README.md | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+COMMIT:ee0febb1c935dc4f7fa9044067fca8941651fc26
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 10:20:03 2025 +0530
+SUBJECT:Fix SEO issues: add canonical URLs, fix mixed content, improve H1 indexability
+BODY:
+
+ README.md                | 62 +++++++++++++++++++++++++++++++++++-------------
+ app/blog/[slug]/page.tsx | 11 +++++++--
+ app/layout.tsx           |  3 +++
+ app/page.tsx             |  1 +
+ 4 files changed, 58 insertions(+), 19 deletions(-)
+
+COMMIT:3c6638726b9c4b3e51182785f0fc92f503bc7e3f
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 10:22:36 2025 +0530
+SUBJECT:Complete SEO improvements: canonical URLs, Twitter/OG metadata, heading hierarchy
+BODY:
+
+ app/blog/[slug]/page.tsx          | 23 +++++++++++++++++------
+ app/tools/image-to-pdf/page.tsx   | 10 +++++++++-
+ app/tools/text-to-excel/page.tsx  | 10 +++++++++-
+ app/tools/text-to-image/page.tsx  | 10 +++++++++-
+ app/tools/text-to-pdf/page.tsx    | 10 +++++++++-
+ app/tools/text-to-ppt/page.tsx    | 10 +++++++++-
+ app/tools/text-to-word/page.tsx   | 10 +++++++++-
+ components/tools/generic-tool.tsx |  1 +
+ 8 files changed, 72 insertions(+), 12 deletions(-)
+
+COMMIT:f7f8979645eb779170774728d4f814157683325c
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 10:22:56 2025 +0530
+SUBJECT:Merge and complete SEO improvements
+BODY:
+
+COMMIT:3bcba3dfa5d428deb2776f6955fff7852c13b768
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 11:39:15 2025 +0530
+SUBJECT:Fix duplicate title tags: enable trailingSlash and add FAQs metadata
+BODY:
+
+ app/faqs/page.tsx | 12 +++++++++++-
+ next.config.mjs   |  1 +
+ 2 files changed, 12 insertions(+), 1 deletion(-)
+
+COMMIT:1d421239d85337164ca3bb4c6fd659baf3bdbc01
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 14:04:35 2025 +0530
+SUBJECT:Update services order and blog banner text
+BODY:
+
+ app/services/page.tsx      | 178 ++++++++++++++++++++++-----------------------
+ components/blog-banner.tsx |   2 +-
+ 2 files changed, 90 insertions(+), 90 deletions(-)
+
+COMMIT:6ddcb098b901a8bdc400eb5d8da8812adf8c5184
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 14:13:39 2025 +0530
+SUBJECT:Center alignment for services page last row
+BODY:
+
+ app/services/page.tsx | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+COMMIT:ebd90bfb3187c170d081548f493fa20d0626807c
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 14:45:01 2025 +0530
+SUBJECT:feat: Add Excel to PDF, Word to PDF, and PPT to PDF tools
+BODY:
+
+ app/tools/excel-to-pdf/page.tsx   |  32 +++
+ app/tools/ppt-to-pdf/page.tsx     |  32 +++
+ app/tools/word-to-pdf/page.tsx    |  32 +++
+ components/navbar.tsx             |   3 +
+ components/tools/generic-tool.tsx |  54 ++++-
+ lib/client-generator.ts           | 404 +++++++++++++++++++++++++++++++++++++-
+ package-lock.json                 |  96 +++++++++
+ package.json                      |   3 +-
+ tool_availability_report.md       |  79 ++++++++
+ 9 files changed, 731 insertions(+), 4 deletions(-)
+
+COMMIT:6c53a81e8dda684720d30953889a87d9914759f3
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 14:51:15 2025 +0530
+SUBJECT:fix: Filter out empty Excel rows to prevent empty pages in PDF output
+BODY:
+
+ lib/client-generator.ts | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+COMMIT:fb824e776d165e8ffe998ab9efa526e5531d4525
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 15:07:47 2025 +0530
+SUBJECT:feat: Add PDF/Word/Excel/PPT to Image tools + Navbar update
+BODY:
+
+ app/tools/excel-to-image/page.tsx | 32 +++++++++++++++++
+ app/tools/pdf-to-image/page.tsx   | 31 +++++++++++++++++
+ app/tools/ppt-to-image/page.tsx   | 32 +++++++++++++++++
+ app/tools/word-to-image/page.tsx  | 32 +++++++++++++++++
+ components/navbar.tsx             | 13 +++++--
+ components/tools/generic-tool.tsx | 60 +++++++++++++++++++++++++++++++-
+ lib/client-generator.ts           | 73 +++++++++++++++++++++++++++++++++++++++
+ tool_availability_report.md       | 12 +++----
+ 8 files changed, 276 insertions(+), 9 deletions(-)
+
+COMMIT:d98de3b0b59f82b0bab6389a3eb24ec6b3a24adb
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 15:10:40 2025 +0530
+SUBJECT:fix: Resolve DOMMatrix is not defined build error by dynamically importing pdfjs-dist
+BODY:
+
+ lib/client-generator.ts | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+COMMIT:640ba676999385e2e07c89bcf3b8353774d99229
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 15:16:15 2025 +0530
+SUBJECT:fix: Use local PDF.js worker from public folder to avoid CDN fetch errors
+BODY:
+
+ lib/client-generator.ts | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+COMMIT:f662dfcb58ddfccd601346ac61562bc4217dcdce
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 15:34:39 2025 +0530
+SUBJECT:feat: Add PDF/Word/Image/PPT to Excel tools + Navbar update
+BODY:
+
+ app/tools/image-to-excel/page.tsx | 33 +++++++++++++++
+ app/tools/pdf-to-excel/page.tsx   | 31 ++++++++++++++
+ app/tools/ppt-to-excel/page.tsx   | 32 ++++++++++++++
+ app/tools/word-to-excel/page.tsx  | 32 ++++++++++++++
+ components/navbar.tsx             | 18 ++++++--
+ components/tools/generic-tool.tsx | 30 +++++++++++++-
+ lib/client-generator.ts           | 87 +++++++++++++++++++++++++++++++++++++++
+ tool_availability_report.md       | 12 +++---
+ 8 files changed, 264 insertions(+), 11 deletions(-)
+
+COMMIT:691edd3a2cd5acffa2e22b2bafaa634e37e1c577
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 15:45:54 2025 +0530
+SUBJECT:fix: Resolve empty Excel output by implementing merged download logic for office-to-excel
+BODY:
+
+ components/tools/generic-tool.tsx |  25 +++++++-
+ lib/client-generator.ts           | 126 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 150 insertions(+), 1 deletion(-)
+
+COMMIT:f63a1fdfdce87e0a3b6a08f139b3a6ba9084cb06
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 15:56:20 2025 +0530
+SUBJECT:feat: Add PDF/Image/Excel/PPT to Word tools + Navbar update
+BODY:
+
+ app/tools/excel-to-word/page.tsx  |  27 +++++
+ app/tools/image-to-word/page.tsx  |  28 +++++
+ app/tools/pdf-to-word/page.tsx    |  26 +++++
+ app/tools/ppt-to-word/page.tsx    |  27 +++++
+ components/navbar.tsx             |  14 ++-
+ components/tools/generic-tool.tsx |  52 ++++++++-
+ lib/client-generator.ts           | 214 ++++++++++++++++++++++++++++++++++++++
+ tool_availability_report.md       |  12 +--
+ 8 files changed, 391 insertions(+), 9 deletions(-)
+
+COMMIT:95ef79f5c82bf1a8b48222338f3e363073843a0f
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 16:12:10 2025 +0530
+SUBJECT:feat: Add PDF/Word/Image/Excel to PPT tools + Individual download buttons for all formats
+BODY:
+
+ app/tools/excel-to-ppt/page.tsx   |  25 +++++
+ app/tools/image-to-ppt/page.tsx   |  26 +++++
+ app/tools/pdf-to-ppt/page.tsx     |  22 +++++
+ app/tools/word-to-ppt/page.tsx    |  25 +++++
+ components/navbar.tsx             |  14 ++-
+ components/tools/generic-tool.tsx |  74 +++++++++++---
+ lib/client-generator.ts           | 196 ++++++++++++++++++++++++++++++++++++++
+ tool_availability_report.md       |  12 +--
+ 8 files changed, 371 insertions(+), 23 deletions(-)
+
+COMMIT:633ce35ca592fecdeb199617abdcba5b916f7773
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 16:33:35 2025 +0530
+SUBJECT:Refactor client-generator for performance and add Text Tools
+BODY:
+
+ app/tools/excel-to-text/page.tsx  |  24 +++++
+ app/tools/ppt-to-text/page.tsx    |  24 +++++
+ app/tools/word-to-text/page.tsx   |  24 +++++
+ components/tools/generic-tool.tsx |  29 ++++-
+ lib/client-generator.ts           | 218 ++++++++++++++++++++++++++++++++------
+ 5 files changed, 281 insertions(+), 38 deletions(-)
+
+COMMIT:d5b70a566384975ef72fdec66a17fff4e0e1eabe
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Dec 26 17:24:57 2025 +0530
+SUBJECT:Update tool availability report
+BODY:
+
+ tool_availability_report.md | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+COMMIT:e1679e6ccdc42876a76e0107591472897f85db18
+AUTHOR:Dhyaneshwaran. K
+DATE:Sun Dec 28 08:35:02 2025 +0530
+SUBJECT:Fix conversion tool bugs and add previews
+BODY:
+
+ components/navbar.tsx             | 59 ++++++++++++++----------------
+ components/tools/generic-tool.tsx | 75 ++++++++++++++++++++++++++++++---------
+ 2 files changed, 85 insertions(+), 49 deletions(-)
+
+COMMIT:4b1923f9c50568366e5d7d99888f9199115eb779
+AUTHOR:Dhyaneshwaran. K
+DATE:Sun Dec 28 09:07:14 2025 +0530
+SUBJECT:Fix Navbar Tools dropdown width and layout
+BODY:
+
+ components/navbar.tsx | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+COMMIT:fea342785c81c9ce96208026baaa01f5506fde25
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 30 14:22:20 2025 +0530
+SUBJECT:feat: Update homepage features, fix camera upload, and enhance footer
+BODY:
+
+ app/layout.tsx                             |  2 +-
+ app/page.tsx                               | 51 +++++++++++++++++++++-
+ app/sitemap.ts                             |  2 +
+ components/cta-section.tsx                 |  2 +-
+ components/footer.tsx                      | 69 +++++++++++++++---------------
+ components/navbar.tsx                      | 54 +----------------------
+ components/smart-upload-zone.tsx           |  1 +
+ components/tools/generic-tool.tsx          | 43 ++++++++++++++-----
+ components/ui/interactive-hover-button.tsx |  8 ++--
+ components/upload-zone.tsx                 | 36 +++++++++++++---
+ lib/image-preprocessing.ts                 | 10 ++++-
+ lib/tools-data.ts                          | 52 ++++++++++++++++++++++
+ 12 files changed, 220 insertions(+), 110 deletions(-)
+
+COMMIT:3b4fb4e8aa0bd6d6e43adf89461ab57cac35cff7
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Dec 30 15:08:41 2025 +0530
+SUBJECT:fix: PDF download, mobile footer layout, and camera input
+BODY:
+
+ app/result/local/client.tsx | 81 +++++++++++++++++----------------------------
+ components/footer.tsx       |  8 ++---
+ components/upload-zone.tsx  |  2 +-
+ 3 files changed, 35 insertions(+), 56 deletions(-)
+
+COMMIT:751a87b54f7c87ce04e48f4e28c27e46ad024476
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 13:43:21 2025 +0530
+SUBJECT:feat: Update Blog features, Navbar, and Upload UI
+BODY:
+
+ app/api/blog/comments/route.ts     |  71 ++++++++
+ app/api/blog/likes/route.ts        |  78 +++++++++
+ app/api/blog/views/route.ts        |  33 ++++
+ app/blog/[slug]/page.tsx           |  21 ++-
+ components/blog/CommentSection.tsx | 323 +++++++++++++++++++++++++++++++++++++
+ components/blog/LikeButton.tsx     |  89 ++++++++++
+ components/blog/ShareButtons.tsx   | 105 ++++++++++++
+ components/blog/ViewCounter.tsx    |  57 +++++++
+ components/cta-section.tsx         |  23 ++-
+ components/footer.tsx              |  22 ++-
+ components/limit-warning-modal.tsx |   8 +-
+ components/navbar.tsx              |  10 +-
+ components/smart-upload-zone.tsx   |  11 ++
+ components/upload-zone.tsx         |  16 +-
+ lib/client-generator.ts            |  31 +++-
+ lib/env.ts                         | 111 +++++++++++++
+ lib/prisma.ts                      |  15 ++
+ lib/store.ts                       |  21 +++
+ middleware.ts                      | 134 ++++++++++++++-
+ package.json                       |  10 +-
+ prisma/schema.prisma               |  38 +++++
+ vercel.json                        |  35 ++++
+ 22 files changed, 1226 insertions(+), 36 deletions(-)
+
+COMMIT:4d02c62eec6bcab86ae89125ea27212b8717abb9
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 13:46:46 2025 +0530
+SUBJECT:fix: Restore react-type-animation dependency
+BODY:
+
+ package.json | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:7614c22322055e181ac6106147a5cb8191f05894
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 13:49:11 2025 +0530
+SUBJECT:fix: explicit empty options for PrismaClient
+BODY:
+
+ lib/prisma.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:e01fb4319ff5b38fc0978bb4626645072e5412e2
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 14:09:35 2025 +0530
+SUBJECT:fix: Consolidate Prisma client usage to lib/db.ts
+BODY:
+
+ app/api/blog/comments/route.ts |  2 +-
+ app/api/blog/likes/route.ts    |  2 +-
+ app/api/blog/views/route.ts    |  2 +-
+ lib/prisma.ts                  | 15 ---------------
+ 4 files changed, 3 insertions(+), 18 deletions(-)
+
+COMMIT:490d0cb3541a85b82687836892339c6e10ba906f
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 14:39:29 2025 +0530
+SUBJECT:fix: Resolve blog banner mobile issues and validation bugs
+BODY:
+
+ components/blog-banner.tsx         |  2 +-
+ components/blog/CommentSection.tsx | 15 ++++++++-------
+ components/blog/LikeButton.tsx     |  1 +
+ 3 files changed, 10 insertions(+), 8 deletions(-)
+
+COMMIT:3021b659a2a9836ab71deaf873b441f0f85215e1
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 14:50:47 2025 +0530
+SUBJECT:fix(ui): Force direct camera launch on mobile by removing multiple attribute
+BODY:
+
+ components/upload-zone.tsx | 1 -
+ 1 file changed, 1 deletion(-)
+
+COMMIT:0adf510f019e33dd249fc9c8bb3f68cfeb8412a3
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 14:53:16 2025 +0530
+SUBJECT:fix: resolve blog interactivity, email validation, and mobile camera behavior
+BODY:
+
+ app/blog/[slug]/page.tsx           | 6 +++---
+ components/blog/CommentSection.tsx | 8 ++++----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+COMMIT:af3d08a6d6942d84211e173a8fd30a1e83431719
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 15:32:34 2025 +0530
+SUBJECT:perf: Optimize LCP, CLS, and lazy load third-party scripts
+BODY:
+
+ app/layout.tsx                     |  5 +++++
+ app/page.tsx                       | 20 +++++++++++++++++---
+ components/blog/CommentSection.tsx | 14 +++++++++-----
+ 3 files changed, 31 insertions(+), 8 deletions(-)
+
+COMMIT:b9ee683405d5aa1bd8b6501c4e2850e4e2ce09f4
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 15:48:22 2025 +0530
+SUBJECT:perf: Optimize mobile OCR upload speed and progress feedback
+BODY:
+
+ components/smart-upload-zone.tsx | 216 ++++++++++++++-------------------------
+ lib/image-preprocessing.ts       |  91 +++++------------
+ 2 files changed, 98 insertions(+), 209 deletions(-)
+
+COMMIT:bb5c45b71991b718b47716e33ea51cf8a1e1fcec
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 15:58:51 2025 +0530
+SUBJECT:fix: Relax OCR validation and increase resolution for dense documents
+BODY:
+
+ app/api/ocr/route.ts       | 8 ++++++--
+ lib/image-preprocessing.ts | 8 ++++----
+ 2 files changed, 10 insertions(+), 6 deletions(-)
+
+COMMIT:6a1585581d6fff2677342bd1279ccd12b10235bd
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 16:06:07 2025 +0530
+SUBJECT:fix: Revert heavy processing and add safety timeout for mobile speed
+BODY:
+
+ components/smart-upload-zone.tsx |  28 +++++++++--
+ lib/image-preprocessing.ts       | 101 +++++----------------------------------
+ 2 files changed, 36 insertions(+), 93 deletions(-)
+
+COMMIT:348f3f74a3137ba63981497d27f7ca3904c49d3b
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 16:22:10 2025 +0530
+SUBJECT:fix: Balanced mobile OCR (2200px, 0.75q, 8s timeout)
+BODY:
+
+ components/smart-upload-zone.tsx | 10 +++++-----
+ lib/image-preprocessing.ts       |  8 ++++----
+ 2 files changed, 9 insertions(+), 9 deletions(-)
+
+COMMIT:529a43d3bc816cd99bcff63cf4eff398f4e895e0
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Dec 31 18:09:25 2025 +0530
+SUBJECT:fix: IP-based usage tracking and tuned OCR filters for quality
+BODY:
+
+ app/api/ocr/route.ts             | 40 +++++++++++++++++++++++-----------------
+ app/api/user/usage/route.ts      |  7 +++++--
+ components/smart-upload-zone.tsx |  3 ++-
+ lib/image-preprocessing.ts       |  4 ++--
+ 4 files changed, 32 insertions(+), 22 deletions(-)
+
+COMMIT:a22ec401b697244e643a54fddd7200093d28182f
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Jan 1 11:49:58 2026 +0530
+SUBJECT:Fix OCR performance: Add DB timeouts and enable anonymous visitor tracking
+BODY:
+
+ app/api/ocr/route.ts              | 144 +++++++++++++++++++++++---------------
+ app/api/visitor/route.ts          |   4 +-
+ components/smart-upload-zone.tsx  |   4 +-
+ components/tools/generic-tool.tsx |   2 +
+ components/upload-zone.tsx        |   1 +
+ lib/image-preprocessing.ts        |  35 +++++----
+ lib/image-processing.ts           | 109 +++++++++++++++++++++++++++++
+ package-lock.json                 |  56 +++++++++------
+ package.json                      |   3 +-
+ prisma/schema.prisma              |   2 +-
+ 10 files changed, 265 insertions(+), 95 deletions(-)
+
+COMMIT:c7f1cf8e70f155102e97ed1466b934701c6b0c63
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Jan 1 20:43:30 2026 +0530
+SUBJECT:Perf: Skip server-side image processing if client optimized. Fix: Refresh quota on upload.
+BODY:
+
+ app/api/ocr/route.ts             |  5 ++++-
+ components/smart-upload-zone.tsx | 41 ++++++++++++++++++++++++++++++++++++++--
+ components/upload-zone.tsx       |  7 ++++---
+ lib/image-processing.ts          | 17 ++++++++++++++++-
+ 4 files changed, 63 insertions(+), 7 deletions(-)
+
+COMMIT:cd220d7af9dd4a3a6d4d04d4533859eb57552b89
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 09:45:51 2026 +0530
+SUBJECT:Feat: Detailed Visit Logging (VisitLog table + Tracker)
+BODY:
+
+ app/api/analytics/track/route.ts | 55 ++++++++++++++++++++++++++++++++++++++++
+ app/layout.tsx                   |  2 ++
+ components/analytics-tracker.tsx | 37 +++++++++++++++++++++++++++
+ prisma/schema.prisma             | 25 ++++++++++++++++++
+ 4 files changed, 119 insertions(+)
+
+COMMIT:f644a556493073f61fe407b3f45a6c7f692598f9
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 10:04:13 2026 +0530
+SUBJECT:Fix: Revert Prisma config and force push DB schema
+BODY:
+
+ scripts/check_visitlog.js | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+COMMIT:9d18a82ece39a17cca9f97b17ab51eece4b9fbc5
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 10:24:22 2026 +0530
+SUBJECT:Fix: Re-pushed DB Schema with direct connection
+BODY:
+
+ scripts/add_direct_url.js | 26 ++++++++++++++++++++++++++
+ scripts/debug_env.js      |  9 +++++++++
+ scripts/fix_db_push.js    | 39 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 74 insertions(+)
+
+COMMIT:7f1c9d4309722da3e8e65f9c1127b48753aefe49
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 10:53:36 2026 +0530
+SUBJECT:Refactor: Simplified comment form to remove name and email requirements
+BODY:
+
+ components/blog/CommentSection.tsx | 118 +++++++------------------------------
+ 1 file changed, 21 insertions(+), 97 deletions(-)
+
+COMMIT:8bd9a21178b9312b161d0a6472757cc1bdacf8b8
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 10:57:51 2026 +0530
+SUBJECT:Fix duplicate input in comment form
+BODY:
+
+ components/blog/CommentSection.tsx | 22 ++--------------------
+ 1 file changed, 2 insertions(+), 20 deletions(-)
+
+COMMIT:7092a8222458dbb4e2e76d1204886e7e9c47184a
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 11:00:14 2026 +0530
+SUBJECT:Refactor: Make name/email optional in DB and API
+BODY:
+
+ app/api/blog/comments/route.ts     | 6 ++----
+ components/blog/CommentSection.tsx | 4 +---
+ prisma/schema.prisma               | 4 ++--
+ 3 files changed, 5 insertions(+), 9 deletions(-)
+
+COMMIT:0d1b2c9b5ae02185d1231872167756f61ec7bb6a
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 11:08:02 2026 +0530
+SUBJECT:Chore: Cleanup temporary scripts
+BODY:
+
+ scripts/add_direct_url.js | 26 --------------------------
+ scripts/check_visitlog.js | 16 ----------------
+ scripts/debug_env.js      |  9 ---------
+ scripts/fix_db_push.js    | 39 ---------------------------------------
+ 4 files changed, 90 deletions(-)
+
+COMMIT:85ceec04eeedca7ea7e6187429f2feec188d29f7
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 13:10:02 2026 +0530
+SUBJECT:Add production QA pipeline (1M scale)
+BODY:
+
+ .github/workflows/daily.yml                        |    60 +
+ .github/workflows/smoke.yml                        |    63 +
+ .github/workflows/weekly.yml                       |    44 +
+ .pa11yci.json                                      |    15 +
+ TEST_REPORT.md                                     |    46 +
+ lighthouse-budget.json                             |    34 +
+ lighthouse.json                                    | 13927 ++++++++++++++++
+ package-lock.json                                  | 15699 +++++++++++++++----
+ package.json                                       |     4 +
+ .../6736581bcac3824db305c8b42894079f4cbcee64.md    |   329 +
+ playwright-report/index.html                       |    85 +
+ playwright.config.ts                               |    42 +
+ promptfoo-mistral-config.yaml                      |    23 +
+ scripts/db-check.js                                |    46 +
+ scripts/parse-lh.js                                |    12 +
+ test-results/.last-run.json                        |     6 +
+ .../error-context.md                               |   329 +
+ tests/cost-check.js                                |    15 +
+ tests/functional.spec.ts                           |    88 +
+ tests/load/load-config.yml                         |    28 +
+ tests/load/users.csv                               |     5 +
+ tests/smoke.spec.ts                                |    65 +
+ tests/tools.spec.ts                                |    30 +
+ 23 files changed, 28070 insertions(+), 2925 deletions(-)
+
+COMMIT:23c5d828eb857194b3cfb73aac4d42f949bddfaa
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 13:44:26 2026 +0530
+SUBJECT:Add test script to package.json
+BODY:
+
+ package.json | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+COMMIT:fc5699e50a9cf87fb361eaf8473b5159059dd6b8
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 13:46:54 2026 +0530
+SUBJECT:Fix CI typos: playwright command and yaml indentation
+BODY:
+
+ .github/workflows/daily.yml | 2 +-
+ .github/workflows/smoke.yml | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+COMMIT:a8f200eb6cedf93466421bc21e0b6bb56c3153a4
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 14:29:19 2026 +0530
+SUBJECT:Fix CI: Add DB vars for Prisma postinstall
+BODY:
+
+ .github/workflows/smoke.yml | 3 +++
+ 1 file changed, 3 insertions(+)
+
+COMMIT:7535c197296bb6efadd2f5fa590798cfa6a9c82d
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 16:11:29 2026 +0530
+SUBJECT:Fix CI/CD: Correct YAML syntax, secure DB creds, add accessibility tests & configs
+BODY:
+
+ .github/workflows/daily.yml      |  4 ++--
+ .github/workflows/smoke.yml      |  4 ++--
+ .gitignore                       |  3 +++
+ .zap/rules.tsv                   |  4 ++++
+ package-lock.json                | 14 +++++++++++++
+ package.json                     |  3 ++-
+ tests/a11y/accessibility.spec.ts | 43 ++++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 70 insertions(+), 5 deletions(-)
+
+COMMIT:1f07d2920e0e91cc549116305fc4792738bd32bd
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 16:36:45 2026 +0530
+SUBJECT:Fix CI: Remove npm caching to resolve 400 error on self-hosted runner
+BODY:
+
+ .github/workflows/daily.yml | 2 +-
+ .github/workflows/smoke.yml | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+COMMIT:13f2d80414b93b009bd9cc6651df143fb6a2700d
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 16:38:46 2026 +0530
+SUBJECT:Fix Weekly: Add build steps and enable WebPageTest
+BODY:
+
+ .github/workflows/weekly.yml | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+COMMIT:bf3c4bc9c7e0da9293ae0b52b327554a10dd308e
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 17:11:40 2026 +0530
+SUBJECT:Add production QA pipeline (1M scale)
+BODY:
+
+ .github/workflows/daily.yml                        |    51 +-
+ .github/workflows/smoke.yml                        |    61 +-
+ .github/workflows/weekly.yml                       |    68 +-
+ .gitignore                                         |     4 +-
+ .../ocr-extraction.com/.gitignore                  |    55 +
+ .../ocr-extraction.com/ocr-extraction.com/.npmrc   |     1 +
+ .../ocr-extraction.com/.pa11yci.json               |    15 +
+ .../ALTERNATIVE_CRON_SOLUTIONS.md                  |   216 +
+ .../ocr-extraction.com/DAILY_LOGIN_REPORT_SETUP.md |    73 +
+ .../DAILY_LOGIN_REPORT_SUMMARY.md                  |    52 +
+ .../ocr-extraction.com/README.md                   |    56 +
+ .../ocr-extraction.com/SEO_Analysis_Report.md      |    82 +
+ .../ocr-extraction.com/TEST_REPORT.md              |    46 +
+ .../ocr-extraction.com/components.json             |    21 +
+ .../ocr-extraction.com/implementation_plan.md      |    31 +
+ .../ocr-extraction.com/lighthouse-budget.json      |    34 +
+ .../ocr-extraction.com/lighthouse.json             | 13927 +++++++
+ .../ocr-extraction.com/middleware.ts               |   157 +
+ .../ocr-extraction.com/next.config.mjs             |    86 +
+ .../ocr-extraction.com/package-lock.json           | 24803 ++++++++++++
+ .../ocr-extraction.com/package.json                |   115 +
+ .../ocr-extraction.com/playwright.config.ts        |    42 +
+ .../ocr-extraction.com/postcss.config.mjs          |     8 +
+ .../ocr-extraction.com/prisma.config.ts            |    14 +
+ .../promptfoo-mistral-config.yaml                  |    23 +
+ .../ocr-extraction.com/test-login-report.js        |    66 +
+ .../ocr-extraction.com/tool_availability_report.md |    79 +
+ .../ocr-extraction.com/tsconfig.json               |    41 +
+ .../ocr-extraction.com/vercel.json                 |    43 +
+ lighthouse-budget.json                             |    77 +-
+ package-lock.json                                  | 38688 ++++++++++++-------
+ package.json                                       |     1 +
+ .../6736581bcac3824db305c8b42894079f4cbcee64.md    |   329 -
+ playwright-report/index.html                       |     2 +-
+ promptfoo-mistral-config.yaml                      |    31 +-
+ test-results/.last-run.json                        |     6 +-
+ .../error-context.md                               |   329 -
+ tests/smoke.spec.ts                                |    76 +-
+ 38 files changed, 63904 insertions(+), 15905 deletions(-)
+
+COMMIT:20ca01d68575af84396e7e382398b1566d7bc40c
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 17:21:43 2026 +0530
+SUBJECT:fix: update workflows to match user secret names
+BODY:
+
+ .github/workflows/daily.yml  | 2 +-
+ .github/workflows/smoke.yml  | 2 +-
+ .github/workflows/weekly.yml | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+COMMIT:9ee15f9d14081597de6e356cb7a32937214b721c
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 17:44:45 2026 +0530
+SUBJECT:fix: use npm install and bash shell for windows runner
+BODY:
+
+ .github/workflows/daily.yml  | 3 ++-
+ .github/workflows/smoke.yml  | 3 ++-
+ .github/workflows/weekly.yml | 3 ++-
+ 3 files changed, 6 insertions(+), 3 deletions(-)
+
+COMMIT:028c7a1608c2e12af1bcbc8d90c2b8ad58178d8f
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 17:57:27 2026 +0530
+SUBJECT:fix: use powershell for notifications and robust npm install
+BODY:
+
+ .github/workflows/daily.yml  | 12 ++++++++----
+ .github/workflows/smoke.yml  | 10 +++++++---
+ .github/workflows/weekly.yml | 10 +++++++---
+ 3 files changed, 22 insertions(+), 10 deletions(-)
+
+COMMIT:4e2b02bcd88a687d99d80b0d6d026ce918c87751
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 2 18:05:10 2026 +0530
+SUBJECT:fix: add dummy DATABASE_URL for prisma generate
+BODY:
+
+ .github/workflows/daily.yml  | 2 ++
+ .github/workflows/smoke.yml  | 2 ++
+ .github/workflows/weekly.yml | 2 ++
+ 3 files changed, 6 insertions(+)
+
+COMMIT:0a1867d9243582206a2423fee9667c68f555dc9b
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 09:36:30 2026 +0530
+SUBJECT:Fix SEO: dynamic sitemap with trailing slashes
+BODY:
+
+ app/sitemap.ts | 26 +++++++++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
+
+COMMIT:15d59ed686f62928e9f62eb7ee70b784c897faa4
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 09:53:04 2026 +0530
+SUBJECT:Add production QA pipeline (1M scale)
+BODY:
+
+ .github/workflows/daily.yml     | 52 +++++++++++++++++------------
+ .github/workflows/smoke.yml     | 39 +++++++++++++---------
+ .github/workflows/weekly.yml    | 70 ++++++++++++++++++++++++--------------
+ lighthouse-budget.json          | 74 ++++++++++++++++-------------------------
+ promptfoo-mistral-config.yaml   | 25 +++++++-------
+ test-results/.last-run.json     |  4 ---
+ tests/guardrails/cost-check.ts  | 60 +++++++++++++++++++++++++++++++++
+ tests/load/load-test-config.yml | 29 ++++++++++++++++
+ tests/smoke.spec.ts             | 59 +++++++++++++++++---------------
+ 9 files changed, 263 insertions(+), 149 deletions(-)
+
+COMMIT:961338bf6017ad0b43ca359c5fc9a2d174152a08
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 10:35:57 2026 +0530
+SUBJECT:fix: resolve multiple file inputs in smoke test
+BODY:
+
+ tests/smoke.spec.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:462e6a0c03cd987c104e00b90c7aa35d95286cff
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 10:39:32 2026 +0530
+SUBJECT:fix: robustness improvements (sqlite, retries, curl for windows)
+BODY:
+
+ .github/workflows/daily.yml | 43 +++++++++++++++++++++++++------------------
+ .github/workflows/smoke.yml | 25 ++++++++++++-------------
+ 2 files changed, 37 insertions(+), 31 deletions(-)
+
+COMMIT:60b243bc4900427a490cb4a5850d37abb1f0398b
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 10:43:03 2026 +0530
+SUBJECT:fix: disable lighthouse to bypass windows path limits
+BODY:
+
+ .github/workflows/smoke.yml | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
+
+COMMIT:fe42ccca1d8276f4930c4fc53fc9bfc3e9841505
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 10:52:33 2026 +0530
+SUBJECT:fix: mock usage api, precise assertions, and powershell notifications
+BODY:
+
+ .github/workflows/smoke.yml | 11 +++++++----
+ tests/smoke.spec.ts         | 12 ++++++++++--
+ 2 files changed, 17 insertions(+), 6 deletions(-)
+
+COMMIT:c56f016176bf26dc034f596bf51443f993a8645c
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 11:16:08 2026 +0530
+SUBJECT:fix: disable zap scans (requires docker) to unblock daily/weekly checks
+BODY:
+
+ .github/workflows/daily.yml  | 28 ++++++++++++++--------------
+ .github/workflows/weekly.yml | 16 ++++++++--------
+ 2 files changed, 22 insertions(+), 22 deletions(-)
+
+COMMIT:f6d303b07b1985815ad852b5a6362c623abfd8e9
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 11:16:30 2026 +0530
+SUBJECT:fix: use bash for background process compatibility on windows runner
+BODY:
+
+ .github/workflows/daily.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:4970ee1f00504922546be295c9491d0f53f22295
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 11:54:12 2026 +0530
+SUBJECT:fix: enable zap scans and add docker path for windows runner
+BODY:
+
+ .github/workflows/daily.yml  | 31 +++++++++++++++++--------------
+ .github/workflows/weekly.yml | 21 ++++++++++++---------
+ 2 files changed, 29 insertions(+), 23 deletions(-)
+
+COMMIT:cc53825b3d9918bdf25fefea80db5820886b3ef8
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 12:12:05 2026 +0530
+SUBJECT:fix: use powershell for notifications to avoid bash path issues
+BODY:
+
+ .github/workflows/daily.yml | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+COMMIT:58fde329e3c7d739c2de3d8b426c18780ab915dd
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 12:12:33 2026 +0530
+SUBJECT:fix: use bash for background process in weekly workflow
+BODY:
+
+ .github/workflows/weekly.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:927956a213b7c4d34e65fe2e1502b325768557bf
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 12:19:52 2026 +0530
+SUBJECT:fix: ensure prisma client is generated in weekly workflow
+BODY:
+
+ .github/workflows/weekly.yml | 3 +++
+ 1 file changed, 3 insertions(+)
+
+COMMIT:8c5c22206fcd150985f9f2eb95cb765dd5623916
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 12:49:19 2026 +0530
+SUBJECT:fix: use proper prisma adapter in cost-check and add explicit datasource url
+BODY:
+
+ prisma/schema.prisma           |  1 +
+ tests/guardrails/cost-check.ts | 46 +++++++++++++++++++++++++++++++++---------
+ 2 files changed, 37 insertions(+), 10 deletions(-)
+
+COMMIT:cc68fd0e04515db4cf2fc4fdf45918160e6830d2
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 13:00:15 2026 +0530
+SUBJECT:fix: revert schema url for prisma 7 and swap smoke/daily triggers
+BODY:
+
+ .github/workflows/daily.yml | 2 ++
+ prisma/schema.prisma        | 1 -
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+COMMIT:a4267a1ebd8e28a40357179a4540a9e3ef8b8cdd
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 13:00:37 2026 +0530
+SUBJECT:chore: optimize ci triggers - daily runs on commit, smoke on pr
+BODY:
+
+ .github/workflows/smoke.yml | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+COMMIT:0c86335abef91890b99217e1a6442426ca441304
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 13:10:42 2026 +0530
+SUBJECT:fix: use powershell for background tasks to handle windows paths
+BODY:
+
+ .github/workflows/daily.yml  | 6 ++++--
+ .github/workflows/weekly.yml | 6 ++++--
+ 2 files changed, 8 insertions(+), 4 deletions(-)
+
+COMMIT:7a802d8db17267097fee7939864e15177699db3e
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 13:49:14 2026 +0530
+SUBJECT:fix: replace zap action with direct docker run for windows compatibility
+BODY:
+
+ .github/workflows/daily.yml  | 31 ++++++++++++++++++-------------
+ .github/workflows/weekly.yml | 22 +++++++++++++++-------
+ 2 files changed, 33 insertions(+), 20 deletions(-)
+
+COMMIT:1ce5c275e8df1b7ae4b156e424fcb1563372fea0
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 13:54:43 2026 +0530
+SUBJECT:fix: use root user and explicit path for zap docker to fix file permissions
+BODY:
+
+ .github/workflows/daily.yml  | 15 +++++++--------
+ .github/workflows/weekly.yml |  8 ++++----
+ 2 files changed, 11 insertions(+), 12 deletions(-)
+
+COMMIT:eb6c6afaf238902161a61d991fba57c573cf4a59
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 14:01:15 2026 +0530
+SUBJECT:fix: use absolute path to docker executable to bypass path resolution issues on windows
+BODY:
+
+ .github/workflows/daily.yml  | 3 ++-
+ .github/workflows/weekly.yml | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+COMMIT:f0bb10071eb866da91548686ff13fe385df50f0a
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 16:34:09 2026 +0530
+SUBJECT:chore: cleanup temporary files and apply accessibility fixes
+BODY:
+
+ app/globals.css                            |    2 +-
+ app/layout.tsx                             |    1 +
+ app/page.tsx                               |    8 +-
+ components/cta-section.tsx                 |    2 +-
+ components/footer.tsx                      |    2 +-
+ components/navbar.tsx                      |   22 +-
+ components/ui/interactive-hover-button.tsx |    2 +-
+ components/upload-zone.tsx                 |    6 +-
+ err.txt                                    |  Bin 0 -> 4582 bytes
+ error.log                                  |  Bin 0 -> 4976 bytes
+ output.txt                                 |   41 +
+ playwright-report/index.html               |   85 -
+ report.json                                | 6331 ++++++++++++++++++++++++++++
+ 13 files changed, 6396 insertions(+), 106 deletions(-)
+
+COMMIT:2008ae8d3950bd3f1db258973d9dede3ed34304e
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 3 16:34:26 2026 +0530
+SUBJECT:chore: remove accidental log files
+BODY:
+
+ err.txt     |  Bin 4582 -> 0 bytes
+ error.log   |  Bin 4976 -> 0 bytes
+ output.txt  |   41 -
+ report.json | 6331 -----------------------------------------------------------
+ 4 files changed, 6372 deletions(-)
+
+COMMIT:4ba6e9e84470ffd089708a09022ad28ace2d6d0a
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Jan 5 13:55:18 2026 +0530
+SUBJECT:SEO Fixes: Trailing slash, GTM/Head placement, Content sanitization, Dynamic tool descriptions
+BODY:
+
+ app/admin/logs/page.tsx           |   91 ++
+ app/api/ocr/route.ts              |   22 +-
+ app/blog/[slug]/page.tsx          |   12 +-
+ app/layout.tsx                    |   12 +-
+ app/sitemap.ts                    |    4 +-
+ components/tools/generic-tool.tsx | 1733 +++++++++++++++++++++----------------
+ issues_overview_report.csv        |   31 +
+ next.config.mjs                   |   11 +-
+ public/llms.txt                   |    2 +-
+ 9 files changed, 1136 insertions(+), 782 deletions(-)
+
+COMMIT:f5f89640e21ab043622080109a69edc07d480f59
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Jan 5 19:09:57 2026 +0530
+SUBJECT:Update website logo
+BODY:
+
+ app/icon.png               | Bin 0 -> 304680 bytes
+ app/icon.tsx               |  34 ------
+ app/page.tsx               | 275 ++-------------------------------------------
+ components/cta-section.tsx |  48 +++++---
+ components/footer.tsx      |  22 +++-
+ components/home-page.tsx   | 265 +++++++++++++++++++++++++++++++++++++++++++
+ components/navbar.tsx      |  28 ++++-
+ public/llms.txt            |   2 +-
+ public/logo.png            | Bin 0 -> 5107 bytes
+ remove_bg.py               |  33 ++++++
+ 10 files changed, 390 insertions(+), 317 deletions(-)
+
+COMMIT:92c5b92ab4af1793149042be7ade2161d583765e
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Jan 6 10:00:29 2026 +0530
+SUBJECT:SEO: Unified logo, optimized tool metadata, added canonicals, and fixed indexing issues
+BODY:
+
+ app/admin/logs/page.tsx           |   8 ++
+ app/icon.png                      | Bin 304680 -> 5107 bytes
+ app/layout.tsx                    |  35 +++++++++
+ app/result/[id]/client.tsx        | 153 ++++++++++++++++++++++++++++++++++++
+ app/result/[id]/page.tsx          | 160 +++-----------------------------------
+ app/robots.ts                     |   2 +-
+ app/tools/excel-to-image/page.tsx |   4 +-
+ app/tools/excel-to-pdf/page.tsx   |   2 +-
+ app/tools/excel-to-ppt/page.tsx   |   6 +-
+ app/tools/excel-to-text/page.tsx  |   5 +-
+ app/tools/excel-to-word/page.tsx  |   4 +-
+ app/tools/image-to-excel/page.tsx |   2 +-
+ app/tools/image-to-pdf/page.tsx   |   4 +-
+ app/tools/image-to-ppt/page.tsx   |   6 +-
+ app/tools/image-to-text/page.tsx  |   7 +-
+ app/tools/image-to-word/page.tsx  |   2 +-
+ app/tools/pdf-to-excel/page.tsx   |   2 +-
+ app/tools/pdf-to-image/page.tsx   |   2 +-
+ app/tools/pdf-to-ppt/page.tsx     |   6 +-
+ app/tools/pdf-to-text/page.tsx    |   7 +-
+ app/tools/pdf-to-word/page.tsx    |   2 +-
+ app/tools/ppt-to-excel/page.tsx   |   2 +-
+ app/tools/ppt-to-image/page.tsx   |   2 +-
+ app/tools/ppt-to-pdf/page.tsx     |   2 +-
+ app/tools/ppt-to-text/page.tsx    |   5 +-
+ app/tools/ppt-to-word/page.tsx    |   4 +-
+ app/tools/text-to-excel/page.tsx  |   2 +-
+ app/tools/text-to-image/page.tsx  |   2 +-
+ app/tools/text-to-pdf/page.tsx    |   2 +-
+ app/tools/text-to-ppt/page.tsx    |   2 +-
+ app/tools/text-to-word/page.tsx   |   2 +-
+ app/tools/word-to-excel/page.tsx  |   2 +-
+ app/tools/word-to-image/page.tsx  |   2 +-
+ app/tools/word-to-pdf/page.tsx    |   2 +-
+ app/tools/word-to-ppt/page.tsx    |   6 +-
+ app/tools/word-to-text/page.tsx   |   5 +-
+ 36 files changed, 271 insertions(+), 190 deletions(-)
+
+COMMIT:d77fb91950c77ce5a0db9442fc435182dc0f6075
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Jan 6 10:32:10 2026 +0530
+SUBJECT:Fix visitor logging and QA issues
+BODY:- Add comprehensive error logging to analytics endpoint
+- Fix QA workflow Docker networking for Windows
+- Add error handling and timeouts to QA tests
+- Update favicon with new logo design
+
+
+ .github/workflows/daily.yml      |  30 +++++++++++++++++++++++++++---
+ app/api/analytics/track/route.ts |  13 ++++++++++---
+ app/icon.png                     | Bin 5107 -> 202795 bytes
+ 3 files changed, 37 insertions(+), 6 deletions(-)
+
+COMMIT:76be237b51a2f24b71ab11fc71d4c1f3ede0e97e
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Jan 6 16:53:02 2026 +0530
+SUBJECT:Fix: Add explicit favicon metadata for Google indexing
+BODY:
+
+ app/layout.tsx         |   9 +++++++++
+ public/pr-awards-4.gif | Bin 0 -> 11953 bytes
+ scripts/verify-db.ts   |  47 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 56 insertions(+)
+
+COMMIT:8db69e157e7143e421806024e74acbcfdef6e77a
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Jan 6 17:14:32 2026 +0530
+SUBJECT:SEO: Fix redirect chains, add canonicals, enable trailing slashes
+BODY:
+
+ app/layout.tsx  |  3 +++
+ middleware.ts   | 18 ++----------------
+ next.config.mjs |  2 +-
+ vercel.json     | 13 +++++++++++++
+ 4 files changed, 19 insertions(+), 17 deletions(-)
+
+COMMIT:9b2429fe68eca51401ea29ab753ab022c7e23d8c
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Jan 6 17:19:13 2026 +0530
+SUBJECT:Fix: Move www redirect to next.config.mjs for better host matching support
+BODY:
+
+ next.config.mjs | 25 +++++++++++--------------
+ vercel.json     | 13 -------------
+ 2 files changed, 11 insertions(+), 27 deletions(-)
+
+COMMIT:f1941780777b8837019f0ed263a580a4882f8ab9
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Jan 6 17:55:11 2026 +0530
+SUBJECT:Fix: Revert manual icons metadata to restore site favicon
+BODY:
+
+ app/layout.tsx | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+COMMIT:4f070636b1253bfefbf5397cbf153d658f7600cd
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Jan 6 17:59:19 2026 +0530
+SUBJECT:Fix: Add DATABASE_URL and DIRECT_URL to Prisma schema for Vercel compatibility
+BODY:
+
+ prisma/schema.prisma | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+COMMIT:7bec14fe46a62b13af9ea679b1dd91601a571181
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Jan 7 09:33:32 2026 +0530
+SUBJECT:fix(analytics): robust geodata decoding and bot filtering
+BODY:
+
+ app/api/analytics/track/route.ts | 50 ++++++++++++++++++++++++++++------------
+ 1 file changed, 35 insertions(+), 15 deletions(-)
+
+COMMIT:d5deed13f4402f47d604fdc3b74fc6e44c99aa3a
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Jan 7 09:36:24 2026 +0530
+SUBJECT:fix(prisma): move datasource config to prisma.config.ts for Prisma 7
+BODY:
+
+ prisma.config.ts     | 1 +
+ prisma/schema.prisma | 2 --
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+COMMIT:a3af7613c794fb79cf589ef29b27896374a1dcc5
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Jan 7 09:38:06 2026 +0530
+SUBJECT:fix(prisma): make DIRECT_URL optional in build config
+BODY:
+
+ prisma.config.ts | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+COMMIT:c1831625d0a1e9fd35de5728ce78addee8dec315
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Jan 7 10:21:02 2026 +0530
+SUBJECT:fix(sitemap): add trailing slashes to eliminate 308 redirects
+BODY:
+
+ app/sitemap.ts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+COMMIT:6f3efcc89795840cf9e14ef994d317ed3b5f3e5b
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Jan 7 10:25:14 2026 +0530
+SUBJECT:fix(analytics): add trailing slash to API fetch to match server config
+BODY:
+
+ components/analytics-tracker.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:948923f77fc79da652afe74cb35ba82e7e1af50e
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Jan 7 11:38:08 2026 +0530
+SUBJECT:fix(api): align all API calls with trailingSlash config
+BODY:
+
+ components/email-capture-modal.tsx | 2 +-
+ hooks/use-visitor-tracker.ts       | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+COMMIT:fd4a748bc0129907bfabcff075c767f1b052cde5
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Jan 7 12:27:56 2026 +0530
+SUBJECT:fix(analytics): improve bot detection and add comprehensive logging
+BODY:- Replace overly broad bot regex with specific known-bad-bot list
+- Remove 'bot', 'crawl', 'spider', 'headless' patterns that catch real users
+- Add database connection validation before inserts
+- Add detailed logging for debugging visitor tracking issues
+- Add fallback 'Unknown' values for missing geo data
+- Return logId in response for verification
+
+
+ app/api/analytics/track/route.ts   |  28 ++++++++++++---
+ app/api/ocr/route.ts               |  15 +++++---
+ reproduce_issue.ts                 |  49 ++++++++++++++++++++++++++
+ scripts/test-analytics-endpoint.js |  70 +++++++++++++++++++++++++++++++++++++
+ scripts/verify-analytics-real.js   |  48 +++++++++++++++++++++++++
+ test_languages.js                  |  32 +++++++++++++++++
+ verification_output.txt            | Bin 0 -> 1360 bytes
+ 7 files changed, 233 insertions(+), 9 deletions(-)
+
+COMMIT:cf53d10e488a1f68a76a2b9a7712c46e8da92a88
+AUTHOR:Antigravity Agent
+DATE:Wed Jan 7 12:56:28 2026 +0530
+SUBJECT:Update layout and remove .env.example
+BODY:
+
+ app/layout.tsx | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+COMMIT:c98d8a5a1a8350fcbcc214d0ef8d762088ae62a9
+AUTHOR:prakashmalay
+DATE:Wed Jan 7 13:30:05 2026 +0530
+SUBJECT:Merge branch 'main' of https://github.com/dhyankarthik-code/ocr-extraction.com
+BODY:
+
+COMMIT:f40813825e46d1458915a089708923bb9635c8c0
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Jan 7 13:43:54 2026 +0530
+SUBJECT:chore: remove temporary verification scripts
+BODY:
+
+ scripts/test-analytics-endpoint.js | 70 --------------------------------------
+ 1 file changed, 70 deletions(-)
+
+COMMIT:1f25b2d9b0ddf7ad76cb3b3b3c88d531db1c9d45
+AUTHOR:Dhyaneshwaran. K
+DATE:Wed Jan 7 13:47:36 2026 +0530
+SUBJECT:fix: add db host debug logging
+BODY:
+
+ app/api/analytics/track/route.ts | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+COMMIT:8a40f7e4c4cf0ca0f08e017a4ac849f6ed4da6e8
+AUTHOR:prakashmalay
+DATE:Thu Jan 8 10:31:04 2026 +0530
+SUBJECT:Update home page meta description
+BODY:
+
+ app/page.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:18a444090cc79b3915aa592b0f63b9e0da17e034
+AUTHOR:prakashmalay
+DATE:Thu Jan 8 10:31:20 2026 +0530
+SUBJECT:Merge branch 'main' of https://github.com/dhyankarthik-code/ocr-extraction.com
+BODY:
+
+COMMIT:f9ee327610ba0e5ac91e7fdf44d51cd7c22c7140
+AUTHOR:prakashmalay
+DATE:Thu Jan 8 11:19:29 2026 +0530
+SUBJECT:Add meta keywords to home page
+BODY:
+
+ app/page.tsx | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+COMMIT:3879566489b6e7657b0f9379e5f3047ff5418262
+AUTHOR:prakashmalay
+DATE:Thu Jan 8 12:51:53 2026 +0530
+SUBJECT:Add new content sections with enhanced UI
+BODY:
+
+ components/home-page.tsx | 172 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 172 insertions(+)
+
+COMMIT:196d369b7e51a47b99a410c476b5289ca58c0eee
+AUTHOR:prakashmalay
+DATE:Thu Jan 8 14:07:24 2026 +0530
+SUBJECT:Fix: Replace broken flag images with react-world-flags library for consistent cross-browser display
+BODY:
+
+ components/home-page.tsx |  81 +++++++++++++++-------------
+ package-lock.json        | 137 +++++++++++++++++++++++++++++++++++++++++++----
+ package.json             |   2 +
+ 3 files changed, 173 insertions(+), 47 deletions(-)
+
+COMMIT:5525487b381872d2bc4411c034c6ec513c2682c7
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Jan 8 14:57:20 2026 +0530
+SUBJECT:feat: refine services page with seo metadata, sharp design, and images
+BODY:
+
+ ...ction Website Archs.-20260108T082334Z-1-001.zip | Bin 0 -> 17663294 bytes
+ app/api/ocr/route.ts                               |  45 ++++++++++++--
+ app/result/local/client.tsx                        |   2 +-
+ app/services/page.tsx                              |  68 ++++++++++++++++++---
+ build_log.txt                                      | Bin 0 -> 7194 bytes
+ components/document-chat.tsx                       |  30 ++++-----
+ .../OCR Extraction Website Archs/Automobile.png    | Bin 0 -> 1342504 bytes
+ .../Banking & Financial Services.png               | Bin 0 -> 742223 bytes
+ .../Documentation & Records.png                    | Bin 0 -> 1533862 bytes
+ .../OCR Extraction Website Archs/Finance.png       | Bin 0 -> 1496956 bytes
+ .../Food & Beverages.png                           | Bin 0 -> 1543380 bytes
+ .../OCR Extraction Website Archs/Health Care.png   | Bin 0 -> 833034 bytes
+ .../OCR Extraction Website Archs/Hospitality.png   | Bin 0 -> 1585737 bytes
+ .../OCR Extraction Website Archs/Legal.png         | Bin 0 -> 1339077 bytes
+ .../Logistics & Supply Chain.png                   | Bin 0 -> 1316875 bytes
+ .../OCR Extraction Website Archs/Manufacturing.png | Bin 0 -> 775405 bytes
+ .../OCR Extraction Website Archs/Oil & Gas.png     | Bin 0 -> 1426908 bytes
+ .../OCR Extraction Website Archs/Retail.png        | Bin 0 -> 1360001 bytes
+ .../OCR Extraction Website Archs/Telecom.png       | Bin 0 -> 849257 bytes
+ .../OCR Extraction Website Archs/Travel.png        | Bin 0 -> 1511180 bytes
+ 20 files changed, 117 insertions(+), 28 deletions(-)
+
+COMMIT:16e0c5ba1e930c2b20ddc08e5b73dfcde0a71b61
+AUTHOR:Dhyaneshwaran. K
+DATE:Thu Jan 8 14:57:45 2026 +0530
+SUBJECT:Merge branch 'main' of https://github.com/dhyankarthik-code/free-ocr-app
+BODY:
+
+COMMIT:3610cc5faeab029455a67b557485fc6ab5db0064
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 9 11:44:34 2026 +0530
+SUBJECT:Add scalability infrastructure
+BODY:
+
+ .env.example                                       |   15 +
+ ...ction Website Archs.-20260108T082334Z-1-001.zip |  Bin 17663294 -> 0 bytes
+ SCALABILITY_SETUP.md                               |  159 +
+ app/api/chat/route.ts                              |   93 +-
+ app/api/inngest/route.ts                           |   18 +
+ app/api/ocr/status/[jobId]/route.ts                |   46 +
+ app/result/local/client.tsx                        |  199 +-
+ build.log                                          |  Bin 0 -> 7870 bytes
+ components/chat-widget.tsx                         |   23 +-
+ components/document-chat.tsx                       |  306 +-
+ components/image-cropper.tsx                       |  128 +
+ components/ui/interactive-hover-button.tsx         |    7 +-
+ components/ui/slider.tsx                           |   28 +
+ components/upload-zone.tsx                         |   81 +-
+ lib/crop-image.ts                                  |  122 +
+ lib/inngest/client.ts                              |   19 +
+ lib/inngest/functions/process-ocr.ts               |  126 +
+ lib/rate-limit.ts                                  |   77 +
+ lib/redis.ts                                       |   20 +
+ middleware.ts                                      |   99 +-
+ package-lock.json                                  | 4253 +++++++++++++++++++-
+ package.json                                       |    8 +-
+ 22 files changed, 5511 insertions(+), 316 deletions(-)
+
+COMMIT:5cd6a672a8a1920ac24a04a8b3f1850f250dff40
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 9 11:59:38 2026 +0530
+SUBJECT:Fix: Add Upstash and Inngest to CSP for scalability infrastructure
+BODY:
+
+ next.config.mjs | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+COMMIT:0f5102cf026daac84897636cf9e09d59320b1540
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 9 12:04:30 2026 +0530
+SUBJECT:Increase batch upload limit to 10MB for multi-image processing
+BODY:
+
+ app/api/ocr/route.ts | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+COMMIT:76dc057db59fee70bfee1a4208a865acd78d2389
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 9 12:10:17 2026 +0530
+SUBJECT:UI Polish: Fix navbar and chat widget layout, improve logo alignment and spacing
+BODY:
+
+ components/document-chat.tsx | 12 ++++++------
+ components/navbar.tsx        | 28 ++++++++++++++--------------
+ 2 files changed, 20 insertions(+), 20 deletions(-)
+
+COMMIT:4f6e9573652395f8bcc17316f7273158a336f828
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 9 12:21:47 2026 +0530
+SUBJECT:UX Fix: Reserve height for typewriter, slow animation 3x, remove Browse Files icon
+BODY:
+
+ components/home-page.tsx   | 10 +++++-----
+ components/upload-zone.tsx |  7 +------
+ 2 files changed, 6 insertions(+), 11 deletions(-)
+
+COMMIT:d64c711ebe7af24140203459bbb479ec0dd8f3c7
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 9 17:46:30 2026 +0530
+SUBJECT:Trigger redeploy: Rollback to 4f6e957 confirmed
+BODY:
+
+COMMIT:5dfbfeb001d63ae63ba4f5381125c78096ce38b9
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 10 12:09:04 2026 +0530
+SUBJECT:fix: Security hardening - Chat API sanitization & NPM audit updates
+BODY:
+
+ app/api/chat/route.ts            |  18 ++-
+ app/globals.css                  |   1 +
+ app/result/local/client.tsx      |   2 +-
+ components/document-chat.tsx     | 304 ++++++++++++++++++++++----------------
+ components/message-item-temp.tsx |  88 +++++++++++
+ components/upload-zone.tsx       |   2 +-
+ package-lock.json                | 311 ++++++++++++++++++++++++++++++++++++++-
+ package.json                     |   6 +-
+ 8 files changed, 594 insertions(+), 138 deletions(-)
+
+COMMIT:772fd8e46a0d1012046111e9d4277faf0a1a16f0
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 10 12:15:25 2026 +0530
+SUBJECT:fix: Restore tw-animate-css dependency to resolve production build issue
+BODY:
+
+ package-lock.json | 2 +-
+ package.json      | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+COMMIT:345af44e3e02f83f48e318d7df8a79a3b1a6dc6f
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 10 12:17:45 2026 +0530
+SUBJECT:fix: Resolve mobile UI overflow and duplicate logo headers
+BODY:
+
+ app/result/local/client.tsx  |  4 ++--
+ components/document-chat.tsx | 31 +++++++++++++++++--------------
+ 2 files changed, 19 insertions(+), 16 deletions(-)
+
+COMMIT:7c6cb55778907fb9b1fdeb25cdd46d6b6c9803fb
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 10 12:19:01 2026 +0530
+SUBJECT:fix: Ensure document chat dropdowns appear above modal with z-index
+BODY:
+
+ components/document-chat.tsx | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+COMMIT:22e780ed9b20b116ca9aca6e484b5d558551bc93
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 10 12:23:18 2026 +0530
+SUBJECT:fix: Relax CSP for external resources and bump z-index for UI elements
+BODY:
+
+ components/document-chat.tsx | 4 ++--
+ next.config.mjs              | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+COMMIT:8a65b4ee40e0744d143088d480c9fe6dde5e7915
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 10 12:24:35 2026 +0530
+SUBJECT:feat: Add visual feedback for copy action in document chat
+BODY:
+
+ components/document-chat.tsx | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
+
+COMMIT:82b38ce4eb2028d02adbcaa47e6e509ced68d414
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 10 12:37:38 2026 +0530
+SUBJECT:feat: Optimize chat system prompt for shorter, more precise responses
+BODY:
+
+ app/api/chat/route.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:c7f4692f2d2cfbe19de0ba6aa806da1da49c11df
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 10 19:01:34 2026 +0530
+SUBJECT:Refine translation download UI with colored icons, improved mobile layout, and click-outside behavior
+BODY:
+
+ app/api/chat/route.ts            |  14 +
+ app/api/report/route.ts          | 184 ++++++++++++
+ app/api/translate/route.ts       |  57 ++++
+ app/layout.tsx                   |  87 ++++--
+ app/result/local/client.tsx      | 608 +++++++++++++++++++++++++++++++++------
+ app/tools/page.tsx               | 102 +++++++
+ components/footer.tsx            |  18 +-
+ components/home-page.tsx         |  32 +--
+ components/navbar.tsx            |   5 +-
+ components/report-chat-modal.tsx | 307 ++++++++++++++++++++
+ next.config.mjs                  |   2 +-
+ package-lock.json                |  28 +-
+ package.json                     |   4 +-
+ prisma/schema.prisma             |   7 +
+ tests/smoke.spec.ts              |   5 +-
+ tests/tools.spec.ts              |   2 +-
+ 16 files changed, 1313 insertions(+), 149 deletions(-)
+
+COMMIT:1f62fd9e58b666bde944f4372e0f7b6d6781e4ef
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 10 21:55:57 2026 +0530
+SUBJECT:Fix: OCR timeout hangs and Session 429 infinite loop
+BODY:
+
+ app/api/ocr/route.ts                      | 40 +++++++++++++----
+ app/layout.tsx                            | 17 +++++---
+ components/providers/session-provider.tsx | 71 +++++++++++++++++++++++++++++++
+ hooks/use-session.ts                      | 35 +++------------
+ 4 files changed, 120 insertions(+), 43 deletions(-)
+
+COMMIT:78f17e867e501e3cb40bb3b7513fad7bec823cdc
+AUTHOR:Dhyaneshwaran. K
+DATE:Sat Jan 10 22:22:47 2026 +0530
+SUBJECT:Fix: Remove animation classes from processing steps to ensure visibility
+BODY:
+
+ components/upload-zone.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:7f6d88b41d07c270a9551a4269d078b8fa1caefd
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Jan 12 08:54:11 2026 +0530
+SUBJECT:fix(seo): consolidate redirects in vercel.json for single-hop non-www redirect
+BODY:
+
+ vercel.json | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+COMMIT:7278cae2e73cc2187647d4c95d804405453a9675
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Jan 12 21:41:12 2026 +0530
+SUBJECT:Optimize mobile OCR performance: remove artificial delays, add mobile detection for fast resize vs desktop quality filters
+BODY:
+
+ .github/workflows/daily.yml      | 57 ++++++++++++-----------------
+ .github/workflows/sonar.yml      | 20 +++++++++++
+ app/api/ocr/route.ts             |  8 +++--
+ components/smart-upload-zone.tsx | 77 +++++++++++++++-------------------------
+ lib/image-preprocessing.ts       | 70 +++++++++++++++++++++---------------
+ sonar-project.properties         |  5 +++
+ 6 files changed, 122 insertions(+), 115 deletions(-)
+
+COMMIT:b8590ef0d30c0ade2f039573a4deefc7521bf400
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Jan 12 21:51:53 2026 +0530
+SUBJECT:Fix mobile stuck issue: Add XHR timeouts and robust JSON parsing for server errors
+BODY:
+
+ components/smart-upload-zone.tsx | 45 ++++++++++++++++++++++++++++++++--------
+ 1 file changed, 36 insertions(+), 9 deletions(-)
+
+COMMIT:fc24863cc46ac9ab15cd43a15301a76f907c09ed
+AUTHOR:Dhyaneshwaran. K
+DATE:Tue Jan 13 09:23:15 2026 +0530
+SUBJECT:Fix: Initialize XMLHttpRequest in handleUpload
+BODY:
+
+ components/smart-upload-zone.tsx | 2 ++
+ 1 file changed, 2 insertions(+)
+
+COMMIT:000b5beca49558774a63e8480b14a9e8f8a3f2b0
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 16 04:59:02 2026 +0530
+SUBJECT:Fix: Next.js 15 params build errors & API crashes
+BODY:
+
+ app/api/chat/end/route.ts                      |  5 +-
+ app/api/ocr/status/[jobId]/route.ts            |  3 +-
+ app/api/result/[id]/route.ts                   |  3 +-
+ app/api/search/route.ts                        |  9 ++-
+ app/tools/image-to-pdf/image-to-pdf-client.tsx |  2 +-
+ components/message-item-temp.tsx               | 88 --------------------------
+ components/navbar.tsx                          |  5 +-
+ next.config.mjs                                |  4 +-
+ package.json                                   |  4 +-
+ types/react-world-flags.d.ts                   |  1 +
+ 10 files changed, 23 insertions(+), 101 deletions(-)
+
+COMMIT:ba8e3b3b429a5b8648f1eb46e15f6892c360e84e
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 16 05:00:12 2026 +0530
+SUBJECT:Feat: Add missing Feedback feature components and API
+BODY:
+
+ app/api/feedback/route.ts     | 429 ++++++++++++++++++++++++++++++++++++++++++
+ components/feedback-popup.tsx | 181 ++++++++++++++++++
+ 2 files changed, 610 insertions(+)
+
+COMMIT:7797104c4ada1c73166a3c5845170f8a51fee40e
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 16 05:08:25 2026 +0530
+SUBJECT:Fix build errors: Remove deprecated config, fix imports, and cleanup next.config
+BODY:
+
+ ALTERNATIVE_CRON_SOLUTIONS.md |   216 -
+ DAILY_LOGIN_REPORT_SETUP.md   |    73 -
+ DAILY_LOGIN_REPORT_SUMMARY.md |    52 -
+ SCALABILITY_SETUP.md          |   159 -
+ SEO_Analysis_Report.md        |    82 -
+ TEST_REPORT.md                |    46 -
+ app/api/feedback/route.ts     |   296 +-
+ app/api/ocr/route.ts          |    16 +-
+ app/layout.tsx                |     2 -
+ app/result/local/client.tsx   |    10 +-
+ build.log                     |   Bin 7870 -> 0 bytes
+ build_log.txt                 |   Bin 7194 -> 0 bytes
+ implementation_plan.md        |    31 -
+ issues_overview_report.csv    |    31 -
+ lib/prisma.ts                 |    15 +
+ lighthouse-budget.json        |    31 -
+ lighthouse.json               | 13927 ----------------------------------------
+ next.config.mjs               |     4 +-
+ prisma/schema.prisma          |    16 +
+ remove_bg.py                  |    33 -
+ reproduce_issue.ts            |    49 -
+ test-login-report.js          |    66 -
+ test_languages.js             |    32 -
+ tool_availability_report.md   |    79 -
+ verification_output.txt       |   Bin 1360 -> 0 bytes
+ 25 files changed, 189 insertions(+), 15077 deletions(-)
+
+COMMIT:fe12318c0822c71b8d06fea1ca6a9ae529a56dd2
+AUTHOR:Dhyaneshwaran. K
+DATE:Fri Jan 16 05:36:49 2026 +0530
+SUBJECT:Fix missing dependencies: Install framer-motion, gsap, and @types/gsap
+BODY:
+
+ package-lock.json | 57 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ package.json      |  5 ++++-
+ 2 files changed, 61 insertions(+), 1 deletion(-)
+
+COMMIT:f2dcc9f83686d33b7f9fb82bb61f3830dda6fe08
+AUTHOR:prakashmalay
+DATE:Fri Jan 16 19:04:38 2026 +0530
+SUBJECT:Fix API issues: Implement mock mode for Feedback, Summary, Chat, and Contact APIs
+BODY:
+
+ app/api/chat/route.ts         |  26 ++++++-
+ app/api/contact/route.ts      |   6 +-
+ app/api/feedback/route.ts     | 165 ++++++++++++++++++++++++++++++++++++++++++
+ app/api/ocr/route.ts          |  30 ++++++++
+ app/api/summary/route.ts      |  22 +++++-
+ app/result/local/client.tsx   |  16 ++++
+ app/test-feedback/page.tsx    |  64 ++++++++++++++++
+ components/feedback-modal.tsx | 157 ++++++++++++++++++++++++++++++++++++++++
+ package-lock.json             |  48 ++++++------
+ package.json                  |   2 +-
+ 10 files changed, 510 insertions(+), 26 deletions(-)
+
+COMMIT:a64f4fa023ea4793b9d6b642f41b685cf2fc18c0
+AUTHOR:prakashmalay
+DATE:Fri Jan 16 19:06:31 2026 +0530
+SUBJECT:Update home page: Add no download required feature item
+BODY:
+
+ components/home-page.tsx | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+COMMIT:950e250d5ba3de19af13961fe2f843e7f143534a
+AUTHOR:prakashmalay
+DATE:Fri Jan 16 19:20:39 2026 +0530
+SUBJECT:Update home page texts: 'Works on Any Device' and 'What You Can Do' sections
+BODY:
+
+ components/home-page.tsx | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+COMMIT:10b880e983ce62efcd8d211b37e062c69d2a2526
+AUTHOR:prakashmalay
+DATE:Fri Jan 16 19:24:24 2026 +0530
+SUBJECT:Merge branch 'main' of https://github.com/dhyankarthik-code/ocr-extraction.com
+BODY:
+
+COMMIT:89485d05ac7690970326e7c8be045c11d7e02c36
+AUTHOR:prakashmalay
+DATE:Fri Jan 16 21:07:44 2026 +0530
+SUBJECT:Trigger Vercel redeploy
+BODY:
+
+COMMIT:a5d040ec742eecfe441f8e71e074fe02666c89ce
+AUTHOR:prakashmalay
+DATE:Fri Jan 16 21:15:53 2026 +0530
+SUBJECT:Force Vercel redeploy: Ensure Works on Any Device and What You Can Do content updates are live
+BODY:
+
+COMMIT:811ca0868961c705c5419f0cee9959b414582601
+AUTHOR:prakashmalay
+DATE:Fri Jan 16 21:27:47 2026 +0530
+SUBJECT:Update home page content: Works on Any Device and What You Can Do sections
+BODY:
+
+ components/home-page.tsx | 2 ++
+ 1 file changed, 2 insertions(+)
+
+COMMIT:a48a6f4e46c7f40f02c0329344c2d4261b83caf1
+AUTHOR:prakashmalay
+DATE:Fri Jan 16 21:34:06 2026 +0530
+SUBJECT:Re-trigger deploy with unique ID
+BODY:
+
+ components/home-page.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:eb26d5776bf30c0f950650e47ae309019b90a18b
+AUTHOR:prakashmalay
+DATE:Fri Jan 16 22:38:00 2026 +0530
+SUBJECT:Fix SonarQube scheme error and implement GSAP hero animation
+BODY:
+
+ components/home-page.tsx | 12 ++++++++++--
+ sonar-project.properties |  2 +-
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+
+COMMIT:35c1db26fe7ac3c126e352077bdf3585a8a4826c
+AUTHOR:prakashmalay
+DATE:Fri Jan 16 22:38:54 2026 +0530
+SUBJECT:Update Sonar workflow if condition
+BODY:
+
+ .github/workflows/sonar.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:007a4bef1273639f71f67b9acc28fd63a7716222
+AUTHOR:prakashmalay
+DATE:Fri Jan 16 22:47:27 2026 +0530
+SUBJECT:fix: Migrate middleware.ts to proxy.ts for Next.js 16 compatibility
+BODY:
+
+ middleware.ts => proxy.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:140ddefda54bad326ef3f813f16243890819f340
+AUTHOR:prakashmalay
+DATE:Fri Jan 16 22:50:23 2026 +0530
+SUBJECT:fix: Remove SONAR_HOST_URL from workflow to use properties file
+BODY:
+
+ .github/workflows/sonar.yml | 1 -
+ 1 file changed, 1 deletion(-)
+
+COMMIT:56c6ea8d103dd4eb0b30fc4d08198ce3406417c3
+AUTHOR:prakashmalay-rgb
+DATE:Sat Jan 17 09:14:55 2026 +0530
+SUBJECT:Delete .github/workflows/sonar.yml
+BODY:
+
+ .github/workflows/sonar.yml | 20 --------------------
+ 1 file changed, 20 deletions(-)
+
+COMMIT:27f878c0d6ea5d23249a11b46325737142b8af26
+AUTHOR:prakashmalay-rgb
+DATE:Sat Jan 17 09:23:21 2026 +0530
+SUBJECT:Delete sonar-project.properties
+BODY:
+
+ sonar-project.properties | 5 -----
+ 1 file changed, 5 deletions(-)
+
+COMMIT:5d7c244c15e00742659c0b0ab8a3303312d99b67
+AUTHOR:prakashmalay-rgb
+DATE:Sat Jan 17 09:28:17 2026 +0530
+SUBJECT:Update README.md
+BODY:
+
+ README.md | 2 ++
+ 1 file changed, 2 insertions(+)
+
+COMMIT:5254ef76ea456ad106185ef629c9eb31b19a00cc
+AUTHOR:prakashmalay-rgb
+DATE:Sat Jan 17 09:40:13 2026 +0530
+SUBJECT:Update README.md
+BODY:
+
+ README.md | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:fe1699d8cf46708687fd369090bfa6a82c9a598b
+AUTHOR:prakashmalay-rgb
+DATE:Sat Jan 17 10:17:31 2026 +0530
+SUBJECT:Update README.md
+BODY:
+
+ README.md | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:62eb7e129a802a9a1db8aa7f62d5485496131b3a
+AUTHOR:prakashmalay-rgb
+DATE:Sat Jan 17 10:32:48 2026 +0530
+SUBJECT:Update README.md
+BODY:
+
+ README.md | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:d06fa7c65550fffd46430263d85a692a5b39d4ae
+AUTHOR:prakashmalay-rgb
+DATE:Sat Jan 17 11:16:16 2026 +0530
+SUBJECT:Trigger deployment - Sonar cleanup complete
+BODY:
+
+ README.md | 1 +
+ 1 file changed, 1 insertion(+)
+
+COMMIT:51d20555376720a1460c30cb6b5b0815f21fef2b
+AUTHOR:prakashmalay-rgb
+DATE:Sat Jan 17 11:39:27 2026 +0530
+SUBJECT:Fix: Image cropper black screen issue - restructure layout
+BODY:- Moved controls div outside the ReactCrop wrapper to fix layout structure
+- Added bg-black/50 to the crop area for better visibility
+- Added rotation degree display
+- Improved responsive layout with proper flex containers
+- Fixed z-index and positioning issues causing black screen
+- Image now displays correctly with crop overlay visible
+
+ components/image-cropper.tsx | 210 ++++++++++++++++++++++---------------------
+ 1 file changed, 107 insertions(+), 103 deletions(-)
+
+COMMIT:5343cf9a161386a856212fc6fee3d21273dc1c1b
+AUTHOR:prakashmalay
+DATE:Sat Jan 17 11:03:50 2026 +0530
+SUBJECT:ci: re-trigger build verification
+BODY:
+
+COMMIT:b01375e995c2af4d9be97e9ac90ea9145dc675ab
+AUTHOR:prakashmalay
+DATE:Sat Jan 17 16:57:12 2026 +0530
+SUBJECT:fix: resolve upload black screen, improve visibility and alignment
+BODY:
+
+ .github/workflows/sonar.yml      | 20 ++++++++++++++++++
+ app/result/local/client.tsx      |  3 +++
+ components/image-cropper.tsx     | 45 ++++++++++++++++++++++------------------
+ components/main-layout.tsx       |  2 +-
+ components/navbar.tsx            |  2 +-
+ components/smart-upload-zone.tsx |  3 ++-
+ components/upload-zone.tsx       | 14 ++++++++++++-
+ sonar-project.properties         |  3 +++
+ 8 files changed, 68 insertions(+), 24 deletions(-)
+
+COMMIT:1bf7dc14a5b44726544aa47fffa4d23f6912b9db
+AUTHOR:prakashmalay
+DATE:Sat Jan 17 17:15:03 2026 +0530
+SUBJECT:fix: remove failing SonarQube workflow and properties
+BODY:
+
+ .github/workflows/sonar.yml | 20 --------------------
+ sonar-project.properties    |  3 ---
+ 2 files changed, 23 deletions(-)
+
+COMMIT:fd23963218edff6e62f2b63742a1b91ae30381af
+AUTHOR:prakashmalay
+DATE:Sat Jan 17 17:26:23 2026 +0530
+SUBJECT:ci: trigger vercel redeploy
+BODY:
+
+COMMIT:7526dfb51a49cd484952ce0452368f00aa3c6ab6
+AUTHOR:prakashmalay-rgb
+DATE:Sat Jan 17 17:51:45 2026 +0530
+SUBJECT:ci: update readme to force vercel build
+BODY:
+
+ README.md | Bin 2297 -> 2423 bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+COMMIT:7d654ec18f6282a48789b944b7c5ad3bb8b6c5f5
+AUTHOR:prakashmalay-rgb
+DATE:Sat Jan 17 18:03:00 2026 +0530
+SUBJECT:fix(ui): align navbar items with 3-column layout
+BODY:
+
+ components/navbar.tsx | 67 +++++++++++++++++++++++++--------------------------
+ 1 file changed, 33 insertions(+), 34 deletions(-)
+
+COMMIT:526104de29078f9bf6342bac932d9b99796b9790
+AUTHOR:prakashmalay-rgb
+DATE:Sat Jan 17 18:12:31 2026 +0530
+SUBJECT:fix(ui): result page layout and duplicate feedback form
+BODY:
+
+ app/result/local/client.tsx   | 1613 ++++++++++++++++++++---------------------
+ components/feedback-modal.tsx |  157 ----
+ 2 files changed, 801 insertions(+), 969 deletions(-)
+
+COMMIT:7381a57aefef71d89796c3cd5eefe3f945710114
+AUTHOR:prakashmalay-rgb
+DATE:Sat Jan 17 18:45:45 2026 +0530
+SUBJECT:fix(ui): improve result page alignment and remove duplicate feedback modal
+BODY:
+
+ app/result/local/client.tsx | 1589 +++++++++++++++++++++----------------------
+ app/test-feedback/page.tsx  |   64 --
+ 2 files changed, 791 insertions(+), 862 deletions(-)
+
+COMMIT:319090116e87c25fc4fd17179f34175b15334225
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Jan 19 16:15:40 2026 +0530
+SUBJECT:fix: restore download buttons, fix login persistence, add ocr fallback and google verification
+BODY:
+
+ app/api/ocr/route.ts                      | 67 +++++++++++++++++++++++++------
+ app/layout.tsx                            |  3 ++
+ app/result/local/client.tsx               | 35 ++++++++--------
+ components/providers/session-provider.tsx |  8 ++++
+ package.json                              |  2 +-
+ 5 files changed, 83 insertions(+), 32 deletions(-)
+
+COMMIT:f31de60f1deca5f8815a658eba36f7be7330b891
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Jan 19 16:19:22 2026 +0530
+SUBJECT:feat: Add Feedback page & Improve Cropper UI/UX
+BODY:
+
+ .env.example                  |   4 +
+ app/api/feedback/route.ts     |  92 ++++++++++----------
+ app/feedback/page.tsx         | 194 ++++++++++++++++++++++++++++++++++++++++++
+ components/feedback-popup.tsx | 181 ---------------------------------------
+ components/image-cropper.tsx  |  53 ++++++------
+ package-lock.json             |  16 ++--
+ 6 files changed, 277 insertions(+), 263 deletions(-)
+
+COMMIT:67188f6a16fba2facfa83926849fe0ce408b5573
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Jan 19 16:21:51 2026 +0530
+SUBJECT:fix: Throttle session refresh to prevent 429 errors
+BODY:
+
+ components/providers/session-provider.tsx | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+COMMIT:ba2a506f354a3854f001e23def77a051a706f19d
+AUTHOR:Dhyaneshwaran. K
+DATE:Mon Jan 19 17:19:21 2026 +0530
+SUBJECT:feat: add AI-optimized llms.txt for better search visibility
+BODY:
+
+ public/llms.txt | 34 +++++++++++++++++++++++-----------
+ 1 file changed, 23 insertions(+), 11 deletions(-)
+
+COMMIT:a717d41969c0cbd461c564285b1c0c25ccd9b5f6
+AUTHOR:dhyankarthik-code
+DATE:Mon Jan 19 17:29:42 2026 +0530
+SUBJECT:chore: verify new git author identity
+BODY:
+
+COMMIT:cdef403344b1fcfb76bdf30275b139a51babb473
+AUTHOR:dhyankarthik-code
+DATE:Mon Jan 19 18:11:20 2026 +0530
+SUBJECT:t
+BODY:
+
+ app/layout.tsx    | 22 +++++++++++++++++++---
+ lib/rate-limit.ts |  2 +-
+ package-lock.json |  8 ++++----
+ package.json      |  2 +-
+ 4 files changed, 25 insertions(+), 9 deletions(-)
+
+COMMIT:4e64300dff7b5ed02128f95de3d28598b9114a9d
+AUTHOR:dhyankarthik-code
+DATE:Mon Jan 19 19:17:19 2026 +0530
+SUBJECT:fix: Throttle session refresh to prevent 429 errors and update footer
+BODY:
+
+ .zap/rules.tsv                                     |     4 -
+ app/layout.tsx                                     |    29 +-
+ components/footer.tsx                              |    15 +-
+ .../ocr-extraction.com/.gitignore                  |    55 -
+ .../ocr-extraction.com/ocr-extraction.com/.npmrc   |     1 -
+ .../ocr-extraction.com/.pa11yci.json               |    15 -
+ .../ALTERNATIVE_CRON_SOLUTIONS.md                  |   216 -
+ .../ocr-extraction.com/DAILY_LOGIN_REPORT_SETUP.md |    73 -
+ .../DAILY_LOGIN_REPORT_SUMMARY.md                  |    52 -
+ .../ocr-extraction.com/README.md                   |    56 -
+ .../ocr-extraction.com/SEO_Analysis_Report.md      |    82 -
+ .../ocr-extraction.com/TEST_REPORT.md              |    46 -
+ .../ocr-extraction.com/components.json             |    21 -
+ .../ocr-extraction.com/implementation_plan.md      |    31 -
+ .../ocr-extraction.com/lighthouse-budget.json      |    34 -
+ .../ocr-extraction.com/lighthouse.json             | 13927 -----------
+ .../ocr-extraction.com/middleware.ts               |   157 -
+ .../ocr-extraction.com/next.config.mjs             |    86 -
+ .../ocr-extraction.com/package-lock.json           | 24803 -------------------
+ .../ocr-extraction.com/package.json                |   115 -
+ .../ocr-extraction.com/playwright.config.ts        |    42 -
+ .../ocr-extraction.com/postcss.config.mjs          |     8 -
+ .../ocr-extraction.com/prisma.config.ts            |    14 -
+ .../promptfoo-mistral-config.yaml                  |    23 -
+ .../ocr-extraction.com/test-login-report.js        |    66 -
+ .../ocr-extraction.com/tool_availability_report.md |    79 -
+ .../ocr-extraction.com/tsconfig.json               |    41 -
+ .../ocr-extraction.com/vercel.json                 |    43 -
+ 28 files changed, 17 insertions(+), 40117 deletions(-)
+
+COMMIT:74774a27a964d607a600a0941802c026ad4b60a3
+AUTHOR:dhyankarthik-code
+DATE:Tue Jan 20 09:53:15 2026 +0530
+SUBJECT:Fix session 429 errors, accessibility issues, and CSP blocked resources
+BODY:
+
+ app/api/auth/session/route.ts             | 57 +++++++++++++++++++++++++++++--
+ app/feedback/page.tsx                     |  1 +
+ components/chat-widget.tsx                |  3 ++
+ components/profile-modal.tsx              | 10 ++++--
+ components/providers/session-provider.tsx | 35 ++++++++++++++++---
+ next.config.mjs                           |  2 +-
+ scripts/verify-session.js                 | 28 +++++++++++++++
+ 7 files changed, 126 insertions(+), 10 deletions(-)
+
+COMMIT:d5e74d242ed942eded853cf93ea75d3b086f1d69
+AUTHOR:dhyankarthik-code
+DATE:Tue Jan 20 10:52:24 2026 +0530
+SUBJECT:Fix: Migrate to reCAPTCHA v3 and resolve invalid key type in auth modal
+BODY:
+
+ app/api/verify-recaptcha/route.ts           | 38 ++++++++++++++++++
+ app/contact/client.tsx                      | 46 +++++++++++-----------
+ app/layout.tsx                              | 17 ++++----
+ components/auth-modal.tsx                   | 60 +++++++++++++++++------------
+ components/providers/recaptcha-provider.tsx | 33 ++++++++++++++++
+ package-lock.json                           | 41 ++++++++------------
+ package.json                                |  2 +
+ 7 files changed, 158 insertions(+), 79 deletions(-)
+
+COMMIT:05b68f8cdae8d307f4cce6330bf58263e9edbb61
+AUTHOR:dhyankarthik-code
+DATE:Wed Jan 21 19:48:53 2026 +0530
+SUBJECT:Fix: Robust exponential backoff for OCR polling to handle 429s
+BODY:
+
+ components/smart-upload-zone.tsx | 105 ++++++++++++++++++++++++++++++++++++---
+ lint_output.txt                  | Bin 0 -> 1132 bytes
+ lint_results.txt                 | Bin 0 -> 1132 bytes
+ 3 files changed, 97 insertions(+), 8 deletions(-)
+
+COMMIT:496951f597ac03929af4141314cb9b5412ac623a
+AUTHOR:dhyankarthik-code
+DATE:Thu Jan 22 10:23:18 2026 +0530
+SUBJECT:fix(regression): restore all trailing slashes and square favicon fixes
+BODY:
+
+ app/about-ocr/client.tsx |  13 +++++-------
+ app/apple-icon.png       | Bin 0 -> 139770 bytes
+ app/blog/[slug]/page.tsx |   6 +++---
+ app/blog/page.tsx        |   2 +-
+ app/icon.png             | Bin 202795 -> 139770 bytes
+ components/footer.tsx    |  18 ++++++++---------
+ components/navbar.tsx    |   8 ++++----
+ lib/tools-data.ts        |  50 +++++++++++++++++++++++------------------------
+ lint_output.txt          | Bin 1132 -> 0 bytes
+ public/favicon.ico       | Bin 0 -> 139770 bytes
+ 10 files changed, 47 insertions(+), 50 deletions(-)
+
+COMMIT:dc0240811a877291d8577e90448e5696c0c19efd
+AUTHOR:dhyankarthik-code
+DATE:Thu Jan 22 10:44:52 2026 +0530
+SUBJECT:refactor(about-ocr): refine UI, spacing and remove red dot from upload button
+BODY:
+
+ app/about-ocr/client.tsx   | 4 ++--
+ components/upload-zone.tsx | 1 +
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+COMMIT:25dc2b6ea1103d22fd915a844848447820370c72
+AUTHOR:dhyankarthik-code
+DATE:Thu Jan 22 11:32:55 2026 +0530
+SUBJECT:fix: resolve GSC redirect loops, block build artifacts, and restore devops fixes
+BODY:
+
+ .github/workflows/daily.yml  | 98 --------------------------------------------
+ .github/workflows/smoke.yml  | 60 ---------------------------
+ .github/workflows/weekly.yml | 88 ---------------------------------------
+ app/layout.tsx               | 10 +----
+ app/robots.ts                |  2 +-
+ next.config.mjs              | 16 +-------
+ vercel.json                  | 22 ++++++++++
+ 7 files changed, 25 insertions(+), 271 deletions(-)
+
+COMMIT:6579d3307d6b525579dba047c1dbb5a184de77b8
+AUTHOR:prakashmalay-rgb
+DATE:Thu Jan 22 11:31:30 2026 +0530
+SUBJECT:fix(ui): update footer feedback text and install missing deps
+BODY:
+
+ .agent/rules/ocr-extraction.md | 56 ++++++++++++++++++++++++++++++++++++++++++
+ components/footer.tsx          |  2 +-
+ 2 files changed, 57 insertions(+), 1 deletion(-)
+
+COMMIT:9a143967f801b968b5e399681b7f6761e8340994
+AUTHOR:dhyankarthik-code
+DATE:Thu Jan 22 11:33:59 2026 +0530
+SUBJECT:chore: trigger deployment for seo fixes
+BODY:
+
+COMMIT:a228d0d934ec63d7c4aab4008a149a36ece29574
+AUTHOR:dhyankarthik-code
+DATE:Thu Jan 22 11:37:33 2026 +0530
+SUBJECT:Merge branch 'main' of https://github.com/dhyankarthik-code/free-ocr-app
+BODY:
+
+COMMIT:23f4b37bfe1e8e587815670c9ded675bf7c07450
+AUTHOR:dhyankarthik-code
+DATE:Thu Jan 22 11:58:40 2026 +0530
+SUBJECT:feat: Implement Google Tag Analytics with Consent Mode v2 and comprehensive event tracking
+BODY:
+
+ app/layout.tsx                        | 16 +++++++++++++
+ app/result/local/client.tsx           | 10 +++++++++
+ app/services/page.tsx                 |  6 ++---
+ app/tools/page.tsx                    | 26 ++++++++++++----------
+ components/client-consent-wrapper.tsx | 11 ++++++++-
+ components/smart-upload-zone.tsx      | 33 +++++++++++++++++++++++++++
+ lib/gtag.ts                           | 42 +++++++++++++++++++++++++++++++++++
+ 7 files changed, 128 insertions(+), 16 deletions(-)
+
+COMMIT:fc1c6039dec280e1c1d6908ca7ed1be275942699
+AUTHOR:dhyankarthik-code
+DATE:Thu Jan 22 15:47:06 2026 +0530
+SUBJECT:chore: update tools CTA + contact flow (AI Orchestration)
+BODY:
+
+ app/api/contact/route.ts                           |  33 +++---
+ app/contact/client.tsx                             | 119 ++++++++++++++-------
+ app/tools/page.tsx                                 |  29 +++--
+ components/client-consent-wrapper.tsx              |   2 -
+ components/contact-modal.tsx                       |  23 ++++
+ components/icons/file-type-icons.tsx               |  42 ++++++++
+ components/tools/tools-cta.tsx                     |  36 +++++++
+ .../add-lookingfor-to-contactsubmission.sql        |   5 +
+ prisma/schema.prisma                               |  17 +--
+ 9 files changed, 229 insertions(+), 77 deletions(-)
+
+COMMIT:24ff2b52616733f62f241a8fce64b4f9b41f478f
+AUTHOR:dhyankarthik-code
+DATE:Thu Jan 22 17:22:44 2026 +0530
+SUBJECT:fix: restore contact page, simplify tools nav, keep tools contact modal + add contact email
+BODY:
+
+ app/api/contact/route.ts                |  74 +++++
+ app/contact/client.tsx                  | 119 +++-----
+ components/contact-modal.tsx            |   5 +-
+ components/navbar.tsx                   |  84 +-----
+ components/tools/tools-contact-form.tsx | 471 ++++++++++++++++++++++++++++++++
+ lib/contact-countries.ts                | 200 ++++++++++++++
+ 6 files changed, 787 insertions(+), 166 deletions(-)
+
+COMMIT:8b762f7fe79d130d08f8fabb8306a094c3d9c606
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 09:24:24 2026 +0530
+SUBJECT:fix(csp): update policies for google ads and gtm
+BODY:
+
+ app/api/contact/route.ts |  42 +++++++------
+ app/api/leads/route.ts   | 150 +++++++++++++++++++++++++++++++++++++++++++++++
+ app/services/page.tsx    |   4 ++
+ next.config.mjs          |   6 +-
+ prisma/schema.prisma     |  15 +++++
+ 5 files changed, 192 insertions(+), 25 deletions(-)
+
+COMMIT:18eb31c2e3d5ca62be749a299b2e4054110ad73b
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 09:33:48 2026 +0530
+SUBJECT:fix(analytics): enable cookie banner and link consent logic
+BODY:
+
+ components/client-consent-wrapper.tsx | 8 +++++++-
+ components/cookie-banner.tsx          | 3 +++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+COMMIT:74729c1363d286af2fb7aae5b55eaec8a49d048d
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 09:55:04 2026 +0530
+SUBJECT:fix(analytics): force consent granted and disable banner
+BODY:
+
+ app/layout.tsx                        | 8 ++++----
+ components/client-consent-wrapper.tsx | 2 +-
+ components/cookie-banner.tsx          | 3 ---
+ 3 files changed, 5 insertions(+), 8 deletions(-)
+
+COMMIT:43c6ce58801bc65b7da35061289d9d0bd821f91e
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 09:59:14 2026 +0530
+SUBJECT:fix(csp): allow google doubleclick scripts
+BODY:
+
+ next.config.mjs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:4a22f56968e22d3b1602f3022e8fef9c67bec6ca
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 10:24:20 2026 +0530
+SUBJECT:feat: separate lead and contact submission tables and flows
+BODY:
+
+ components/tools/tools-contact-form.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:7916ac186f40a4323bf57c4bf01c8232295fc658
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 12:01:18 2026 +0530
+SUBJECT:feat: custom camera capture to bypass native review step
+BODY:
+
+ components/camera-capture.tsx | 198 ++++++++++++++++++++++++++++++++++++++++++
+ components/upload-zone.tsx    | 178 +++++++++++++++++++------------------
+ 2 files changed, 291 insertions(+), 85 deletions(-)
+
+COMMIT:73b24473f454f463b1645e128c1fa8eeb2b5ac5c
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 12:11:10 2026 +0530
+SUBJECT:fix: resolve camera hanging and bubbling issues
+BODY:
+
+ components/camera-capture.tsx |  73 ++++++++++++++++------
+ components/upload-zone.tsx    | 141 +++++++++++++++++++++---------------------
+ ngrok.log                     | Bin 0 -> 1698 bytes
+ 3 files changed, 122 insertions(+), 92 deletions(-)
+
+COMMIT:78901c98e85bb108a15e2aec5a6bed7c3f73d497
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 12:57:16 2026 +0530
+SUBJECT:fix(camera): resolve mobile freezing by removing infinite useEffect loop
+BODY:
+
+ components/camera-capture.tsx | 232 ++++++++++++++++++++++++++----------------
+ 1 file changed, 143 insertions(+), 89 deletions(-)
+
+COMMIT:5e1ea3c8fb95a45441ac186b4071c796dc316bb4
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 13:22:45 2026 +0530
+SUBJECT:feat(camera): add tap-to-focus and continuous autofocus
+BODY:
+
+ components/camera-capture.tsx |  74 ++++++++++++++++++++++++++++++++++++++++++
+ ngrok.log                     | Bin 1698 -> 197112 bytes
+ 2 files changed, 74 insertions(+)
+
+COMMIT:4286517e91c5150490308d9715752ebd4e74452d
+AUTHOR:prakashmalay-rgb
+DATE:Fri Jan 23 13:41:46 2026 +0530
+SUBJECT:Add LLMS.txt with project description
+BODY:
+
+ LLMS.txt | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+
+COMMIT:4d18b8ffe89422a244bd64cf91ae1942dc4d495e
+AUTHOR:prakashmalay-rgb
+DATE:Fri Jan 23 13:56:42 2026 +0530
+SUBJECT:Update public/llms.txt with project description
+BODY:
+
+ public/llms.txt | 63 +++++++++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 41 insertions(+), 22 deletions(-)
+
+COMMIT:4cafd7a86bf43cedea89a8aa16893c2ad602b932
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 16:10:37 2026 +0530
+SUBJECT:Update email automation: remove login report, update recipients to admin only, update Resend key
+BODY:
+
+ app/api/contact/route.ts                 |   2 +-
+ app/api/cron/daily-login-report/route.ts | 106 -------------------------------
+ app/api/feedback/route.ts                |   2 +-
+ app/api/leads/route.ts                   |   2 +-
+ ngrok.log                                | Bin 197112 -> 221690 bytes
+ test-email-automation.ps1                |  69 ++++++++++++++++++++
+ vercel.json                              |   6 --
+ 7 files changed, 72 insertions(+), 115 deletions(-)
+
+COMMIT:a676dae897ff2816c1f0de8d97f88329a22fe76b
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 16:48:33 2026 +0530
+SUBJECT:Update email sender to onboarding@resend.dev for testing
+BODY:
+
+ app/api/contact/route.ts  | 2 +-
+ app/api/feedback/route.ts | 2 +-
+ app/api/leads/route.ts    | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+COMMIT:5ac7a818602f2d95dbecc49c6d9fcd127d60ed05
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 16:57:38 2026 +0530
+SUBJECT:Add debug logging for Lead Generation email failure
+BODY:
+
+ app/api/leads/route.ts | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+COMMIT:7f7fe8e709780b7cde4a076c764e990bb346557a
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 17:11:23 2026 +0530
+SUBJECT:fix(leads): correct Resend response handling to fix build
+BODY:
+
+ app/api/leads/route.ts | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+COMMIT:c166c29d66ae1f10bf453eaba422bd0a7a239afc
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 17:39:46 2026 +0530
+SUBJECT:fix(config): disable trailingSlash to resolve 308 redirects
+BODY:
+
+ next.config.mjs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:c14da4915a7546367bff612b3204eb002fd4f965
+AUTHOR:dhyankarthik-code
+DATE:Fri Jan 23 17:58:46 2026 +0530
+SUBJECT:fix(seo): remove trailingSlash and align all internal links/sitemap
+BODY:
+
+ app/api/contact/route.ts |   3 ++-
+ app/sitemap.ts           |   4 ++--
+ build_log.txt            | Bin 0 -> 2768 bytes
+ components/footer.tsx    |  18 ++++++++---------
+ components/navbar.tsx    |  10 +++++-----
+ lib/tools-data.ts        |  50 +++++++++++++++++++++++------------------------
+ 6 files changed, 43 insertions(+), 42 deletions(-)
+
+COMMIT:0acad6b3ee5f91f382524961b2cef6d13654d753
+AUTHOR:dhyankarthik-code
+DATE:Sat Jan 24 12:03:37 2026 +0530
+SUBJECT:feat(chat): Enhanced AI prompt with site knowledge and security rules
+BODY:
+
+ app/api/auth/session/route.ts | 48 ++++++++++++---------
+ app/api/chat/end/route.ts     |  2 +-
+ app/api/chat/route.ts         | 99 ++++++++++++++++++++++++++++++++++---------
+ app/result/[id]/client.tsx    | 12 ++++--
+ app/result/local/client.tsx   | 80 +++++-----------------------------
+ components/chat-widget.tsx    | 18 ++++----
+ lib/pdf-utils.ts              | 54 +++++++++++++++++++++++
+ lib/rate-limit.ts             | 17 ++++----
+ lib/redis.ts                  | 10 +++--
+ 9 files changed, 204 insertions(+), 136 deletions(-)
+
+COMMIT:8ed5064c8628fc496a760d704e4fcb82b9453047
+AUTHOR:dhyankarthik-code
+DATE:Sat Jan 24 12:11:07 2026 +0530
+SUBJECT:fix(chat): SSE stream parsing and logo alignment
+BODY:
+
+ components/chat-widget.tsx | 38 +++++++++++++++++++++++++++++++++++---
+ 1 file changed, 35 insertions(+), 3 deletions(-)
+
+COMMIT:f08149367a41449f8df196b623458138344977c1
+AUTHOR:dhyankarthik-code
+DATE:Sat Jan 24 12:27:43 2026 +0530
+SUBJECT:feat(chat): Enhanced UI - Streaming response + improved Markdown
+BODY:
+
+ components/chat-widget.tsx | 50 ++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 37 insertions(+), 13 deletions(-)
+
+COMMIT:83b98b59cf6b6d7c838313a1f806d9c7913d5689
+AUTHOR:dhyankarthik-code
+DATE:Sat Jan 24 12:46:12 2026 +0530
+SUBJECT:feat(chat): Enhanced email template with geolocation and timestamps
+BODY:
+
+ app/api/chat/end/route.ts | 73 ++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 62 insertions(+), 11 deletions(-)
+
+COMMIT:4570a734ffa4fe55b893b8d37822db63d4b8ec4d
+AUTHOR:dhyankarthik-code
+DATE:Sat Jan 24 17:14:31 2026 +0530
+SUBJECT:Implement mobile download button and fix linting issues
+BODY:
+
+ app/api/chat/route.ts            | 28 ++++++++++++++++++------
+ app/result/local/client.tsx      | 47 ++++++++++++++++++++++++++++++++++++++++
+ components/smart-upload-zone.tsx | 26 +++++++++-------------
+ components/upload-zone.tsx       | 44 ++++++++++++++++++++++++++++++-------
+ 4 files changed, 114 insertions(+), 31 deletions(-)
+
+COMMIT:51b7321195134f6cb5b2c9b8e2e8c571da194cfa
+AUTHOR:dhyankarthik-code
+DATE:Mon Jan 26 12:40:59 2026 +0530
+SUBJECT:perf: Optimize Web Vitals (LCP/FCP/INP) - Dynamic imports & lazy loading
+BODY:
+
+ app/layout.tsx             | 30 ------------------------------
+ components/home-page.tsx   | 23 ++++++++++++++---------
+ components/main-layout.tsx |  9 ++++++---
+ next.config.mjs            |  2 +-
+ 4 files changed, 21 insertions(+), 43 deletions(-)
+
+COMMIT:724f5734ceacc51f57960e1aa02fd85c0e51a461
+AUTHOR:dhyankarthik-code
+DATE:Mon Jan 26 15:22:40 2026 +0530
+SUBJECT:update: Change lead gen button text to 'Try Our Live Demo'
+BODY:
+
+ components/tools/tools-cta.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+COMMIT:0a43e7fef56b159c4dd58335446ace63db8633e9
+AUTHOR:dhyankarthik-code
+DATE:Mon Jan 26 19:02:51 2026 +0530
+SUBJECT:perf: Optimize Summary API with robust Redis caching and rate limiting
+BODY:
+
+ app/api/blog/comments/route.ts            |  34 ++++---
+ app/api/summary/route.ts                  | 144 ++++++++++++++++++++++++------
+ app/blog/layout.tsx                       |   6 +-
+ app/result/[id]/client.tsx                |   8 ++
+ app/result/local/client.tsx               |  28 +-----
+ components/blog/CommentSection.tsx        |  51 ++++-------
+ components/providers/session-provider.tsx |   5 +-
+ components/ui/premium-loading.tsx         | 102 +++++++++++++++++++++
+ lib/pdf-utils.ts                          | 109 +++++++++++++++++-----
+ scripts/test-rate-limit.mjs               |  62 +++++++++++++
+ scripts/verify-redis-connection.mjs       |  62 +++++++++++++
+ 11 files changed, 489 insertions(+), 122 deletions(-)

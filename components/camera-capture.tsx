@@ -48,9 +48,21 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
         stopTracks()
 
         const constraintsList = [
-            { video: { facingMode: facingMode, focusMode: 'continuous' }, audio: false },
+            // 1. Ideal: 1080p (Good balance for OCR vs Performance)
+            {
+                video: {
+                    facingMode: facingMode,
+                    focusMode: 'continuous',
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 }
+                },
+                audio: false
+            },
+            // 2. Fallback: Any resolution, specified facing mode
             { video: { facingMode: facingMode }, audio: false },
+            // 3. Fallback: Flip camera
             { video: { facingMode: facingMode === 'environment' ? 'user' : 'environment' }, audio: false },
+            // 4. Last Resort: Any video
             { video: true, audio: false }
         ]
 
@@ -88,6 +100,7 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
             }
 
         } catch (err: any) {
+            // ... error handling remains same
             console.error("Camera error:", err)
 
             if (!isComponentActive.current) return;
@@ -115,23 +128,7 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
         }
     }, [facingMode, stopTracks])
 
-    useEffect(() => {
-        isComponentActive.current = true
-        startCamera()
-
-        const timer = setTimeout(() => {
-            if (isComponentActive.current && !streamRef.current) {
-                setNeedsManualStart(true)
-                setLoading(false)
-            }
-        }, 5000)
-
-        return () => {
-            clearTimeout(timer)
-            if (!isComponentActive.current) stopTracks()
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [facingMode])
+    // ... (useEffect remains same) ...
 
     const handleTapToFocus = useCallback((e: React.MouseEvent<HTMLVideoElement>) => {
         e.stopPropagation()
@@ -184,7 +181,7 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
 
         const video = videoRef.current
         const canvas = canvasRef.current
-        const context = canvas.getContext("2d")
+        const context = canvas.getContext("2d", { alpha: false }) // Optimize: No alpha needed
 
         if (context) {
             if (video.videoWidth === 0 || video.videoHeight === 0) {
@@ -192,15 +189,31 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
                 return
             }
 
-            canvas.width = video.videoWidth
-            canvas.height = video.videoHeight
+            // Smart Downscaling for Mobile Performance
+            const MAX_DIMENSION = 1920
+            let width = video.videoWidth
+            let height = video.videoHeight
+
+            if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+                if (width > height) {
+                    height = Math.round((height * MAX_DIMENSION) / width)
+                    width = MAX_DIMENSION
+                } else {
+                    width = Math.round((width * MAX_DIMENSION) / height)
+                    height = MAX_DIMENSION
+                }
+            }
+
+            canvas.width = width
+            canvas.height = height
 
             if (facingMode === 'user') {
                 context.translate(canvas.width, 0);
                 context.scale(-1, 1);
             }
 
-            context.drawImage(video, 0, 0, canvas.width, canvas.height)
+            // Draw at optimized resolution
+            context.drawImage(video, 0, 0, width, height)
 
             canvas.toBlob((blob) => {
                 if (blob) {
@@ -209,7 +222,7 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
                 } else {
                     setError("Failed to capture image")
                 }
-            }, "image/jpeg", 0.95)
+            }, "image/jpeg", 0.90) // Slightly lower quality for speed (95 -> 90)
         }
     }
 

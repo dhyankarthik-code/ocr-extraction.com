@@ -32,12 +32,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         title: `${post.title.rendered} - OCR Extraction Blog`,
         description,
         alternates: {
-            canonical: `https://www.ocr-extraction.com/blog/${slug}/`,
+            canonical: `https://www.ocr-extraction.com/blog/${slug}`,
         },
         openGraph: {
             title: `${post.title.rendered} - OCR Extraction Blog`,
             description,
-            url: `https://www.ocr-extraction.com/blog/${slug}/`,
+            url: `https://www.ocr-extraction.com/blog/${slug}`,
             type: 'article',
             images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630 }] : [],
         },

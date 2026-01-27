@@ -7,6 +7,9 @@ import BlogBanner from '@/components/blog-banner';
 export const metadata = {
     title: 'Blog - OCR Extraction & Tech Insights',
     description: 'Read the latest articles about OCR technology, data extraction, and productivity tools.',
+    alternates: {
+        canonical: '/blog',
+    },
 };
 
 export default async function BlogPage() {
