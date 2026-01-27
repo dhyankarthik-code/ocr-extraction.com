@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 // ============================================
 // Distributed Rate Limiting with Upstash Redis
 // ============================================
-import { apiRateLimiter, ocrRateLimiter, toolRateLimiter, authRateLimiter, getClientIp } from '@/lib/rate-limit'
+import { apiRateLimiter, ocrRateLimiter, toolRateLimiter, authRateLimiter, statusRateLimiter, getClientIp } from '@/lib/rate-limit'
 
 /**
  * Check rate limit using Upstash distributed limiter
@@ -66,13 +66,17 @@ export async function proxy(request: NextRequest) {
     // ============================================
     const isApiRoute = pathname.startsWith('/api/')
     const isOcrRoute = pathname.startsWith('/api/ocr')
+    const isStatusCheck = pathname.startsWith('/api/ocr/status')
     const isAuthRoute = pathname.startsWith('/api/auth/')
     const isToolRoute = pathname.match(/\/api\/(upload|download|result)/)
 
     if (isApiRoute) {
         // Select appropriate rate limiter based on route
         let limiter = apiRateLimiter
-        if (isOcrRoute) {
+
+        if (isStatusCheck) {
+            limiter = statusRateLimiter
+        } else if (isOcrRoute) {
             limiter = ocrRateLimiter
         } else if (isAuthRoute) {
             limiter = authRateLimiter
