@@ -52,6 +52,22 @@ export async function GET(
         // If stored as string, parse it (Redis usually returns object if using Upstash SDK with JSON, but safer to check)
         const job = typeof jobData === 'string' ? JSON.parse(jobData) : jobData;
 
+        // BULLETPROOF FIX: Stale job detection
+        // If a job has been in 'processing' for more than 90 seconds, assume it's stuck
+        const STALE_THRESHOLD_MS = 90000; // 90 seconds
+        if (job.status === 'processing' && job.updatedAt) {
+            const jobAge = Date.now() - job.updatedAt;
+            if (jobAge > STALE_THRESHOLD_MS) {
+                console.warn(`[Job Status] Stale job detected: ${jobId} (age: ${jobAge}ms)`);
+                return NextResponse.json({
+                    jobId,
+                    status: 'failed',
+                    error: 'Processing timed out. The job may have encountered an issue. Please try again.',
+                    stale: true
+                });
+            }
+        }
+
         return NextResponse.json({
             jobId,
             status: job.status || 'unknown',

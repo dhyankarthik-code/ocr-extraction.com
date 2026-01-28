@@ -39,10 +39,14 @@ export default function SmartUploadZone() {
     }, [trackUsage])
 
     // Helper to poll for job completion
+    // Helper to poll for job completion
+    // BULLETPROOF FIX: Reduced timeout for faster failure detection
     const pollForCompletion = async (jobId: string) => {
         const pollUrl = `/api/ocr/status/${jobId}`
         let attempts = 0
-        const maxAttempts = 50 // Cap attempts to prevent infinite loops (50 * ~3s avg = ~2.5 mins max wait)
+        let pendingCount = 0 // Track consecutive 'pending' responses
+        const maxAttempts = 30 // Reduced from 50 to ~90 seconds max wait
+        const maxPendingAttempts = 8 // If still 'pending' after 8 polls (~15s), assume stuck
         const baseDelay = 1000 // Start with 1s
         const maxDelay = 10000 // Cap delay at 10s
 
@@ -86,8 +90,18 @@ export default function SmartUploadZone() {
                     throw new Error(data.error || 'Job failed')
                 }
 
-                // Still processing
-                setStatus("AI Processing... (Running in background)")
+                // BULLETPROOF FIX: Detect stuck 'pending' jobs early
+                if (data.status === 'pending') {
+                    pendingCount++
+                    if (pendingCount >= maxPendingAttempts) {
+                        console.error(`Job ${jobId} stuck in pending state for ${pendingCount} polls`)
+                        throw new Error('Processing failed to start. Please try again.')
+                    }
+                    setStatus("Waiting for processing to start...")
+                } else {
+                    pendingCount = 0 // Reset if we see any other status
+                    setStatus("AI Processing... (Running in background)")
+                }
 
                 // Standard Exponential Backoff
                 // 1s, 1.5s, 2.25s, 3.375s, 5s... capped at 10s

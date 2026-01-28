@@ -366,10 +366,11 @@ export async function POST(request: NextRequest) {
         const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 
         // --- HYBRID ROUTING LOGIC ---
-        // Vercel Serverless has 60s timeout. Large files/PDFs risk hitting this.
-        // We offload them to Inngest (Background Queue) to be safe.
-        const ASYNC_THRESHOLD_MB = 4.0;
-        const useAsyncQueue = isPDF || fileSizeMB > ASYNC_THRESHOLD_MB;
+        // BULLETPROOF FIX (2026-01-28): Only PDFs use async queue.
+        // Images ALWAYS process synchronously to prevent silent failures.
+        // Rationale: Images complete within Vercel's 60s limit; PDFs may not.
+        // If Inngest is down, images still work. PDFs fail gracefully with error.
+        const useAsyncQueue = isPDF; // Only PDFs need async processing
 
         if (useAsyncQueue) {
             console.log(`[Hybrid Route] Offloading to Inngest (Reason: ${isPDF ? 'PDF' : 'Large File ' + fileSizeMB.toFixed(2) + 'MB'})`);
@@ -405,8 +406,13 @@ export async function POST(request: NextRequest) {
 
             } catch (queueError: any) {
                 console.error("Failed to queue Inngest job:", queueError);
-                // Fallback to sync processing if queue fails
-                console.warn("[Hybrid Route] Fallback to Synchronous processing...");
+                // BULLETPROOF FIX: For PDFs, don't silently fallback - it will likely timeout.
+                // Return a clear error so the user knows to retry.
+                return NextResponse.json({
+                    error: 'PDF Processing Temporarily Unavailable',
+                    details: 'Our PDF processing service is experiencing issues. Please try again in a few minutes or upload an image instead.',
+                    retryable: true
+                }, { status: 503 });
             }
         }
         // --- END HYBRID LOGIC ---
