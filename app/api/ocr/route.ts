@@ -406,13 +406,22 @@ export async function POST(request: NextRequest) {
 
             } catch (queueError: any) {
                 console.error("Failed to queue Inngest job:", queueError);
-                // BULLETPROOF FIX: For PDFs, don't silently fallback - it will likely timeout.
-                // Return a clear error so the user knows to retry.
-                return NextResponse.json({
-                    error: 'PDF Processing Temporarily Unavailable',
-                    details: 'Our PDF processing service is experiencing issues. Please try again in a few minutes or upload an image instead.',
-                    retryable: true
-                }, { status: 503 });
+                // ZERO FAILURE GUARANTEE: Fallback to sync for small PDFs
+                // PDFs under 2MB typically complete within Vercel's 60s timeout
+                const SYNC_PDF_THRESHOLD_MB = 2.0;
+                if (fileSizeMB <= SYNC_PDF_THRESHOLD_MB) {
+                    console.warn(`[Hybrid Route] Inngest failed, falling back to SYNC for small PDF (${fileSizeMB.toFixed(2)}MB)`);
+                    // Continue to sync processing below (don't return, let code flow continue)
+                } else {
+                    // For large PDFs (>2MB), we truly cannot process synchronously - they would timeout
+                    console.error(`[Hybrid Route] Cannot process large PDF (${fileSizeMB.toFixed(2)}MB) synchronously`);
+                    return NextResponse.json({
+                        error: 'Large PDF Processing Temporarily Unavailable',
+                        details: 'Our background processing service is experiencing issues. For now, please try uploading PDFs under 2MB or convert to images.',
+                        retryable: true,
+                        maxSyncSize: '2MB'
+                    }, { status: 503 });
+                }
             }
         }
         // --- END HYBRID LOGIC ---
