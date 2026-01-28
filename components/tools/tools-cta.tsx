@@ -21,7 +21,7 @@ export function ToolsCTA() {
                 <Button
                     size="lg"
                     onClick={() => setShowContact(true)}
-                    className="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-full shadow hover:shadow-md transition-all"
+                    className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-black text-xl px-12 py-10 rounded-[2.5rem] shadow-2xl shadow-red-500/20 hover:shadow-red-500/40 hover:-translate-y-2 transition-all duration-500 border-b-8 border-red-800 active:translate-y-0 active:border-b-0"
                 >
                     Try Our Live Demo
                 </Button>
