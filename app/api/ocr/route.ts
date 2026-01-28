@@ -365,66 +365,11 @@ export async function POST(request: NextRequest) {
         // Check if PDF
         const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 
-        // --- HYBRID ROUTING LOGIC ---
-        // BULLETPROOF FIX (2026-01-28): Only PDFs use async queue.
-        // Images ALWAYS process synchronously to prevent silent failures.
-        // Rationale: Images complete within Vercel's 60s limit; PDFs may not.
-        // If Inngest is down, images still work. PDFs fail gracefully with error.
-        const useAsyncQueue = isPDF; // Only PDFs need async processing
-
-        if (useAsyncQueue) {
-            console.log(`[Hybrid Route] Offloading to Inngest (Reason: ${isPDF ? 'PDF' : 'Large File ' + fileSizeMB.toFixed(2) + 'MB'})`);
-
-            try {
-                const { inngest } = await import("@/lib/inngest/client");
-                const { nanoid } = await import("nanoid");
-
-                const jobId = nanoid();
-
-                // Convert file to base64 for transport
-                const base64 = buffer.toString('base64');
-
-                await inngest.send({
-                    name: "ocr/process.requested",
-                    data: {
-                        jobId,
-                        fileBuffer: base64, // Inngest supports up to 6MB payload usually, assume within limits or use S3 in future
-                        fileName: file.name,
-                        fileType: file.type,
-                        userId: userGoogleId || 'anonymous',
-                        userEmail: userEmail
-                    }
-                });
-
-                return NextResponse.json({
-                    success: true,
-                    status: 'queued',
-                    jobId: jobId,
-                    message: "File queued for background processing",
-                    method: 'async_inngest'
-                }, { status: 202 });
-
-            } catch (queueError: any) {
-                console.error("Failed to queue Inngest job:", queueError);
-                // ZERO FAILURE GUARANTEE: Fallback to sync for small PDFs
-                // PDFs under 2MB typically complete within Vercel's 60s timeout
-                const SYNC_PDF_THRESHOLD_MB = 2.0;
-                if (fileSizeMB <= SYNC_PDF_THRESHOLD_MB) {
-                    console.warn(`[Hybrid Route] Inngest failed, falling back to SYNC for small PDF (${fileSizeMB.toFixed(2)}MB)`);
-                    // Continue to sync processing below (don't return, let code flow continue)
-                } else {
-                    // For large PDFs (>2MB), we truly cannot process synchronously - they would timeout
-                    console.error(`[Hybrid Route] Cannot process large PDF (${fileSizeMB.toFixed(2)}MB) synchronously`);
-                    return NextResponse.json({
-                        error: 'Large PDF Processing Temporarily Unavailable',
-                        details: 'Our background processing service is experiencing issues. For now, please try uploading PDFs under 2MB or convert to images.',
-                        retryable: true,
-                        maxSyncSize: '2MB'
-                    }, { status: 503 });
-                }
-            }
-        }
-        // --- END HYBRID LOGIC ---
+        // --- EMERGENCY FIX (2026-01-28): INNGEST REMOVED ---
+        // User request: Remove all async queue logic
+        // All files now process synchronously to eliminate failure points
+        // Note: Very large PDFs/files may hit Vercel's 60s timeout, but most files will complete
+        console.log('[OCR API] Processing synchronously (Inngest queue disabled)');
 
         // Check if Excel
         const isExcel = file.name.match(/\.xls(x)?$/i) ||
