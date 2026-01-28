@@ -128,7 +128,9 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
 
   return (
     <div id="upload-zone-container" className="w-full max-w-2xl mx-auto space-y-6">
-      <div className="relative w-full">
+      <div className="relative w-full group">
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100/50 rounded-t-2xl z-20"></div>
+        <div className="absolute top-0 left-0 w-0 group-hover:w-full h-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 transition-all duration-700 ease-in-out rounded-tl-2xl z-20"></div>
         {/* Main Drop Zone */}
         <div
           {...getRootProps()}
@@ -137,7 +139,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
           border-2 border-dashed rounded-2xl p-8 md:p-12
           transition-all duration-300 ease-in-out
           flex flex-col items-center justify-center
-          ${isDragActive ? "border-red-500 bg-red-50 scale-[1.02]" : "border-gray-300 hover:border-red-400 hover:bg-gray-50"}
+          ${isDragActive ? "border-red-500 bg-red-50 scale-[1.02] shadow-2xl" : "border-gray-300 hover:border-red-400 hover:bg-gray-50 hover:shadow-2xl hover:-translate-y-1"}
           ${uploading ? "opacity-50 pointer-events-none border-gray-200" : ""}
         `}
         >
