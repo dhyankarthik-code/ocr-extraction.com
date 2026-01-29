@@ -32,14 +32,13 @@ const parseTextToGrid = (text: string): string[][] => {
 
     const lines = text.split('\n');
 
-    // Detect if it's a markdown table (checks if multiple lines contain pipes)
-    const isMarkdownTable = lines.filter(l => l.trim().includes('|')).length > 1;
+
 
     const rows = lines.map(line => {
         const trimmedLine = line.trim();
         if (!trimmedLine) return [];
 
-        if (isMarkdownTable && trimmedLine.includes('|')) {
+        if (trimmedLine.includes('|')) {
             // Markdown Table Logic
             const cells = trimmedLine.split('|').map(cell => {
                 // Clean Markdown formatting (bold, italics)
@@ -927,7 +926,7 @@ export const generateImagesFromPPT = async (file: File): Promise<Blob[]> => {
 
 /**
  * Convert PDF to Excel
- * Extracts text from PDF and creates Excel rows
+ * Extracts text from PDF and creates Excel rows preserving column structure
  */
 export const generateExcelFromPDF = async (file: File): Promise<Blob> => {
     const pdfjs = await getPdfJs();
@@ -936,19 +935,80 @@ export const generateExcelFromPDF = async (file: File): Promise<Blob> => {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
 
-    let allText = '';
+    const allRows: string[][] = [];
+
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         const page = await pdf.getPage(pageNum);
         const textContent = await page.getTextContent();
-        const pageText = textContent.items.map((item: any) => item.str).join(' ');
-        allText += pageText + '\n';
+        const viewport = page.getViewport({ scale: 1.0 });
+
+        // Group text items by Y coordinate (rows) with a tolerance for slight misalignments
+        const rowTolerance = 5; // pixels
+        const rowsMap = new Map<number, Array<{ x: number; str: string }>>();
+
+        for (const item of textContent.items) {
+            // Only process TextItem types that have transform and str properties
+            if (!('transform' in item && 'str' in item)) continue;
+            
+            const y = Math.round(item.transform[5]); // Get Y coordinate
+            const x = item.transform[4]; // Get X coordinate
+            const str = item.str;
+
+            // Find or create a row group
+            let foundRowKey: number | null = null;
+            for (const existingY of rowsMap.keys()) {
+                if (Math.abs(existingY - y) <= rowTolerance) {
+                    foundRowKey = existingY;
+                    break;
+                }
+            }
+
+            if (foundRowKey === null) {
+                rowsMap.set(y, [{ x, str }]);
+            } else {
+                rowsMap.get(foundRowKey)!.push({ x, str });
+            }
+        }
+
+        // Sort rows by Y coordinate (top to bottom)
+        const sortedRowKeys = Array.from(rowsMap.keys()).sort((a, b) => b - a);
+
+        for (const rowKey of sortedRowKeys) {
+            const rowItems = rowsMap.get(rowKey)!;
+
+            // Sort items within row by X coordinate (left to right)
+            rowItems.sort((a, b) => a.x - b.x);
+
+            // Determine column positions by clustering items that are close together
+            const columnTolerance = 15; // pixels - items within this distance belong to same column
+            const columns: Array<Array<{ x: number; str: string }>> = [];
+
+            for (const item of rowItems) {
+                let placed = false;
+                for (const col of columns) {
+                    const lastItem = col[col.length - 1];
+                    if (Math.abs(lastItem.x - item.x) <= columnTolerance) {
+                        // Merge with previous item (likely same column value split across items)
+                        col[col.length - 1].str += ' ' + item.str;
+                        placed = true;
+                        break;
+                    }
+                }
+                if (!placed) {
+                    columns.push([{ x: item.x, str: item.str }]);
+                }
+            }
+
+            // Build the row with values in column order
+            const row = columns.map(col => col[0].str.trim()).filter(val => val.length > 0);
+            if (row.length > 0) {
+                allRows.push(row);
+            }
+        }
     }
 
-    // Split into rows and filter empty lines
-    const rows = parseTextToGrid(allText);
-
     // Create Excel workbook
-    const worksheet = utils.aoa_to_sheet(rows);
+    const worksheet = utils.aoa_to_sheet(allRows);
     const workbook = utils.book_new();
     utils.book_append_sheet(workbook, worksheet, 'Extracted Text');
 
