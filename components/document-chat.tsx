@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Send, Bot, User, Loader2, MoreVertical, Copy, Download, FileText, Image as ImageIcon, MoreHorizontal, Trash2, Check } from "lucide-react"
+import { Send, User, Loader2, MoreVertical, Copy, Download, FileText, Image as ImageIcon, MoreHorizontal, Trash2, Check } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "@/components/ui/dropdown-menu"
@@ -27,26 +27,7 @@ interface DocumentChatProps {
     hideHeader?: boolean
 }
 
-// Helper components from HextaUI design
-type StatusType = "online" | "dnd" | "offline";
-const STATUS_COLORS: Record<StatusType, string> = {
-    online: "bg-green-500",
-    dnd: "bg-red-500",
-    offline: "bg-gray-400",
-};
-
-function StatusBadge({ status }: { status: StatusType }) {
-    return (
-        <span
-            aria-label={status}
-            className={cn(
-                "inline-block size-3 rounded-full border-2 border-background",
-                STATUS_COLORS[status]
-            )}
-            title={status.charAt(0).toUpperCase() + status.slice(1)}
-        />
-    );
-}
+// StatusBadge removed as it is no longer used
 
 function UserActionsMenu() {
     return (
@@ -424,17 +405,15 @@ function MessageItem({ msg, isLoadingStatus }: { msg: Message, isLoadingStatus?:
                     isMe ? "flex-row-reverse" : undefined
                 )}
             >
-                <Avatar className="size-8 mt-1">
+                <Avatar className="size-8 mt-1 shadow-sm border border-gray-100">
                     {isMe ? (
-                        <>
-                            <AvatarImage src="https://api.dicebear.com/9.x/avataaars/svg?seed=User" />
-                            <AvatarFallback><User className="w-4 h-4" /></AvatarFallback>
-                        </>
+                        <div className="flex w-full h-full items-center justify-center bg-gray-100 text-gray-500">
+                            <User className="w-4 h-4" />
+                        </div>
                     ) : (
-                        <>
-                            <AvatarImage src="https://api.dicebear.com/9.x/bottts/svg?seed=AI" />
-                            <AvatarFallback><Bot className="w-4 h-4" /></AvatarFallback>
-                        </>
+                        <div className="flex w-full h-full items-center justify-center bg-white p-1">
+                            <img src="/logo.png" alt="AI" className="w-full h-full object-contain" />
+                        </div>
                     )}
                 </Avatar>
                 <div>
@@ -585,75 +564,75 @@ export default function DocumentChat({ documentText, hideHeader = false }: Docum
             {/* Header */}
             {!hideHeader && (
                 <CardHeader className="sticky top-0 z-10 flex flex-row items-center justify-between gap-2 border-b bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6 py-4 rounded-t-lg">
-                    <div className="flex items-center gap-4">
-                        <div className="relative bg-white p-3 rounded-xl shadow-md flex-shrink-0">
-                            <img src="/logo.png" alt="InfyGalaxy AI" className="h-10 w-auto object-contain rounded-lg" />
-                            <span className="absolute -bottom-1 -right-1 block size-3.5 rounded-full bg-green-500 ring-2 ring-white" />
-                        </div>
+                    <div className="flex items-center gap-1">
+                        <img src="/logo.png" alt="Infy Galaxy" className="h-7 w-7 object-contain" />
                         <div className="flex flex-col justify-center">
                             <div className="font-bold text-lg text-gray-900 leading-tight">Chat with our Reports Agent</div>
-                            <div className="flex items-center gap-2 text-muted-foreground text-xs mt-1">
-                                <StatusBadge status="online" />
-                                <span className="font-medium">Online</span>
-                            </div>
                         </div>
                     </div>
                 </CardHeader>
             )}
 
             {/* Messages */}
-            <CardContent className="flex-1 p-0 overflow-hidden flex flex-col bg-background/50">
-                <ScrollArea
-                    ref={scrollAreaRef}
-                    className="flex-1 px-4"
-                >
-                    <div className="flex flex-col gap-6 py-4">
-                        {messages.length === 0 && (
-                            <div className="text-center text-gray-400 py-12 flex flex-col items-center">
-                                <div className="w-20 h-20 bg-white rounded-2xl shadow-md flex items-center justify-center mb-4 p-3">
-                                    <img src="/logo.png" alt="Infy Galaxy" className="max-w-full max-h-full object-contain rounded-lg" />
-                                </div>
-                                <p className="text-sm font-semibold text-gray-700">No messages yet</p>
-                                <p className="text-xs text-gray-500 mt-1">Ask a question about your document to get started</p>
-                            </div>
-                        )}
-
-                        {messages.map((msg, idx) => (
-                            <MessageItem
-                                key={idx}
-                                msg={msg}
-                                isLoadingStatus={loading && idx === messages.length - 1 && msg.role === 'assistant' && !msg.content}
-                            />
-                        ))}
-                    </div>
-                </ScrollArea>
+            <CardContent className={cn("flex-1 p-0 overflow-hidden flex flex-col bg-background/50", messages.length === 0 && "justify-center")}> 
+                {messages.length > 0 && (
+                    <ScrollArea
+                        ref={scrollAreaRef}
+                        className="flex-1 px-4"
+                    >
+                        <div className="flex flex-col gap-6 py-4">
+                            {messages.map((msg, idx) => (
+                                <MessageItem
+                                    key={idx}
+                                    msg={msg}
+                                    isLoadingStatus={loading && idx === messages.length - 1 && msg.role === 'assistant' && !msg.content}
+                                />
+                            ))}
+                        </div>
+                    </ScrollArea>
+                )}
 
                 {/* Input Area */}
-                <div className="p-4 bg-background border-t">
-                    <div className="relative flex items-center">
-                        <Input
+                <div className={cn("p-4 bg-background border-t", messages.length === 0 && "border-t-0")}> 
+                    <div className="relative flex items-start">
+                        <textarea
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            onKeyPress={handleKeyPress}
-                            placeholder="Type your message..."
+                            onKeyDown={handleKeyPress}
                             disabled={loading}
-                            className="pr-12 py-3 rounded-full bg-muted/50 border-muted-foreground/20 focus-visible:ring-2 focus-visible:ring-blue-500/30 text-sm"
+                            rows={4}
+                            className={cn(
+                                "w-full pr-16 pl-6 py-6 resize-none rounded-2xl bg-white border-[3px] border-blue-400 focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-700 text-sm shadow-xl placeholder:text-gray-400 transition-all hover:border-blue-500",
+                                messages.length === 0
+                                    ? "h-[200px] min-h-[200px]"
+                                    : "h-[96px] min-h-[96px]",
+                                !input.trim() ? "overflow-hidden" : "overflow-y-auto"
+                            )}
                         />
+
+                        {/* Centered placeholder overlay when input is empty */}
+                        {!input.trim() && (
+                            <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 pr-16">
+                                <p className="w-full max-w-md mx-auto text-center leading-relaxed text-sm text-gray-400 whitespace-pre-line">
+                                    {`Your Exclusive Agent For More Insights From Your Extracted Data\nAsk Away, Chat Now`}
+                                </p>
+                            </div>
+                        )}
                         <Button
                             onClick={handleSend}
                             disabled={loading || !input.trim()}
                             size="icon"
                             className={cn(
-                                "absolute right-1.5 h-9 w-9 rounded-full transition-all",
+                                "absolute right-3 bottom-3 h-11 w-11 rounded-xl transition-all shadow-md",
                                 input.trim()
-                                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md"
-                                    : "bg-muted text-muted-foreground hover:bg-muted"
+                                    ? "bg-blue-700 hover:bg-blue-800 text-white shadow-blue-400 scale-100"
+                                    : "bg-blue-100 text-blue-600 scale-95"
                             )}
                         >
                             {loading ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <Loader2 className="w-5 h-5 animate-spin" strokeWidth={3} />
                             ) : (
-                                <Send className="w-4 h-4 ml-0.5" />
+                                <Send className="w-5 h-5 ml-0.5" strokeWidth={3} />
                             )}
                         </Button>
                     </div>

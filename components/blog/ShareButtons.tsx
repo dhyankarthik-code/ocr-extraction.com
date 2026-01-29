@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Facebook, Twitter, Mail, Link as LinkIcon, Smartphone, Share2 } from "lucide-react"
+import { Facebook, Twitter, Mail, Link as LinkIcon, Smartphone, Share2, Linkedin } from "lucide-react"
 import { toast } from "sonner"
 
 interface ShareButtonsProps {
@@ -23,6 +23,9 @@ export default function ShareButtons({ slug, title }: ShareButtonsProps) {
                 break
             case 'facebook':
                 shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
+                break
+            case 'linkedin':
+                shareUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(title + ' ' + url)}`
                 break
             case 'twitter':
                 shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`
@@ -78,6 +81,16 @@ export default function ShareButtons({ slug, title }: ShareButtonsProps) {
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
+            </Button>
+
+            {/* LinkedIn */}
+            <Button
+                size="sm"
+                className="bg-[#0077b5] hover:bg-[#006399] text-white rounded-full w-9 h-9 p-0"
+                onClick={() => handleShare('linkedin')}
+                title="Share on LinkedIn"
+            >
+                <Linkedin className="w-4 h-4" />
             </Button>
 
             {/* Email */}

@@ -252,26 +252,22 @@ export default function LocalResultPage() {
 
         const lines = text.split('\n');
 
-        // Detect if it's a markdown table (checks if multiple lines contain pipes)
-        const isMarkdownTable = lines.filter(l => l.trim().includes('|')).length > 1;
+
 
         const rows = lines.map(line => {
             const trimmedLine = line.trim();
             if (!trimmedLine) return [];
 
-            if (isMarkdownTable && trimmedLine.includes('|')) {
-                // Markdown Table Logic
+            // Pattern 1: Markdown Table (contains pipes) 
+            // Check for pipes acting as separators (at least 2 pipes usually indicate a table row)
+            if (trimmedLine.includes('|')) {
                 const cells = trimmedLine.split('|').map(cell => {
                     // Clean Markdown formatting (bold, italics)
                     return cell.replace(/\*\*|__/g, '').trim();
                 });
 
                 // Remove empty start/end cells that result from | start | end | style
-                // Usually split('|') on "| a | b |" gives ["", " a ", " b ", ""]
                 const validCells = cells.filter((cell, index, arr) => {
-                    // Keep cell if it has content, OR if it's inside the table structure
-                    // But usually we just want the content.
-                    // Let's filter out purely empty start/end artifacts.
                     if (index === 0 && cell === '') return false;
                     if (index === arr.length - 1 && cell === '') return false;
                     return true;
@@ -282,15 +278,113 @@ export default function LocalResultPage() {
                 if (isSeparator) return null; // Signal to filter this row out entirely
 
                 return validCells;
-            } else {
-                // Fallback: Split by tabs or 2+ spaces
-                return line.split(/\t|\s{2,}/).map(cell => cell.trim()).filter(cell => cell.length > 0);
             }
+
+            // Pattern 2: Key : Value pair (common in forms/headers)
+            // Example: "Customer Name : John Doe"
+            // We split by " : " or similar pattern to create 2 columns
+            if (trimmedLine.includes(':')) {
+                // Check if it's a likely key-value pair (colon surrounded by whitespace or at specific positions)
+                // We use a safe heuristic: split by " : ". 
+                // We avoid splitting formatted time (12:00:00) by ensuring space around colon or specific structure
+                const colonSplit = trimmedLine.split(/\s+:\s+/);
+                if (colonSplit.length > 1) {
+                    return colonSplit.map(c => c.trim());
+                }
+            }
+
+            // Pattern 3: Whitespace separated (Tabs or 2+ spaces)
+            const cells = line.split(/\t|\s{2,}/).map(cell => cell.trim()).filter(cell => cell.length > 0);
+            if (cells.length > 1) {
+                return cells;
+            }
+
+            // Pattern 4: Smart/Content-Aware Fallback
+            // Check if the line looks like a transaction row (has Date AND Number/Amount)
+            // Common in bank statements: "27-Oct-25 Transaction 500.00"
+            const hasDate = /\d{1,4}[-/.]\d{1,2}[-/.]\d{2,4}|\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{2,4}/i.test(trimmedLine);
+            const hasNumber = /\d+[.,]\d{2}\b/.test(trimmedLine); // Matches 100.00 or 1,000.50
+
+            const singleSpaceSplit = line.split(/\s+/).map(c => c.trim()).filter(c => c.length > 0);
+
+            // Resurrect data rows that were missed by tab/double-space split
+            if ((hasDate && hasNumber && singleSpaceSplit.length > 1) || singleSpaceSplit.length > 3) {
+                return singleSpaceSplit;
+            }
+
+            // Fallback: Return raw line to be processed by Fixed Width Logic later if needed
+            return [line];
         });
 
-        // Filter out null rows (separator lines) and ensure we return string[][]
-        return rows.filter((row): row is string[] => row !== null && row.length > 0);
+        // FIXED WIDTH ANALYSIS (Global Layout)
+        const validRows = rows.filter((r): r is string[] => r !== null && r.length > 0);
+        const singleColumnRows = validRows.filter(r => r.length === 1);
+
+        // If > 50% of rows are single column, try Fixed Width detection on those lines
+        if (singleColumnRows.length > validRows.length * 0.5) {
+            // 1. Analyze all "single column" strings to find common space indices
+            const rawLines = singleColumnRows.map(r => r[0]);
+            const maxLen = Math.max(...rawLines.map(l => l.length));
+
+            // Histogram: How many lines have a SPACE at index i?
+            const spaceCounts = new Array(maxLen).fill(0);
+            rawLines.forEach(line => {
+                for (let i = 0; i < line.length; i++) {
+                    if (line[i] === ' ') spaceCounts[i]++;
+                }
+                // Assume area past end of line is empty space
+                for (let i = line.length; i < maxLen; i++) spaceCounts[i]++;
+            });
+
+            // 2. Identify separators: Indices where > 85% of lines have a space
+            const separators: number[] = [];
+            const threshold = rawLines.length * 0.85;
+
+            let inSeparatorZone = false;
+            for (let i = 0; i < maxLen; i++) {
+                if (spaceCounts[i] >= threshold) {
+                    if (!inSeparatorZone) {
+                        separators.push(i);
+                        inSeparatorZone = true;
+                    }
+                } else {
+                    inSeparatorZone = false;
+                }
+            }
+
+            // 3. Re-split the single-column rows using these separators
+            if (separators.length > 0) {
+                return validRows.map(row => {
+                    if (row.length === 1) {
+                        const line = row[0];
+                        const newCells: string[] = [];
+                        let lastIdx = 0;
+
+                        // Add a virtual "end" separator
+                        const allSeps = [...separators, maxLen];
+
+                        allSeps.forEach(sepIdx => {
+                            // Trim text between separators
+                            const safeSep = Math.min(sepIdx, line.length);
+                            if (safeSep > lastIdx) {
+                                const chunk = line.substring(lastIdx, safeSep).trim();
+                                if (chunk) newCells.push(chunk);
+                            }
+                            lastIdx = safeSep;
+                        });
+
+                        return newCells.length > 0 ? newCells : row;
+                    }
+                    return row;
+                });
+            }
+        }
+
+        return validRows;
     }
+
+
+
 
     const handleDownloadXlsx = () => {
         sendGAEvent({ action: 'file_download', category: 'Download', label: 'xlsx' })
@@ -542,9 +636,9 @@ export default function LocalResultPage() {
     }
 
     return (
-        <div className="bg-gray-50 flex-1 py-8">
+        <div className="bg-gray-50 flex-1 py-4">
             <div className="container mx-auto px-4">
-                <div className="mb-6 grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+                <div className="mb-4 grid grid-cols-1 md:grid-cols-3 items-center gap-4">
                     <div className="flex justify-center md:justify-start">
                         <Button
                             onClick={() => router.push("/")}
@@ -753,7 +847,7 @@ export default function LocalResultPage() {
                                                         {translationScope === 'current' ? `Page ${currentPage}` : 'Full Doc'}
                                                     </span>
                                                 </div>
-                                                <div className="min-h-[500px] max-h-[700px] overflow-y-auto p-4 bg-white rounded-lg border border-gray-200 font-mono text-xs whitespace-pre-wrap leading-relaxed text-gray-700 shadow-sm custom-scrollbar">
+                                                <div className="min-h-[400px] max-h-[600px] overflow-y-auto p-4 bg-white rounded-lg border border-gray-200 font-mono text-xs whitespace-pre-wrap leading-relaxed text-gray-700 shadow-sm custom-scrollbar">
                                                     {translationScope === 'current' ? text : getFullText()}
                                                 </div>
                                             </div>
@@ -809,7 +903,7 @@ export default function LocalResultPage() {
                                                         </Button>
                                                     </div>
                                                 </div>
-                                                <div className="min-h-[500px] max-h-[700px] overflow-y-auto p-4 bg-white rounded-lg border border-purple-100 font-mono text-xs whitespace-pre-wrap leading-relaxed text-gray-800 shadow-sm custom-scrollbar">
+                                                <div className="min-h-[400px] max-h-[600px] overflow-y-auto p-4 bg-white rounded-lg border border-purple-100 font-mono text-xs whitespace-pre-wrap leading-relaxed text-gray-800 shadow-sm custom-scrollbar">
                                                     {isTranslating ? (
                                                         <div className="flex flex-col items-center justify-center h-full text-center gap-3">
                                                             <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
@@ -824,14 +918,14 @@ export default function LocalResultPage() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="min-h-[500px] max-h-[700px] overflow-y-auto p-6 bg-gray-50 rounded-xl m-4 border border-gray-100 shadow-inner custom-scrollbar relative">
+                                        <div className="min-h-[400px] max-h-[600px] overflow-y-auto p-6 bg-gray-50 rounded-xl m-4 border border-gray-100 shadow-inner custom-scrollbar relative">
                                             {/* Only use Highlight/Raw text if SEARCH is active. Otherwise render beautiful Markdown. */}
                                             {searchTerm && searchTerm.length > 0 ? (
-                                                <div className="font-mono text-sm whitespace-pre-wrap leading-relaxed text-gray-800">
+                                                <div className="font-mono text-xs whitespace-pre-wrap leading-relaxed text-gray-800">
                                                     {highlightedText()}
                                                 </div>
                                             ) : (
-                                                <div className="prose prose-sm max-w-none text-gray-800 prose-headings:mt-4 prose-headings:mb-2 prose-p:my-2 prose-table:border-collapse prose-td:border prose-td:border-gray-300 prose-td:p-2 prose-th:bg-gray-100 prose-th:border prose-th:border-gray-300 prose-th:p-2">
+                                                <div className="prose prose-sm max-w-none text-gray-800 text-xs prose-p:text-xs prose-li:text-xs prose-headings:text-sm prose-td:text-xs prose-th:text-xs prose-strong:text-xs prose-a:text-xs prose-headings:mt-4 prose-headings:mb-2 prose-p:my-2 prose-table:border-collapse prose-td:border prose-td:border-gray-300 prose-td:p-2 prose-th:bg-gray-100 prose-th:border prose-th:border-gray-300 prose-th:p-2">
                                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                                         {text}
                                                     </ReactMarkdown>
@@ -843,13 +937,13 @@ export default function LocalResultPage() {
 
                                 {/* MOBILE VIEW */}
                                 <div className="md:hidden">
-                                    <div className="min-h-[400px] max-h-[600px] overflow-y-auto p-4 bg-gray-50 shadow-inner">
+                                    <div className="min-h-[300px] max-h-[500px] overflow-y-auto p-4 bg-gray-50 shadow-inner">
                                         {searchTerm && searchTerm.length > 0 ? (
-                                            <div className="font-mono text-sm whitespace-pre-wrap leading-relaxed text-gray-800">
+                                            <div className="font-mono text-xs whitespace-pre-wrap leading-relaxed text-gray-800">
                                                 {highlightedText()}
                                             </div>
                                         ) : (
-                                            <div className="prose prose-sm max-w-none text-gray-800 text-sm">
+                                            <div className="prose prose-sm max-w-none text-gray-800 text-xs prose-p:text-xs prose-li:text-xs prose-headings:text-sm prose-td:text-xs prose-th:text-xs prose-strong:text-xs prose-a:text-xs">
                                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                                     {text}
                                                 </ReactMarkdown>
@@ -919,49 +1013,52 @@ export default function LocalResultPage() {
                         </Card>
                     </div>
 
-                    <div className="space-y-6">
+                    <div className="space-y-0 lg:sticky lg:top-0 lg:h-[calc(100vh-240px)] flex flex-col">
                         {/* Mobile Download Button - Interstitial */}
-                        <div className="md:hidden w-full relative z-30" ref={mobileDocDownloadRef}>
-                            <Button
-                                onClick={() => setShowMobileDownload(!showMobileDownload)}
-                                className="w-full bg-red-600 text-white hover:bg-red-700 shadow-md flex items-center justify-center gap-2 h-12 rounded-xl text-sm font-semibold transition-all hover:scale-[1.01] hover:shadow-lg border-none"
-                            >
-                                <div className="p-1 bg-white/20 rounded-full text-white">
-                                    <Download className="w-4 h-4" />
-                                </div>
-                                Download Extracted Data
-                            </Button>
-
-                            {showMobileDownload && (
-                                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-50 p-2 animate-in fade-in zoom-in-95 duration-200">
-                                    <div className="grid grid-cols-1 gap-1">
-                                        <button onClick={handleDownloadTxt} className="w-full text-left px-4 py-3 hover:bg-gray-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
-                                            <div className="p-1.5 rounded-lg bg-gray-100 text-gray-500"><LucideFileText className="w-4 h-4" /></div>
-                                            Text File (.txt)
-                                        </button>
-                                        <button onClick={handleDownloadDocx} className="w-full text-left px-4 py-3 hover:bg-blue-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
-                                            <div className="p-1.5 rounded-lg bg-blue-100 text-blue-600"><FileIcon className="w-4 h-4" /></div>
-                                            Word Document (.docx)
-                                        </button>
-                                        <button onClick={handleDownloadPdf} className="w-full text-left px-4 py-3 hover:bg-red-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
-                                            <div className="p-1.5 rounded-lg bg-red-100 text-red-600"><FileTypeIcon className="w-4 h-4" /></div>
-                                            PDF Document (.pdf)
-                                        </button>
-                                        <button onClick={handleDownloadXlsx} className="w-full text-left px-4 py-3 hover:bg-emerald-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
-                                            <div className="p-1.5 rounded-lg bg-emerald-100 text-emerald-600"><TableIcon className="w-4 h-4" /></div>
-                                            Excel Spreadsheet (.xlsx)
-                                        </button>
-                                        <button onClick={handleDownloadPpt} className="w-full text-left px-4 py-3 hover:bg-orange-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
-                                            <div className="p-1.5 rounded-lg bg-orange-100 text-orange-600"><PresentationIcon className="w-4 h-4" /></div>
-                                            PowerPoint (.pptx)
-                                        </button>
+                        {/* Mobile Download Button - Interstitial */}
+                        {isMobile && (
+                            <div className="md:hidden w-full relative z-30 mb-6" ref={mobileDocDownloadRef}>
+                                <Button
+                                    onClick={() => setShowMobileDownload(!showMobileDownload)}
+                                    className="w-full bg-red-600 text-white hover:bg-red-700 shadow-md flex items-center justify-center gap-2 h-12 rounded-xl text-sm font-semibold transition-all hover:scale-[1.01] hover:shadow-lg border-none"
+                                >
+                                    <div className="p-1 bg-white/20 rounded-full text-white">
+                                        <Download className="w-4 h-4" />
                                     </div>
-                                </div>
-                            )}
-                        </div>
+                                    Download Extracted Data
+                                </Button>
+
+                                {showMobileDownload && (
+                                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-50 p-2 animate-in fade-in zoom-in-95 duration-200">
+                                        <div className="grid grid-cols-1 gap-1">
+                                            <button onClick={handleDownloadTxt} className="w-full text-left px-4 py-3 hover:bg-gray-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
+                                                <div className="p-1.5 rounded-lg bg-gray-100 text-gray-500"><LucideFileText className="w-4 h-4" /></div>
+                                                Text File (.txt)
+                                            </button>
+                                            <button onClick={handleDownloadDocx} className="w-full text-left px-4 py-3 hover:bg-blue-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
+                                                <div className="p-1.5 rounded-lg bg-blue-100 text-blue-600"><FileIcon className="w-4 h-4" /></div>
+                                                Word Document (.docx)
+                                            </button>
+                                            <button onClick={handleDownloadPdf} className="w-full text-left px-4 py-3 hover:bg-red-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
+                                                <div className="p-1.5 rounded-lg bg-red-100 text-red-600"><FileTypeIcon className="w-4 h-4" /></div>
+                                                PDF Document (.pdf)
+                                            </button>
+                                            <button onClick={handleDownloadXlsx} className="w-full text-left px-4 py-3 hover:bg-emerald-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
+                                                <div className="p-1.5 rounded-lg bg-emerald-100 text-emerald-600"><TableIcon className="w-4 h-4" /></div>
+                                                Excel Spreadsheet (.xlsx)
+                                            </button>
+                                            <button onClick={handleDownloadPpt} className="w-full text-left px-4 py-3 hover:bg-orange-50 rounded-lg flex items-center gap-3 text-gray-700 font-medium transition-colors">
+                                                <div className="p-1.5 rounded-lg bg-orange-100 text-orange-600"><PresentationIcon className="w-4 h-4" /></div>
+                                                PowerPoint (.pptx)
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* AI Document Chat */}
-                        <div className="h-[600px]">
+                        <div className="h-[450px] lg:h-full lg:min-h-0 flex-1">
                             <DocumentChat documentText={getFullText()} />
                         </div>
                     </div>

@@ -250,7 +250,7 @@ export default function ChatWidget() {
     // }
 
     return (
-        <div ref={chatContainerRef} className="fixed bottom-6 right-6 z-[50] flex flex-col items-end">
+        <div ref={chatContainerRef} className="fixed bottom-3 right-6 z-[50] flex flex-col items-end">
             {/* Chat Window */}
             {isOpen && (
                 <div className="mb-4 w-[350px] md:w-[380px] h-[500px] max-h-[80vh] bg-white rounded-2xl shadow-xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-200">

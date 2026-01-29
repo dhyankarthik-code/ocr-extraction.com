@@ -115,11 +115,6 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
                 text="Login"
                 className="px-4 xl:px-5 py-2 text-sm h-9"
               />
-              <InteractiveHoverButton
-                onClick={onLoginClick}
-                text="Sign in"
-                className="px-4 xl:px-5 py-2 text-sm h-9"
-              />
             </div>
           )}
         </div>
@@ -179,11 +174,6 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
                   <InteractiveHoverButton
                     onClick={() => { onLoginClick?.(); setMobileMenuOpen(false); }}
                     text="Login"
-                    className="w-full text-center"
-                  />
-                  <InteractiveHoverButton
-                    onClick={() => { onLoginClick?.(); setMobileMenuOpen(false); }}
-                    text="Sign in"
                     className="w-full text-center"
                   />
                 </>

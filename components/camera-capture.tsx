@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { createPortal } from "react-dom"
-import { X, SwitchCamera, Loader2, AlertCircle, Play } from "lucide-react"
+import { X, Camera, SwitchCamera, Loader2 } from "lucide-react"
 
 interface CameraCaptureProps {
     onCapture: (blob: Blob) => void
@@ -11,169 +11,89 @@ interface CameraCaptureProps {
 
 export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps) {
     const [mounted, setMounted] = useState(false)
+    const [stream, setStream] = useState<MediaStream | null>(null)
     const [facingMode, setFacingMode] = useState<"user" | "environment">("environment")
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const [debugInfo, setDebugInfo] = useState<string>("")
-    const [needsManualStart, setNeedsManualStart] = useState(false)
-    const [focusPoint, setFocusPoint] = useState<{ x: number; y: number } | null>(null)
 
     const videoRef = useRef<HTMLVideoElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
+
     const streamRef = useRef<MediaStream | null>(null)
-    const isComponentActive = useRef(true)
 
     useEffect(() => {
         setMounted(true)
         return () => {
             setMounted(false)
-            isComponentActive.current = false
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop())
+            }
         }
     }, [])
 
-    const stopTracks = useCallback(() => {
+    const stopStream = useCallback(() => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop())
             streamRef.current = null
+            setStream(null)
         }
     }, [])
 
-    const startCamera = useCallback(async (retryCount = 0) => {
-        if (!isComponentActive.current) return
-
+    const startCamera = useCallback(async () => {
         setLoading(true)
         setError(null)
-        setNeedsManualStart(false)
-
-        stopTracks()
-
-        const constraintsList = [
-            // 1. Ideal: 1080p (Good balance for OCR vs Performance)
-            {
-                video: {
-                    facingMode: facingMode,
-                    focusMode: 'continuous',
-                    width: { ideal: 1920 },
-                    height: { ideal: 1080 }
-                },
-                audio: false
-            },
-            // 2. Fallback: Any resolution, specified facing mode
-            { video: { facingMode: facingMode }, audio: false },
-            // 3. Fallback: Flip camera
-            { video: { facingMode: facingMode === 'environment' ? 'user' : 'environment' }, audio: false },
-            // 4. Last Resort: Any video
-            { video: true, audio: false }
-        ]
-
-        if (retryCount >= constraintsList.length) {
-            if (isComponentActive.current) {
-                setError("Could not access any camera. Please check permissions.")
-                setLoading(false)
-            }
-            return
-        }
-
-        const currentConstraints = constraintsList[retryCount]
-        if (isComponentActive.current) setDebugInfo(`Trying: ${JSON.stringify(currentConstraints)}`)
+        stopStream()
 
         try {
-            const newStream = await navigator.mediaDevices.getUserMedia(currentConstraints as MediaStreamConstraints)
-
-            if (!isComponentActive.current) {
-                newStream.getTracks().forEach(t => t.stop())
-                return
+            const constraints = {
+                video: {
+                    facingMode: facingMode
+                },
+                audio: false
             }
 
+            const newStream = await navigator.mediaDevices.getUserMedia(constraints)
             streamRef.current = newStream
-
-            setLoading(false)
-            setDebugInfo("")
+            setStream(newStream)
 
             if (videoRef.current) {
                 videoRef.current.srcObject = newStream
-
-                videoRef.current.play().catch(e => {
-                    console.warn("Autoplay blocked/failed", e)
-                    if (isComponentActive.current) setNeedsManualStart(true)
-                })
             }
-
         } catch (err: any) {
-            // ... error handling remains same
             console.error("Camera error:", err)
-
-            if (!isComponentActive.current) return;
-
-            if (err.name === 'OverconstrainedError' || err.name === 'ConstraintNotSatisfiedError') {
-                console.log("Constraint failed, retrying...")
-                startCamera(retryCount + 1)
-                return
-            }
-
-            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                setError("Camera permission denied. Please allow access in browser settings.")
-            } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-                setError("No camera found on this device.")
-            } else {
-                setDebugInfo(`Error: ${err.name} - ${err.message}`)
-                if (retryCount < constraintsList.length - 1) {
-                    startCamera(retryCount + 1)
-                    return
-                }
-                setError("Unable to access camera.")
-            }
-
+            setError("Unable to access camera. Please ensure permissions are granted.")
+        } finally {
             setLoading(false)
         }
-    }, [facingMode, stopTracks])
+    }, [facingMode, stopStream])
 
-    // ... (useEffect remains same) ...
+    // Initial start with Timeout
+    useEffect(() => {
+        if (mounted) {
+            startCamera()
+        }
+        const timer = setTimeout(() => {
+            if (loading) {
+                setLoading(false)
+                setError(prev => prev || "Camera is taking too long to start. Please try refreshing or check permissions.")
+            }
+        }, 8000)
 
-    const handleTapToFocus = useCallback((e: React.MouseEvent<HTMLVideoElement>) => {
-        e.stopPropagation()
+        return () => {
+            stopStream()
+            clearTimeout(timer)
+        }
+    }, [mounted, startCamera, stopStream])
 
-        if (!videoRef.current || loading || error) return
-
-        const video = videoRef.current
-        const rect = video.getBoundingClientRect()
-
-        // Calculate tap position relative to video element
-        const x = ((e.clientX - rect.left) / rect.width) * 100
-        const y = ((e.clientY - rect.top) / rect.height) * 100
-
-        // Show visual feedback
-        setFocusPoint({ x, y })
-
-        // Clear focus indicator after animation
-        setTimeout(() => setFocusPoint(null), 1000)
-
-        // Attempt to trigger autofocus/refocus on the camera
-        if (streamRef.current) {
-            const track = streamRef.current.getVideoTracks()[0]
-
-            if (track) {
-                // Try to apply focus constraints if supported
-                const capabilities = track.getCapabilities() as any
-
-                if (capabilities?.focusMode) {
-                    // Toggle between single-shot and continuous to trigger refocus
-                    track.applyConstraints({
-                        advanced: [{ focusMode: 'single-shot' } as any]
-                    }).then(() => {
-                        // Switch back to continuous after a brief moment
-                        setTimeout(() => {
-                            track.applyConstraints({
-                                advanced: [{ focusMode: 'continuous' } as any]
-                            }).catch(err => console.log('Focus toggle failed:', err))
-                        }, 100)
-                    }).catch(err => {
-                        console.log('Focus constraint not supported:', err)
-                    })
-                }
+    // Handle stream ready explicitly
+    useEffect(() => {
+        if (stream && videoRef.current) {
+            const playPromise = videoRef.current.play()
+            if (playPromise !== undefined) {
+                playPromise.catch(e => console.log("Auto-play prevented:", e))
             }
         }
-    }, [loading, error])
+    }, [stream])
 
     const handleCapture = (e: React.MouseEvent) => {
         e.stopPropagation()
@@ -181,7 +101,7 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
 
         const video = videoRef.current
         const canvas = canvasRef.current
-        const context = canvas.getContext("2d", { alpha: false }) // Optimize: No alpha needed
+        const context = canvas.getContext("2d")
 
         if (context) {
             if (video.videoWidth === 0 || video.videoHeight === 0) {
@@ -189,40 +109,24 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
                 return
             }
 
-            // Smart Downscaling for Mobile Performance
-            const MAX_DIMENSION = 1920
-            let width = video.videoWidth
-            let height = video.videoHeight
-
-            if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-                if (width > height) {
-                    height = Math.round((height * MAX_DIMENSION) / width)
-                    width = MAX_DIMENSION
-                } else {
-                    width = Math.round((width * MAX_DIMENSION) / height)
-                    height = MAX_DIMENSION
-                }
-            }
-
-            canvas.width = width
-            canvas.height = height
+            canvas.width = video.videoWidth
+            canvas.height = video.videoHeight
 
             if (facingMode === 'user') {
                 context.translate(canvas.width, 0);
                 context.scale(-1, 1);
             }
 
-            // Draw at optimized resolution
-            context.drawImage(video, 0, 0, width, height)
+            context.drawImage(video, 0, 0, canvas.width, canvas.height)
 
             canvas.toBlob((blob) => {
                 if (blob) {
-                    stopTracks()
+                    stopStream()
                     onCapture(blob)
                 } else {
                     setError("Failed to capture image")
                 }
-            }, "image/jpeg", 0.90) // Slightly lower quality for speed (95 -> 90)
+            }, "image/jpeg", 0.95)
         }
     }
 
@@ -233,7 +137,7 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
 
     const handleClose = (e: React.MouseEvent) => {
         e.stopPropagation()
-        stopTracks()
+        stopStream()
         onClose()
     }
 
@@ -241,130 +145,95 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center animate-in fade-in duration-200 text-white"
+            className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center animate-in fade-in duration-200"
             onClick={(e) => e.stopPropagation()}
         >
+
             <canvas ref={canvasRef} className="hidden" />
 
             <div className="relative w-full h-full flex flex-col">
+
                 <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-10 bg-gradient-to-b from-black/50 to-transparent">
                     <button
                         onClick={handleClose}
-                        className="p-2 rounded-full bg-black/20 backdrop-blur-md hover:bg-black/40 transition-colors"
+                        className="p-2 rounded-full bg-black/20 text-white backdrop-blur-md hover:bg-black/40 transition-colors"
                         type="button"
                     >
                         <X className="w-6 h-6" />
                     </button>
-                    <div className="font-medium text-sm drop-shadow-md">Take Photo</div>
+                    <div className="text-white font-medium text-sm drop-shadow-md">Take Photo</div>
                     <div className="w-10" />
                 </div>
 
-                <div className="flex-1 relative flex items-center justify-center bg-zinc-900 overflow-hidden w-full">
+                <div className="flex-1 relative flex items-center justify-center bg-zinc-900 overflow-hidden">
+                    {loading && (
+                        <div className="absolute inset-0 flex items-center justify-center text-white/70">
+                            <div className="flex flex-col items-center gap-2">
+                                <Loader2 className="w-8 h-8 animate-spin" />
+                                <span>Starting camera...</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {error && (
+                        <div className="absolute inset-0 flex items-center justify-center p-6 text-center z-20">
+                            <div className="max-w-xs text-red-400 bg-red-950/80 backdrop-blur p-4 rounded-xl border border-red-900/50">
+                                <p>{error}</p>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        startCamera()
+                                    }}
+                                    className="mt-4 px-4 py-2 bg-red-900/50 rounded-lg text-white text-sm hover:bg-red-800 transition-colors"
+                                    type="button"
+                                >
+                                    Retry
+                                </button>
+                                <button
+                                    onClick={handleClose}
+                                    className="mt-2 block w-full text-xs text-red-300 hover:text-white underline"
+                                    type="button"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     <video
                         ref={videoRef}
                         autoPlay
                         playsInline
                         muted
                         className={`w-full h-full object-cover transition-opacity duration-300 ${loading ? 'opacity-0' : 'opacity-100'} ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}
-                        onClick={handleTapToFocus}
                     />
-
-                    {/* Tap to Focus Indicator */}
-                    {focusPoint && (
-                        <div
-                            className="absolute pointer-events-none z-30 animate-ping"
-                            style={{
-                                left: `${focusPoint.x}%`,
-                                top: `${focusPoint.y}%`,
-                                transform: 'translate(-50%, -50%)'
-                            }}
-                        >
-                            <div className="w-20 h-20 border-2 border-yellow-400 rounded-sm" />
-                        </div>
-                    )}
-                    {focusPoint && (
-                        <div
-                            className="absolute pointer-events-none z-30"
-                            style={{
-                                left: `${focusPoint.x}%`,
-                                top: `${focusPoint.y}%`,
-                                transform: 'translate(-50%, -50%)'
-                            }}
-                        >
-                            <div className="w-16 h-16 border-2 border-yellow-400 rounded-sm" />
-                        </div>
-                    )}
-
-                    {loading && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-20">
-                            <Loader2 className="w-8 h-8 animate-spin text-red-500" />
-                            <span className="text-sm text-gray-400">Starting camera...</span>
-                            <div className="text-[10px] text-gray-600 font-mono mt-2 px-4 text-center max-w-xs">{debugInfo}</div>
-                        </div>
-                    )}
-
-                    {needsManualStart && !loading && !error && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-30 bg-black/80">
-                            <button
-                                onClick={() => startCamera(0)}
-                                className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 transition"
-                            >
-                                <Play className="w-12 h-12 text-green-500 fill-current" />
-                                <span className="font-medium">Tap to Start Camera</span>
-                            </button>
-                            <p className="text-xs text-gray-400 max-w-[200px] text-center">Browser requires interaction</p>
-                        </div>
-                    )}
-
-                    {error && (
-                        <div className="absolute inset-0 flex items-center justify-center p-6 text-center z-40 bg-black/90">
-                            <div className="max-w-xs flex flex-col items-center gap-4 text-red-400">
-                                <AlertCircle className="w-10 h-10" />
-                                <p className="font-medium">{error}</p>
-                                {debugInfo && <p className="text-xs text-red-900/50 break-all">{debugInfo}</p>}
-
-                                <div className="flex gap-3 w-full">
-                                    <button
-                                        onClick={handleClose}
-                                        className="flex-1 py-2 px-4 rounded-lg bg-zinc-800 text-gray-300 hover:bg-zinc-700 text-sm"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        onClick={() => startCamera(0)}
-                                        className="flex-1 py-2 px-4 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm font-medium"
-                                    >
-                                        Retry
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
-                <div className="h-32 bg-black flex items-center justify-around px-8 pb-4 pt-2 shrink-0">
+                <div className="h-32 bg-black flex items-center justify-around px-8 pb-4 pt-2">
+
                     <div className="w-12 h-12" />
 
                     <button
                         onClick={handleCapture}
-                        disabled={loading || !!error || needsManualStart}
-                        className="relative group disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95 transition-all"
+                        disabled={loading || !!error}
+                        className="relative group disabled:opacity-50 disabled:cursor-not-allowed"
                         type="button"
                     >
-                        <div className="w-20 h-20 rounded-full border-[5px] border-white flex items-center justify-center">
-                            <div className="w-16 h-16 rounded-full bg-white group-hover:bg-gray-200 transition-colors shadow-lg" />
+                        <div className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center transition-transform group-active:scale-95">
+                            <div className="w-16 h-16 rounded-full bg-white group-hover:bg-gray-200 transition-colors" />
                         </div>
                     </button>
 
                     <button
                         onClick={switchCamera}
-                        disabled={loading || !!error || needsManualStart}
-                        className="p-3 rounded-full bg-zinc-800 text-white hover:bg-zinc-700 transition-colors disabled:opacity-50 flex flex-col items-center gap-1"
+                        disabled={loading || !!error}
+                        className="p-3 rounded-full bg-zinc-800 text-white hover:bg-zinc-700 transition-colors disabled:opacity-50"
                         type="button"
                     >
                         <SwitchCamera className="w-6 h-6" />
                     </button>
                 </div>
+
             </div>
         </div>,
         document.body

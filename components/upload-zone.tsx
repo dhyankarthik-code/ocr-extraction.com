@@ -129,8 +129,7 @@ export default function UploadZone({ onDrop, uploading, progress, processingStep
   return (
     <div id="upload-zone-container" className="w-full max-w-2xl mx-auto space-y-6">
       <div className="relative w-full group">
-        <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100/50 rounded-t-2xl z-20"></div>
-        <div className="absolute top-0 left-0 w-0 group-hover:w-full h-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 transition-all duration-700 ease-in-out rounded-tl-2xl z-20"></div>
+
         {/* Main Drop Zone */}
         <div
           {...getRootProps()}

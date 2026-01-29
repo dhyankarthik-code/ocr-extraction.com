@@ -15,8 +15,9 @@ import {
 import { saveAs } from "file-saver"
 import ReactMarkdown from 'react-markdown'
 import { Document, Packer, Paragraph, TextRun } from "docx"
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
+import { generatePdfFromText } from "@/lib/pdf-utils"
 import { Input } from "@/components/ui/input"
+import remarkGfm from 'remark-gfm'
 
 interface ReportChatModalProps {
     isOpen: boolean
@@ -34,7 +35,7 @@ const REPORT_CATEGORIES: { id: ReportCategory; label: string; icon: React.ReactN
     { id: 'operational-efficiency', label: 'Operational Efficiency', icon: <Settings2 className="w-5 h-5" />, description: 'Analyze workflows and process improvements' },
 ]
 
-export default function ReportChatModal({ isOpen, onClose, documentText }: ReportChatModalProps) {
+export default function ReportChatModal({ isOpen, onClose, documentText }: Readonly<ReportChatModalProps>) {
     const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string; type?: 'report' | 'error' }>>([])
     const [loading, setLoading] = useState(false)
     const [currentReport, setCurrentReport] = useState("")
@@ -222,13 +223,7 @@ export default function ReportChatModal({ isOpen, onClose, documentText }: Repor
             const blob = await Packer.toBlob(doc)
             saveAs(blob, `${filename}.docx`)
         } else if (format === 'pdf') {
-            const doc = await PDFDocument.create()
-            const page = doc.addPage()
-            const { height } = page.getSize()
-            page.drawText(content, { x: 50, y: height - 50, size: 10, color: rgb(0, 0, 0) })
-            const pdfBytes = await doc.save()
-            const blob = new Blob([Buffer.from(pdfBytes)], { type: "application/pdf" })
-            saveAs(blob, `${filename}.pdf`)
+            generatePdfFromText(content, filename)
         }
     }
 
@@ -327,6 +322,7 @@ export default function ReportChatModal({ isOpen, onClose, documentText }: Repor
                                                 {msg.role === 'assistant' ? (
                                                     <div className="text-sm leading-relaxed text-gray-800">
                                                         <ReactMarkdown
+                                                            remarkPlugins={[remarkGfm]}
                                                             components={{
                                                                 h1: ({ node, ...props }) => <h1 className="text-sm font-bold mb-3 mt-1 text-gray-900 border-b border-gray-100 pb-2 uppercase tracking-tight" {...props} />,
                                                                 h2: ({ node, ...props }) => <h2 className="text-sm font-bold mb-2 mt-4 text-gray-800 uppercase tracking-tight" {...props} />,
@@ -335,6 +331,12 @@ export default function ReportChatModal({ isOpen, onClose, documentText }: Repor
                                                                 ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-3 space-y-1" {...props} />,
                                                                 li: ({ node, ...props }) => <li className="text-sm" {...props} />,
                                                                 strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
+                                                                table: ({ node, ...props }) => <div className="overflow-x-auto my-4 border rounded-lg"><table className="w-full text-sm text-left" {...props} /></div>,
+                                                                thead: ({ node, ...props }) => <thead className="bg-gray-50 text-gray-700 font-semibold" {...props} />,
+                                                                tbody: ({ node, ...props }) => <tbody className="divide-y divide-gray-100" {...props} />,
+                                                                tr: ({ node, ...props }) => <tr className="hover:bg-gray-50/50 transition-colors" {...props} />,
+                                                                th: ({ node, ...props }) => <th className="px-4 py-3 font-semibold text-gray-900" {...props} />,
+                                                                td: ({ node, ...props }) => <td className="px-4 py-3 align-top text-gray-600 border-t border-gray-50" {...props} />,
                                                             }}
                                                         >
                                                             {msg.content}
@@ -387,23 +389,23 @@ export default function ReportChatModal({ isOpen, onClose, documentText }: Repor
                                         value={input}
                                         onChange={(e) => setInput(e.target.value)}
                                         onKeyPress={handleKeyPress}
-                                        placeholder="Ask follow-up questions about the report..."
+                                        placeholder="Chat With OCR Report Agent"
                                         disabled={loading}
-                                        className="pr-12 py-3 rounded-xl bg-gray-50 border-gray-200 focus-visible:ring-2 focus-visible:ring-blue-500/30 text-sm"
+                                        className="pr-14 py-7 rounded-2xl bg-white border-[3px] border-indigo-200 focus-visible:ring-4 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-600 text-lg shadow-xl placeholder:text-gray-400 font-medium transition-all hover:border-indigo-300"
                                     />
                                     <Button
                                         onClick={handleSendChat}
                                         disabled={loading || !input.trim()}
                                         size="icon"
-                                        className={`absolute right-1.5 h-9 w-9 rounded-lg transition-all ${input.trim()
-                                            ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md"
-                                            : "bg-gray-200 text-gray-400"
+                                        className={`absolute right-3 h-11 w-11 rounded-xl transition-all shadow-md ${input.trim()
+                                            ? "bg-blue-700 hover:bg-blue-800 text-white shadow-blue-400 scale-100"
+                                            : "bg-blue-100 text-blue-600 scale-95"
                                             }`}
                                     >
                                         {loading ? (
-                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            <Loader2 className="w-5 h-5 animate-spin" strokeWidth={3} />
                                         ) : (
-                                            <Send className="w-4 h-4 ml-0.5" />
+                                            <Send className="w-5 h-5 ml-0.5" strokeWidth={3} />
                                         )}
                                     </Button>
                                 </div>
