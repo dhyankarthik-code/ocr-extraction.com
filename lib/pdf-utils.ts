@@ -48,21 +48,28 @@ const parseMarkdownToBlocks = (text: string): ContentBlock[] => {
     let inTable = false;
 
     for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
+        const rawLine = lines[i];
+        const line = rawLine.trim();
         // Check if line looks like a table row (starts/ends with | or contains | separators)
         // Loose check: contains '|' and has multiple segments
         const isTableRow = line.includes('|') && line.split('|').length > 1;
-        const isSeparator = isTableRow && line.replace(/\|/g, '').trim().match(/^[-: ]+$/);
+        const isStrictSeparator = isTableRow && line.replace(/\|/g, '').trim().match(/^[-: ]+$/);
 
         if (isTableRow) {
             if (!inTable) {
-                // Determine if this is start of a new table or just random pipe usage
-                // Look ahead for separator
+                // Determine if this is start of a new table
+                // RELAXED LOGIC: If it looks like a table row (has pipes), check if it's worth starting a table.
+                // We check if:
+                // 1. It is a strict separator line (unlikely to start here but possible)
+                // 2. The NEXT line is a separator
+                // 3. The NEXT line is ALSO a table row (contiguous rows = table)
+                // 4. This line itself has multiple columns (>2) implying structure
+
                 const nextLine = lines[i + 1]?.trim();
+                const nextIsTableRow = nextLine?.includes('|') && nextLine.split('|').length > 1;
                 const nextIsSeparator = nextLine?.includes('|') && nextLine.replace(/\|/g, '').trim().match(/^[-: ]+$/);
 
-                // Allow table start if current line is separator (headerless?) or next is separator
-                if (isSeparator || nextIsSeparator || (currentTableRows.length > 0)) {
+                if (isStrictSeparator || nextIsSeparator || nextIsTableRow || line.split('|').length > 2) {
                     // Flush text buffer
                     if (currentTextBuffer.length > 0) {
                         blocks.push({ type: 'text', content: currentTextBuffer.join('\n') });
@@ -73,8 +80,9 @@ const parseMarkdownToBlocks = (text: string): ContentBlock[] => {
             }
 
             if (inTable) {
-                if (isSeparator) {
-                    // Skip separator lines
+                if (isStrictSeparator) {
+                    // Skip PURE separator lines (--- | ---)
+                    // If the line contains actual text mixed with separators (OCR artifact), we treat it as data below
                 } else {
                     const cells = line.split('|')
                         .map(c => c.trim().replace(/\*\*|__/g, '')) // Clean markdown styling
@@ -86,7 +94,7 @@ const parseMarkdownToBlocks = (text: string): ContentBlock[] => {
                     currentTableRows.push(cells);
                 }
             } else {
-                currentTextBuffer.push(lines[i]); // Keep original indentation
+                currentTextBuffer.push(rawLine); // Keep original indentation
             }
         } else {
             if (inTable) {
@@ -95,13 +103,13 @@ const parseMarkdownToBlocks = (text: string): ContentBlock[] => {
                     blocks.push({
                         type: 'table',
                         content: currentTableRows.slice(1), // Body
-                        headers: currentTableRows[0] // Assume first row is header
+                        headers: currentTableRows[0] // First row is header
                     });
                     currentTableRows = [];
                 }
                 inTable = false;
             }
-            currentTextBuffer.push(lines[i]);
+            currentTextBuffer.push(rawLine);
         }
     }
 
@@ -143,7 +151,7 @@ export const generatePdfFromText = (text: string, fileName: string): boolean => 
         const marginBottom = 30 // Increased margin to prevent cutoff
         const maxLineWidth = pageWidth - marginLeft - marginRight
         const fontSize = 10
-        const lineHeight = 5
+        const lineHeight = (fontSize * doc.getLineHeightFactor()) / doc.internal.scaleFactor
 
         // Set font
         doc.setFont("helvetica", "normal")

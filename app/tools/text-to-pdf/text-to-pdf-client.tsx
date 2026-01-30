@@ -21,25 +21,49 @@ export default function TextToPdfClient() {
         setTextContent(text)
 
         // Generate PDF
-        const doc = new jsPDF()
-        doc.setFont("courier", "normal") // Monospace usually better for txt
+        const doc = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a4",
+        })
+
+        doc.setFont("courier", "normal")
         doc.setFontSize(11)
 
         const pageWidth = doc.internal.pageSize.getWidth()
         const pageHeight = doc.internal.pageSize.getHeight()
-        const margin = 15
-        const lineHeight = 5
+        const marginLeft = 15
+        const marginRight = 15
+        const marginTop = 15
+        const marginBottom = 20
+        const maxLineWidth = pageWidth - marginLeft - marginRight
 
-        const splitText = doc.splitTextToSize(text, pageWidth - margin * 2)
+        const usableHeight = pageHeight - marginTop - marginBottom
+        const maxLinesPerPage = 45
+        const lineHeight = usableHeight / maxLinesPerPage
 
-        let y = margin
-        for (let i = 0; i < splitText.length; i++) {
-            if (y + lineHeight > pageHeight - margin) {
-                doc.addPage()
-                y = margin
+        const paragraphs = text.replace(/\r\n/g, "\n").split("\n")
+        let y = marginTop
+
+        for (const paragraph of paragraphs) {
+            if (!paragraph.trim()) {
+                if (y + lineHeight > pageHeight - marginBottom) {
+                    doc.addPage()
+                    y = marginTop
+                }
+                y += lineHeight
+                continue
             }
-            doc.text(splitText[i], margin, y)
-            y += lineHeight
+
+            const lines = doc.splitTextToSize(paragraph, maxLineWidth) as string[]
+            for (const line of lines) {
+                if (y + lineHeight > pageHeight - marginBottom) {
+                    doc.addPage()
+                    y = marginTop
+                }
+                doc.text(line, marginLeft, y)
+                y += lineHeight
+            }
         }
 
         const blob = doc.output("blob")

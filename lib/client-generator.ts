@@ -186,20 +186,67 @@ export const generateMergedPPT = async (fileStates: Array<{ file: File, result: 
 
 export const generatePDF = async (text: string): Promise<Blob> => {
     const jsPDFModule = await getJsPDF();
-    const doc = new jsPDFModule();
-    const splitText = doc.splitTextToSize(text, 180);
-
-    let y = 10;
-    const pageHeight = doc.internal.pageSize.height;
-
-    splitText.forEach((line: string) => {
-        if (y > pageHeight - 10) {
-            doc.addPage();
-            y = 10;
-        }
-        doc.text(line, 10, y);
-        y += 7;
+    const doc = new jsPDFModule({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
     });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const marginLeft = 15;
+    const marginRight = 15;
+    const marginTop = 15;
+    const marginBottom = 20;
+    const maxLineWidth = pageWidth - marginLeft - marginRight;
+
+    const k = doc.internal.scaleFactor;
+    const internal = doc.internal as any;
+    const baseFontSize = typeof internal.getFontSize === "function"
+        ? internal.getFontSize()
+        : doc.getFontSize();
+    const fontSizeInUnits = baseFontSize / k;
+    const lineHeightFactor = typeof (doc as any).getLineHeightFactor === "function"
+        ? (doc as any).getLineHeightFactor()
+        : 1.15;
+    const lineHeight = fontSizeInUnits * lineHeightFactor;
+
+    const usableHeight = pageHeight - marginTop - marginBottom;
+    const maxLinesPerPage = Math.max(1, Math.floor(usableHeight / lineHeight) - 1);
+
+    const rawLines = text.replace(/\r\n/g, "\n").split("\n");
+    let currentLine = 0;
+    let y = marginTop;
+
+    const advanceLine = (content: string | null) => {
+        if (currentLine >= maxLinesPerPage) {
+            doc.addPage();
+            currentLine = 0;
+            y = marginTop;
+        }
+
+        if (content && content.length > 0) {
+            doc.text(content, marginLeft, y);
+        }
+
+        currentLine++;
+        y += lineHeight;
+    };
+
+    for (const rawLine of rawLines) {
+        if (!rawLine) {
+            advanceLine("");
+            continue;
+        }
+
+        const segments = doc.splitTextToSize(rawLine, maxLineWidth) as string[];
+        for (const segment of segments) {
+            advanceLine(segment);
+        }
+    }
 
     return doc.output('blob');
 }
@@ -314,7 +361,11 @@ export const generateMergedPDFFromImages = async (imageFiles: File[]): Promise<B
 
 export const generateMergedPDF = async (fileStates: Array<{ file: File, result: any }>): Promise<Blob> => {
     const jsPDFModule = await getJsPDF();
-    const doc = new jsPDFModule();
+    const doc = new jsPDFModule({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+    });
     let isFirstPage = true;
 
     for (const fs of fileStates) {
@@ -368,20 +419,65 @@ export const generateMergedPDF = async (fileStates: Array<{ file: File, result: 
             isFirstPage = false;
         }
         else if (result?.text) {
-            if (!isFirstPage) doc.addPage();
+            if (!isFirstPage) {
+                doc.addPage();
+            }
 
-            const splitText = doc.splitTextToSize(result.text, 180);
-            let y = 10;
-            const pageHeight = doc.internal.pageSize.height;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(11);
 
-            splitText.forEach((line: string) => {
-                if (y > pageHeight - 10) {
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const marginLeft = 15;
+            const marginRight = 15;
+            const marginTop = 15;
+            const marginBottom = 20;
+            const maxLineWidth = pageWidth - marginLeft - marginRight;
+
+            const k = doc.internal.scaleFactor;
+            const internal = doc.internal as any;
+            const baseFontSize = typeof internal.getFontSize === "function"
+                ? internal.getFontSize()
+                : doc.getFontSize();
+            const fontSizeInUnits = baseFontSize / k;
+            const lineHeightFactor = typeof (doc as any).getLineHeightFactor === "function"
+                ? (doc as any).getLineHeightFactor()
+                : 1.15;
+            const lineHeight = fontSizeInUnits * lineHeightFactor;
+
+            const usableHeight = pageHeight - marginTop - marginBottom;
+            const maxLinesPerPage = Math.max(1, Math.floor(usableHeight / lineHeight) - 1);
+
+            const rawLines = result.text.replace(/\r\n/g, "\n").split("\n");
+            let currentLine = 0;
+            let y = marginTop;
+
+            const advanceLine = (content: string | null) => {
+                if (currentLine >= maxLinesPerPage) {
                     doc.addPage();
-                    y = 10;
+                    currentLine = 0;
+                    y = marginTop;
                 }
-                doc.text(line, 10, y);
-                y += 7;
-            });
+
+                if (content && content.length > 0) {
+                    doc.text(content, marginLeft, y);
+                }
+
+                currentLine++;
+                y += lineHeight;
+            };
+
+            for (const rawLine of rawLines) {
+                if (!rawLine) {
+                    advanceLine("");
+                    continue;
+                }
+
+                const segments = doc.splitTextToSize(rawLine, maxLineWidth) as string[];
+                for (const segment of segments) {
+                    advanceLine(segment);
+                }
+            }
             isFirstPage = false;
         }
     }
