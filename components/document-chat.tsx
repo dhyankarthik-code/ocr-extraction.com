@@ -464,6 +464,7 @@ function MessageItem({ msg, isLoadingStatus }: { msg: Message, isLoadingStatus?:
 export default function DocumentChat({ documentText, hideHeader = false }: DocumentChatProps) {
     const [messages, setMessages] = useState<Message[]>([])
     const [input, setInput] = useState("")
+    const [isInputFocused, setIsInputFocused] = useState(false)
     const [loading, setLoading] = useState(false)
     const scrollAreaRef = useRef<HTMLDivElement>(null)
 
@@ -567,7 +568,9 @@ export default function DocumentChat({ documentText, hideHeader = false }: Docum
                     <div className="flex items-center gap-1">
                         <img src="/logo.png" alt="Infy Galaxy" className="h-7 w-7 object-contain" />
                         <div className="flex flex-col justify-center">
-                            <div className="font-bold text-lg text-gray-900 leading-tight">Chat with our Reports Agent</div>
+                            <div className="font-bold text-lg text-gray-900 leading-tight">
+                                Chat with our Reports Agent
+                            </div>
                         </div>
                     </div>
                 </CardHeader>
@@ -598,17 +601,24 @@ export default function DocumentChat({ documentText, hideHeader = false }: Docum
                         <textarea
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
+                            onFocus={() => setIsInputFocused(true)}
+                            onBlur={() => setIsInputFocused(false)}
                             onKeyDown={handleKeyPress}
                             disabled={loading}
                             rows={4}
                             className={cn(
-                                "w-full pr-16 pl-6 py-6 resize-none rounded-2xl bg-white border-[3px] border-blue-400 focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-700 text-sm shadow-xl placeholder:text-gray-400 transition-all hover:border-blue-500",
+                                "w-full pr-16 pl-6 py-6 resize-none rounded-2xl bg-white border-[3px] border-blue-400 focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-700 text-sm shadow-xl placeholder:text-gray-400 transition-all hover:border-blue-500 caret-red-600",
                                 messages.length === 0
                                     ? "h-[200px] min-h-[200px]"
                                     : "h-[96px] min-h-[96px]",
                                 !input.trim() ? "overflow-hidden" : "overflow-y-auto"
                             )}
                         />
+
+                        {/* Always-visible blinking caret in the input box when empty */}
+                        {!input.trim() && !isInputFocused && (
+                            <span className="pointer-events-none absolute left-6 top-6 brand-red-caret" aria-hidden="true">|</span>
+                        )}
 
                         {/* Centered placeholder overlay when input is empty */}
                         {!input.trim() && (

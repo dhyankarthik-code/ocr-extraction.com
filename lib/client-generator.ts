@@ -937,10 +937,31 @@ export const generateExcelFromPDF = async (file: File): Promise<Blob> => {
 
     const allRows: string[][] = [];
 
+    const parseMarkdownPipeRow = (line: string): string[] | null => {
+        const trimmed = line.trim();
+        if (!trimmed.includes('|')) return null;
+        if (!trimmed.startsWith('|') && !trimmed.endsWith('|')) return null;
+
+        const parts = trimmed
+            .split('|')
+            .map((p) => p.trim())
+            .filter((p, idx, arr) => {
+                if (idx === 0 && p === '') return false;
+                if (idx === arr.length - 1 && p === '') return false;
+                return true;
+            });
+
+        if (parts.length === 0) return null;
+
+        const isSeparator = parts.every((p) => /^[-:]+$/.test(p.replaceAll(' ', '')));
+        if (isSeparator) return null;
+
+        return parts.filter((p) => p.length > 0);
+    };
+
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         const page = await pdf.getPage(pageNum);
         const textContent = await page.getTextContent();
-        const viewport = page.getViewport({ scale: 1.0 });
 
         // Group text items by Y coordinate (rows) with a tolerance for slight misalignments
         const rowTolerance = 5; // pixels
@@ -1000,7 +1021,15 @@ export const generateExcelFromPDF = async (file: File): Promise<Blob> => {
             }
 
             // Build the row with values in column order
-            const row = columns.map(col => col[0].str.trim()).filter(val => val.length > 0);
+            let row = columns.map((col) => col[0].str.trim()).filter((val) => val.length > 0);
+
+            if (row.length === 1) {
+                const parsed = parseMarkdownPipeRow(row[0]);
+                if (parsed && parsed.length > 0) {
+                    row = parsed;
+                }
+            }
+
             if (row.length > 0) {
                 allRows.push(row);
             }
@@ -1008,7 +1037,17 @@ export const generateExcelFromPDF = async (file: File): Promise<Blob> => {
     }
 
     // Create Excel workbook
-    const worksheet = utils.aoa_to_sheet(allRows);
+    const safeRows = allRows.length > 0 ? allRows : [['(No extracted text)']];
+    const worksheet = utils.aoa_to_sheet(safeRows);
+
+    const maxCols = safeRows.reduce((m, r) => Math.max(m, r.length), 0);
+    if (maxCols > 0) {
+        worksheet['!cols'] = Array.from({ length: maxCols }, (_, colIndex) => {
+            const maxLen = safeRows.reduce((mx, r) => Math.max(mx, (r[colIndex] ?? '').length), 0);
+            return { wch: Math.min(60, Math.max(10, maxLen + 2)) };
+        });
+    }
+
     const workbook = utils.book_new();
     utils.book_append_sheet(workbook, worksheet, 'Extracted Text');
 

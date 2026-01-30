@@ -7,13 +7,15 @@ import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import ClientConsentWrapper from "@/components/client-consent-wrapper"
 import { AnalyticsTracker } from "@/components/analytics-tracker"
+import { Toaster } from "sonner"
+import { SessionProvider } from "@/components/providers/session-provider"
+import { ReCaptchaProvider } from "@/components/providers/recaptcha-provider"
+import MainLayout from "@/components/main-layout"
 
 const geist = Geist({ subsets: ["latin"] })
 
 // Imports moved to top
-import { SessionProvider } from "@/components/providers/session-provider"
-import { ReCaptchaProvider } from "@/components/providers/recaptcha-provider"
-import MainLayout from "@/components/main-layout"
+ 
 
 export const metadata: Metadata = {
   title: {
@@ -121,6 +123,7 @@ export default function RootLayout({
             </MainLayout>
             <ClientConsentWrapper />
             <AnalyticsTracker />
+            <Toaster position="top-center" />
           </SessionProvider>
         </ReCaptchaProvider>
         <Analytics />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Upload,
   FileText,
@@ -92,6 +92,7 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
   type FileState = {
     file: File;
     id: string;
+    batchId: string;
     status: "idle" | "processing" | "success" | "error";
     progress: number;
     result: any | null; // { text: string } or { image: true }
@@ -100,6 +101,9 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
   };
 
   const [fileStates, setFileStates] = useState<FileState[]>([]);
+
+  const batchCounterRef = useRef(0);
+  const notifiedBatchesRef = useRef<Set<string>>(new Set());
 
   // Sync preview URLs clean up
   useEffect(() => {
@@ -113,10 +117,13 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
   const handleDrop = async (droppedFiles: File[]) => {
     if (droppedFiles.length === 0) return;
 
+    const batchId = `${Date.now()}-${batchCounterRef.current++}`;
+
     // Initialize states for new files
     const newStates: FileState[] = droppedFiles.map((f) => ({
       file: f,
       id: Math.random().toString(36).substring(7),
+      batchId,
       status: "idle",
       progress: 0,
       result: null,
@@ -130,6 +137,32 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
     // Process each new file
     newStates.forEach((state) => processFileItem(state));
   };
+
+  useEffect(() => {
+    const batches = new Map<string, FileState[]>();
+    for (const fs of fileStates) {
+      batches.set(fs.batchId, [...(batches.get(fs.batchId) ?? []), fs]);
+    }
+
+    for (const [batchId, batchFiles] of batches.entries()) {
+      if (notifiedBatchesRef.current.has(batchId)) continue;
+
+      const allSuccess = batchFiles.length > 0 && batchFiles.every((f) => f.status === "success");
+      if (!allSuccess) continue;
+
+      notifiedBatchesRef.current.add(batchId);
+
+      const isBatch = batchFiles.length > 1;
+      const subject = isBatch ? "files" : batchFiles[0]?.file.name ?? "file";
+      const verb = isBatch ? "have" : "has";
+      toast.success(`The ${subject} ${verb} been converted successfully, scroll down to download`, {
+        duration: 8000,
+        icon: <CheckCircle className="h-5 w-5 text-red-600" />,
+        className:
+          "border border-red-200 bg-red-50 text-red-700 rounded-xl px-5 py-4 text-base font-semibold shadow-lg",
+      });
+    }
+  }, [fileStates]);
 
   const updateFileState = (id: string, updates: Partial<FileState>) => {
     setFileStates((prev) =>
@@ -233,7 +266,6 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
           progress: 100,
           result: { text: extractedText },
         });
-        toast.success(`${file.name} processed!`);
       } else if (config.type === "client-convert") {
         if (file.type.startsWith("image/")) {
           // For image-to-pdf, the result needs to indicate it's an image
@@ -251,7 +283,6 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
             result: { text },
           });
         }
-        toast.success(`${file.name} ready!`);
       } else if (config.type === "office-to-pdf") {
         // Direct Office file to PDF conversion
         updateFileState(id, { progress: 50 });
@@ -289,8 +320,6 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
         } catch (e) {
           console.error("Failed to initiate preview", e);
         }
-
-        toast.success(`${file.name} converted!`);
       } else if (config.type === "office-to-image") {
         // Document to Image conversion
         updateFileState(id, { progress: 50 });
@@ -320,7 +349,6 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
           result: { images },
           previewUrl: previewUrl || fileState.previewUrl,
         });
-        toast.success(`${file.name} converted!`);
       } else if (config.type === "office-to-excel") {
         // Document to Excel conversion
         updateFileState(id, { progress: 50 });
@@ -341,7 +369,6 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
           progress: 100,
           result: { excelBlob, officeFile: true },
         });
-        toast.success(`${file.name} converted!`);
       } else if (config.type === "office-to-word") {
         // Document to Word conversion
         updateFileState(id, { progress: 50 });
@@ -362,7 +389,6 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
           progress: 100,
           result: { wordBlob, officeFile: true },
         });
-        toast.success(`${file.name} converted!`);
       } else if (config.type === "office-to-ppt") {
         // Document to PPT conversion
         updateFileState(id, { progress: 50 });
@@ -383,7 +409,6 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
           progress: 100,
           result: { pptBlob, officeFile: true },
         });
-        toast.success(`${file.name} converted!`);
       } else if (config.type === "office-to-text") {
         // Document to Text conversion
         updateFileState(id, { progress: 50 });
@@ -404,7 +429,6 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
           progress: 100,
           result: { text },
         });
-        toast.success(`${file.name} converted!`);
       } else {
         updateFileState(id, {
           status: "error",
