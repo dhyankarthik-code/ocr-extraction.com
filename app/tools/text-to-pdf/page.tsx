@@ -20,7 +20,7 @@ const config: ToolConfig = {
     description: 'Convert plain text files (.txt) to PDF documents.',
     fromFormat: 'Text',
     toFormat: 'PDF',
-    type: 'client-convert',
+    type: 'office-to-pdf',
     accept: {
         'text/plain': ['.txt']
     }

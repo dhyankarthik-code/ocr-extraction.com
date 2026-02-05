@@ -19,6 +19,14 @@ const config: ToolConfig = {
     accept: {
         'application/pdf': ['.pdf']
     },
+    options: [
+        {
+            id: 'smart',
+            label: 'AI Enhanced Mode (Better Layout & Editability)',
+            type: 'checkbox',
+            defaultValue: true // Enable by default for better user experience
+        }
+    ],
     content: (
         <>
             <p>

@@ -594,7 +594,7 @@ export const generatePDFFromExcel = async (file: File): Promise<Blob> => {
 
 /**
  * Convert Word document to PDF
- * Uses mammoth to extract text/HTML and jsPDF for rendering
+ * Uses mammoth to extract HTML and jsPDF for rendering with formatting
  */
 export const generatePDFFromWord = async (file: File): Promise<Blob> => {
     const mammoth = await getMammoth();
@@ -602,40 +602,221 @@ export const generatePDFFromWord = async (file: File): Promise<Blob> => {
 
     const buffer = await file.arrayBuffer();
 
-    // Extract raw text from DOCX using mammoth
-    const result = await mammoth.extractRawText({ arrayBuffer: buffer });
-    const text = result.value;
+    // Extract HTML with formatting preserved
+    const result = await mammoth.convertToHtml({ arrayBuffer: buffer });
+    const html = result.value;
 
     const doc = new jsPDFModule();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 20;
-    const lineHeight = 7;
     const maxWidth = pageWidth - margin * 2;
 
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'normal');
-
-    // Split text into paragraphs
-    const paragraphs = text.split(/\n\n+/);
     let y = margin;
+    let listCounter = 0;
+    let listDepth = 0;
 
-    for (const paragraph of paragraphs) {
-        if (!paragraph.trim()) continue;
+    // Helper to check and add new page if needed
+    const checkPage = (neededHeight: number) => {
+        if (y + neededHeight > pageHeight - margin) {
+            doc.addPage();
+            y = margin;
+        }
+    };
 
-        const lines = doc.splitTextToSize(paragraph.trim(), maxWidth);
+    // Parse HTML and render to PDF
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
+    const container = htmlDoc.body.firstChild as HTMLElement;
 
-        for (const line of lines) {
-            if (y + lineHeight > pageHeight - margin) {
-                doc.addPage();
-                y = margin;
+    const processNode = (node: Node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const text = node.textContent?.trim();
+            if (text) {
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                const lines = doc.splitTextToSize(text, maxWidth - (listDepth * 15) - 5);
+                for (const line of lines) {
+                    checkPage(7);
+                    doc.text(line, margin + (listDepth * 15), y);
+                    y += 7;
+                }
             }
-            doc.text(line, margin, y);
-            y += lineHeight;
+            return;
         }
 
-        // Add paragraph spacing
-        y += 4;
+        if (node.nodeType !== Node.ELEMENT_NODE) return;
+        const el = node as HTMLElement;
+        const tag = el.tagName.toLowerCase();
+
+        switch (tag) {
+            case 'h1':
+                checkPage(12);
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                const h1Text = el.textContent?.trim() || '';
+                const h1Lines = doc.splitTextToSize(h1Text, maxWidth - 5);
+                for (const line of h1Lines) {
+                    checkPage(10);
+                    doc.text(line, margin, y);
+                    y += 10;
+                }
+                y += 4;
+                break;
+
+            case 'h2':
+                checkPage(10);
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                const h2Text = el.textContent?.trim() || '';
+                const h2Lines = doc.splitTextToSize(h2Text, maxWidth - 5);
+                for (const line of h2Lines) {
+                    checkPage(8);
+                    doc.text(line, margin, y);
+                    y += 8;
+                }
+                y += 3;
+                break;
+
+            case 'h3':
+            case 'h4':
+            case 'h5':
+            case 'h6':
+                checkPage(9);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                const hText = el.textContent?.trim() || '';
+                const hLines = doc.splitTextToSize(hText, maxWidth - 5);
+                for (const line of hLines) {
+                    checkPage(7);
+                    doc.text(line, margin, y);
+                    y += 7;
+                }
+                y += 2;
+                break;
+
+            case 'p':
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                // Process children to handle bold/italic
+                for (const child of Array.from(el.childNodes)) {
+                    processNode(child);
+                }
+                y += 4; // Paragraph spacing
+                break;
+
+            case 'ul':
+                listDepth++;
+                for (const child of Array.from(el.children)) {
+                    processNode(child);
+                }
+                listDepth--;
+                y += 2;
+                break;
+
+            case 'ol':
+                listDepth++;
+                listCounter = 0;
+                for (const child of Array.from(el.children)) {
+                    processNode(child);
+                }
+                listDepth--;
+                y += 2;
+                break;
+
+            case 'li':
+                checkPage(7);
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                const indent = margin + (listDepth * 15);
+                const bulletWidth = 10;
+                const liMaxWidth = maxWidth - (listDepth * 15) - bulletWidth;
+
+                // Determine bullet/number
+                const parentTag = el.parentElement?.tagName.toLowerCase();
+                if (parentTag === 'ol') {
+                    listCounter++;
+                    doc.text(`${listCounter}.`, indent - 5, y);
+                } else {
+                    doc.text('•', indent - 3, y);
+                }
+
+                const liText = el.textContent?.trim() || '';
+                // Reduce width slightly (-5) to prevent right-edge clipping
+                const liLines = doc.splitTextToSize(liText, liMaxWidth - 5);
+                for (let i = 0; i < liLines.length; i++) {
+                    if (i > 0) checkPage(7);
+                    doc.text(liLines[i], indent + bulletWidth - 5, i === 0 ? y : y);
+                    if (i < liLines.length - 1) y += 7;
+                }
+                y += 7;
+                break;
+
+            case 'strong':
+            case 'b':
+                doc.setFont('helvetica', 'bold');
+                const boldText = el.textContent?.trim() || '';
+                if (boldText) {
+                    const boldLines = doc.splitTextToSize(boldText, maxWidth - (listDepth * 15) - 5);
+                    for (const line of boldLines) {
+                        checkPage(7);
+                        doc.text(line, margin + (listDepth * 15), y);
+                        y += 7;
+                    }
+                }
+                doc.setFont('helvetica', 'normal');
+                break;
+
+            case 'em':
+            case 'i':
+                doc.setFont('helvetica', 'italic');
+                const italicText = el.textContent?.trim() || '';
+                if (italicText) {
+                    const italicLines = doc.splitTextToSize(italicText, maxWidth - (listDepth * 15) - 5);
+                    for (const line of italicLines) {
+                        checkPage(7);
+                        doc.text(line, margin + (listDepth * 15), y);
+                        y += 7;
+                    }
+                }
+                doc.setFont('helvetica', 'normal');
+                break;
+
+            case 'br':
+                y += 7;
+                break;
+
+            case 'table':
+                // Render table as text for now
+                checkPage(7);
+                for (const row of Array.from(el.querySelectorAll('tr'))) {
+                    const cells = Array.from(row.querySelectorAll('td, th'));
+                    const rowText = cells.map(c => c.textContent?.trim()).join(' | ');
+                    if (rowText) {
+                        const tableLines = doc.splitTextToSize(rowText, maxWidth - 5);
+                        for (const line of tableLines) {
+                            checkPage(7);
+                            doc.text(line, margin, y);
+                            y += 7;
+                        }
+                    }
+                }
+                y += 4;
+                break;
+
+            default:
+                // Process children for unknown elements
+                for (const child of Array.from(el.childNodes)) {
+                    processNode(child);
+                }
+        }
+    };
+
+    // Process all children
+    if (container) {
+        for (const child of Array.from(container.childNodes)) {
+            processNode(child);
+        }
     }
 
     return doc.output('blob');
@@ -990,15 +1171,61 @@ export const generateImagesFromPDF = async (file: File): Promise<Blob[]> => {
     return images;
 };
 
+
+/**
+ * Clean cloned container to bypass Tailwind 4's lab/oklch colors that crash html2canvas
+ * Based on fix from document-chat.tsx
+ */
+function cleanContainerForHtml2Canvas(container: HTMLElement): void {
+    container.removeAttribute('class');
+    const allElements = container.querySelectorAll('*');
+    allElements.forEach((el) => {
+        el.removeAttribute('class');
+        if (el instanceof HTMLElement) {
+            el.style.boxShadow = 'none';
+            el.style.backgroundImage = 'none';
+            el.style.borderColor = 'transparent';
+
+            if (el.tagName === 'STRONG' || el.tagName === 'B') {
+                el.style.fontWeight = 'bold';
+                el.style.color = '#1e40af';
+            }
+            if (el.tagName === 'H1' || el.tagName === 'H2' || el.tagName === 'H3') {
+                el.style.fontWeight = 'bold';
+                el.style.marginTop = '16px';
+                el.style.marginBottom = '12px';
+            }
+            if (el.tagName === 'P') {
+                el.style.marginBottom = '12px';
+                el.style.lineHeight = '1.6';
+            }
+            if (el.tagName === 'TABLE') {
+                el.style.borderCollapse = 'collapse';
+                el.style.width = '100%';
+            }
+            if (el.tagName === 'TD' || el.tagName === 'TH') {
+                el.style.border = '1px solid #d1d5db';
+                el.style.padding = '8px';
+            }
+            if (el.tagName === 'TH') {
+                el.style.backgroundColor = '#f3f4f6';
+                el.style.fontWeight = 'bold';
+            }
+        }
+    });
+}
+
 /**
  * Convert Word document to Images
- * Converts to PDF first, then to images
+ * Uses PDF as intermediate format for reliable rendering
  */
 export const generateImagesFromWord = async (file: File): Promise<Blob[]> => {
     const pdfBlob = await generatePDFFromWord(file);
     const pdfFile = new File([pdfBlob], 'temp.pdf', { type: 'application/pdf' });
     return await generateImagesFromPDF(pdfFile);
 };
+
+
 
 /**
  * Convert Excel spreadsheet to Images
@@ -1066,7 +1293,7 @@ export const generateExcelFromPDF = async (file: File): Promise<Blob> => {
         for (const item of textContent.items) {
             // Only process TextItem types that have transform and str properties
             if (!('transform' in item && 'str' in item)) continue;
-            
+
             const y = Math.round(item.transform[5]); // Get Y coordinate
             const x = item.transform[4]; // Get X coordinate
             const str = item.str;
@@ -1198,7 +1425,7 @@ export const generateExcelFromPPT = async (file: File): Promise<Blob> => {
     for (const slideFile of slideFiles) {
         const slideXml = await zipContent.files[slideFile].async('text');
         const textMatches = slideXml.match(/<a:t>([^<]+)<\/a:t>/g) || [];
-        const slideText = textMatches.map(match => match.replace(/<\/?a:t>/g, '')).join(' ');
+        const slideText = textMatches.map(match => match.replace(/<\/?a:t>/g, '')).join('\n');
 
         if (slideText.trim()) {
             rows.push(...parseTextToGrid(slideText));
@@ -1374,9 +1601,35 @@ export const generateWordFromPDF = async (file: File): Promise<Blob> => {
         paragraphs.push(new Paragraph({ children: [new TextRun('(No text extracted)')] }));
     }
 
-    const doc = new Document({ sections: [{ properties: {}, children: paragraphs }] });
+    const doc = new Document({
+        sections: [{ properties: {}, children: paragraphs }],
+    });
+
     return await Packer.toBlob(doc);
 };
+
+/**
+ * Convert Text/CSV to Excel
+ */
+export const generateExcelFromText = async (file: File): Promise<Blob> => {
+    const { utils, write } = await getXlsx();
+    const text = await file.text();
+
+    // Use shared parsing logic
+    const rows = parseTextToGrid(text);
+
+    // Filter empty rows if strictly empty? Maybe better to keep them for fidelity
+    // rows = rows.filter(r => r.length > 0 && r.some(c => c.trim().length > 0));
+
+    const worksheet = utils.aoa_to_sheet(rows);
+    const workbook = utils.book_new();
+    utils.book_append_sheet(workbook, worksheet, 'Imported Text');
+
+    return new Blob([write(workbook, { bookType: 'xlsx', type: 'array' })], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+};
+
 
 /**
  * Convert Excel to Word
@@ -1642,32 +1895,105 @@ export const generatePPTFromWord = async (file: File): Promise<Blob> => {
  * Convert Excel to PPT
  */
 export const generatePPTFromExcel = async (file: File): Promise<Blob> => {
+    console.log('generatePPTFromExcel: Starting conversion');
     const { read, utils } = await getXlsx();
+    console.log('generatePPTFromExcel: Loaded xlsx');
     const PptxGenModule = await getPptxGen();
+    console.log('generatePPTFromExcel: Loaded PptxGenModule');
 
     const buffer = await file.arrayBuffer();
     const workbook = read(buffer);
+    console.log('generatePPTFromExcel: Workbook read, sheets:', workbook.SheetNames);
 
     const pptx = new PptxGenModule();
 
     for (const sheetName of workbook.SheetNames) {
+        console.log(`generatePPTFromExcel: Processing sheet ${sheetName}`);
         const worksheet = workbook.Sheets[sheetName];
         const jsonData: any[][] = utils.sheet_to_json(worksheet, { header: 1 });
+        console.log(`generatePPTFromExcel: Sheet data length: ${jsonData.length}`);
 
         const slide = pptx.addSlide();
-        slide.addText(`Sheet: ${sheetName}`, { x: 0.5, y: 0.3, fontSize: 24, bold: true, color: '363636' });
+        console.log('generatePPTFromExcel: Added slide');
 
-        // Take first 20 rows
-        const rows = jsonData.slice(0, 20).map(row =>
-            Array.isArray(row) ? row.map(cell => String(cell ?? '')).join(' | ') : ''
-        ).filter(r => r.trim());
+        try {
+            slide.addText(`Sheet: ${sheetName}`, { x: 0.5, y: 0.3, fontSize: 24, bold: true, color: '363636' });
+            console.log('generatePPTFromExcel: Added title text');
+        } catch (e) {
+            console.error('generatePPTFromExcel: Error adding title text', e);
+        }
 
-        if (rows.length > 0) {
-            slide.addText(rows.join('\n'), { x: 0.5, y: 1, w: 9, fontSize: 12, color: '666666', valign: 'top' });
+        if (jsonData.length > 0) {
+            // Prepare table data for PptxGenJS (rows must be strings/numbers)
+            console.log('generatePPTFromExcel: Normalizing table data');
+            const tableData = jsonData.map(row =>
+                (Array.isArray(row) ? row : [row]).map(cell => (cell !== undefined && cell !== null) ? String(cell) : "")
+            );
+
+            // 1. Calculate Max Columns across ALL rows (not just the first)
+            const maxCols = tableData.reduce((max, row) => Math.max(max, row.length), 0);
+            const safeMaxCols = Math.max(1, maxCols);
+
+            // 2. Normalize Data: Ensure every row has exactly `maxCols` cells
+            // PptxGenJS can crash if row lengths vary or are less than colW length
+            // Explicitly convert to objects to avoid internal pptxgenjs errors reading .text
+            const normalizedData = tableData.map(row => {
+                const newRow = [...row];
+                while (newRow.length < safeMaxCols) {
+                    newRow.push("");
+                }
+                return newRow.map(cell => ({ text: cell }));
+            });
+            console.log(`generatePPTFromExcel: Normalized data prepared. Rows: ${normalizedData.length}, Cols: ${safeMaxCols}`);
+
+            // 3. Calculate column widths
+            // Force exactly `safeMaxCols` widths to fit within 9.0 inches
+            const totalWidth = 9.0;
+            const colWidth = totalWidth / safeMaxCols;
+            const colWidths = Array(safeMaxCols).fill(colWidth);
+
+            // Calculate font size based on column count to prevent text overlap
+            const dynamicFontSize = safeMaxCols > 10 ? 7 : (safeMaxCols > 6 ? 9 : 10);
+
+            // Add Table with styling
+            try {
+                console.log('generatePPTFromExcel: Adding table to slide...');
+                slide.addTable(normalizedData as any[], {
+                    x: 0.5,
+                    y: 0.8,
+                    w: totalWidth,
+                    colW: colWidths,
+                    fontSize: dynamicFontSize,
+                    border: { pt: 1, color: "e5e7eb" },
+                    autoPage: true, // Auto-paginate if table is too long
+                    rowH: 0.3,
+                    valign: 'middle',
+                    align: 'left',
+                    // Header styling (first row)
+                    fill: { color: "ffffff" },
+                    color: "363636",
+                });
+                console.log('generatePPTFromExcel: Table added successfully');
+            } catch (e: any) {
+                console.error('generatePPTFromExcel: Error adding table', e);
+                // Log more details to help debugging
+                if (e.message?.includes('text')) {
+                    console.error('generatePPTFromExcel: Text property error detected. inspect normalizedData:', JSON.stringify(normalizedData.slice(0, 2)));
+                }
+                throw e; // Rethrow to show in UI
+            }
         }
     }
 
-    return await pptx.write({ outputType: 'blob' }) as Blob;
+    console.log('generatePPTFromExcel: Finished processing sheets, writing file');
+    try {
+        const blob = await pptx.write({ outputType: 'blob' }) as Blob;
+        console.log('generatePPTFromExcel: Blob created');
+        return blob;
+    } catch (e) {
+        console.error('generatePPTFromExcel: Error writing pptx', e);
+        throw e;
+    }
 };
 
 /**

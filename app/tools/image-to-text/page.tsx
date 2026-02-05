@@ -15,7 +15,7 @@ const config: ToolConfig = {
     description: 'Extract plain text from images (JPG, PNG, WebP) instantly.',
     fromFormat: 'Image',
     toFormat: 'Text',
-    type: 'ocr',
+    type: 'ocr-pdf',
     accept: {
         'image/*': ['.png', '.jpg', '.jpeg', '.webp']
     },

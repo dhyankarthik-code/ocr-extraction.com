@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Upload,
   FileText,
@@ -9,9 +9,10 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
-  Archive,
   FileStack,
+  Archive,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import UploadZone from "@/components/upload-zone";
 import { toast } from "sonner";
@@ -44,6 +45,7 @@ import {
   generateMergedExcelFromWord,
   generateMergedExcelFromPPT,
   generateWordFromPDF,
+  generateExcelFromText,
   generateWordFromExcel,
   generateWordFromPPT,
   generateMergedWordFromPDF,
@@ -70,6 +72,7 @@ export type ToolType =
   | "office-to-word" // Convert document to Word
   | "office-to-ppt" // Convert document to PPT
   | "office-to-text" // Convert document to Text
+  | "ocr-pdf" // Use Stirling OCR (Image/PDF to Text)
   | "coming-soon";
 
 export interface ToolConfig {
@@ -83,6 +86,12 @@ export interface ToolConfig {
   apiEndpoint?: string;
   content?: React.ReactNode;
   faq?: { question: string; answer: string }[];
+  options?: {
+    id: string;
+    label: string;
+    type: 'checkbox';
+    defaultValue: boolean;
+  }[];
 }
 
 export default function GenericTool({ config }: { config: ToolConfig }) {
@@ -101,68 +110,21 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
   };
 
   const [fileStates, setFileStates] = useState<FileState[]>([]);
+  const [optionValues, setOptionValues] = useState<Record<string, boolean>>({});
+
+  // Initialize default options
+  useEffect(() => {
+    if (config.options) {
+      const defaults: Record<string, boolean> = {};
+      config.options.forEach((opt) => {
+        defaults[opt.id] = opt.defaultValue;
+      });
+      setOptionValues(defaults);
+    }
+  }, [config.options]);
 
   const batchCounterRef = useRef(0);
   const notifiedBatchesRef = useRef<Set<string>>(new Set());
-
-  // Sync preview URLs clean up
-  useEffect(() => {
-    return () => {
-      fileStates.forEach((fs) => {
-        if (fs.previewUrl) URL.revokeObjectURL(fs.previewUrl);
-      });
-    };
-  }, []); // Cleanup on unmount, or we could track diffs if needed but unmount is safer for now
-
-  const handleDrop = async (droppedFiles: File[]) => {
-    if (droppedFiles.length === 0) return;
-
-    const batchId = `${Date.now()}-${batchCounterRef.current++}`;
-
-    // Initialize states for new files
-    const newStates: FileState[] = droppedFiles.map((f) => ({
-      file: f,
-      id: Math.random().toString(36).substring(7),
-      batchId,
-      status: "idle",
-      progress: 0,
-      result: null,
-      error: null,
-      previewUrl: f.type.startsWith("image/") ? URL.createObjectURL(f) : null,
-    }));
-
-    setFiles((prev) => [...prev, ...droppedFiles]);
-    setFileStates((prev) => [...prev, ...newStates]);
-
-    // Process each new file
-    newStates.forEach((state) => processFileItem(state));
-  };
-
-  useEffect(() => {
-    const batches = new Map<string, FileState[]>();
-    for (const fs of fileStates) {
-      batches.set(fs.batchId, [...(batches.get(fs.batchId) ?? []), fs]);
-    }
-
-    for (const [batchId, batchFiles] of batches.entries()) {
-      if (notifiedBatchesRef.current.has(batchId)) continue;
-
-      const allSuccess = batchFiles.length > 0 && batchFiles.every((f) => f.status === "success");
-      if (!allSuccess) continue;
-
-      notifiedBatchesRef.current.add(batchId);
-
-      const isBatch = batchFiles.length > 1;
-      const subject = isBatch ? "files" : batchFiles[0]?.file.name ?? "file";
-      const verb = isBatch ? "have" : "has";
-      toast.success(`The ${subject} ${verb} been converted successfully, scroll down to download`, {
-        duration: 8000,
-        icon: <CheckCircle className="h-5 w-5 text-red-600" />,
-        className:
-          "border border-red-200 bg-red-50 text-red-700 rounded-xl px-5 py-4 text-base font-semibold shadow-lg",
-      });
-    }
-  }, [fileStates]);
 
   const updateFileState = (id: string, updates: Partial<FileState>) => {
     setFileStates((prev) =>
@@ -266,36 +228,73 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
           progress: 100,
           result: { text: extractedText },
         });
-      } else if (config.type === "client-convert") {
-        if (file.type.startsWith("image/")) {
-          // For image-to-pdf, the result needs to indicate it's an image
-          // The preview is already there from the input
-          updateFileState(id, {
-            status: "success",
-            progress: 100,
-            result: { image: true },
-          });
-        } else {
-          const text = await file.text();
-          updateFileState(id, {
-            status: "success",
-            progress: 100,
-            result: { text },
-          });
-        }
-      } else if (config.type === "office-to-pdf") {
-        // Direct Office file to PDF conversion
-        updateFileState(id, { progress: 50 });
+      } else if (config.type === "ocr-pdf") {
+        const formData = new FormData();
+        formData.append("file", file);
+        // Default to English for now, could add language selector later
+        formData.append("languages", "eng");
 
+        const interval = setInterval(() => {
+          setFileStates((current) => {
+            return current.map((s) => {
+              if (s.id === id && s.progress < 80)
+                return { ...s, progress: s.progress + 5 };
+              return s;
+            });
+          });
+        }, 500);
+
+        const response = await fetch("/api/tools/ocr-pdf", {
+          method: "POST",
+          body: formData,
+        });
+
+        clearInterval(interval);
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error || "OCR failed");
+        }
+
+        const text = await response.text();
+
+        updateFileState(id, {
+          status: "success",
+          progress: 100,
+          result: { text },
+        });
+      } else if (config.type === "office-to-pdf") {
+        // Server-side conversion via Stirling PDF API
+        updateFileState(id, { progress: 30 });
         let pdfBlob: Blob;
-        if (config.fromFormat === "Excel") {
-          pdfBlob = await generatePDFFromExcel(file);
-        } else if (config.fromFormat === "Word") {
-          pdfBlob = await generatePDFFromWord(file);
-        } else if (config.fromFormat === "PPT") {
-          pdfBlob = await generatePDFFromPPT(file);
-        } else {
-          throw new Error(`Unsupported format: ${config.fromFormat}`);
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Simulate progress
+        const progressInterval = setInterval(() => {
+          setFileStates(prev => prev.map(s =>
+            s.id === id && s.progress < 90 ? { ...s, progress: s.progress + 5 } : s
+          ));
+        }, 500);
+
+        try {
+          const response = await fetch('/api/convert', {
+            method: 'POST',
+            body: formData,
+          });
+
+          clearInterval(progressInterval);
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Conversion failed');
+          }
+
+          pdfBlob = await response.blob();
+        } catch (error) {
+          clearInterval(progressInterval);
+          throw error;
         }
 
         updateFileState(id, {
@@ -325,14 +324,96 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
         updateFileState(id, { progress: 50 });
 
         let images: Blob[];
+
         if (config.fromFormat === "PDF") {
-          images = await generateImagesFromPDF(file);
+          // Use Backend API for PDF to Image
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('format', 'png');
+
+          const response = await fetch('/api/tools/pdf-to-image', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Conversion failed');
+          }
+
+          const zipBlob = await response.blob();
+          // We need to unzip this to get images for preview/individual download
+          // Or GenericTool expects an array of blobs.
+          // Let's unzip client side for consistency with existing structure
+          const zip = new JSZip();
+          const unzipped = await zip.loadAsync(zipBlob);
+          images = [];
+
+          // Sort files to ensure order
+          const filenames = Object.keys(unzipped.files).sort();
+          for (const filename of filenames) {
+            if (!unzipped.files[filename].dir) {
+              const blob = await unzipped.files[filename].async('blob');
+              images.push(blob);
+            }
+          }
         } else if (config.fromFormat === "Word") {
-          images = await generateImagesFromWord(file);
+          // Use Server-side Stirling PDF for high fidelity
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const response = await fetch('/api/convert', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Conversion failed');
+          }
+
+          const pdfBlob = await response.blob();
+          // Convert the server-generated high-fidelity PDF to images client-side
+          // We use a file object to reuse existing logic
+          const pdfFile = new File([pdfBlob], "temp.pdf", { type: "application/pdf" });
+          images = await generateImagesFromPDF(pdfFile);
+
         } else if (config.fromFormat === "Excel") {
-          images = await generateImagesFromExcel(file);
+          // Use Server-side Stirling PDF for high fidelity
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const response = await fetch('/api/convert', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Conversion failed');
+          }
+
+          const pdfBlob = await response.blob();
+          const pdfFile = new File([pdfBlob], "temp.pdf", { type: "application/pdf" });
+          images = await generateImagesFromPDF(pdfFile);
         } else if (config.fromFormat === "PPT") {
-          images = await generateImagesFromPPT(file);
+          // Use Server-side Stirling PDF for high fidelity
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const response = await fetch('/api/convert', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Conversion failed');
+          }
+
+          const pdfBlob = await response.blob();
+          const pdfFile = new File([pdfBlob], "temp.pdf", { type: "application/pdf" });
+          images = await generateImagesFromPDF(pdfFile);
         } else {
           throw new Error(`Unsupported format: ${config.fromFormat}`);
         }
@@ -375,7 +456,26 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
         let wordBlob: Blob;
         if (config.fromFormat === "PDF") {
-          wordBlob = await generateWordFromPDF(file);
+          // Use Backend API for PDF to Word
+          const formData = new FormData();
+          formData.append('file', file);
+
+          // Pass AI/Smart Mode option if selected
+          if (optionValues['smart']) {
+            formData.append('mode', 'smart');
+          }
+
+          const response = await fetch('/api/tools/pdf-to-word', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Conversion failed');
+          }
+
+          wordBlob = await response.blob();
         } else if (config.fromFormat === "Excel") {
           wordBlob = await generateWordFromExcel(file);
         } else if (config.fromFormat === "PPT") {
@@ -395,7 +495,23 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
         let pptBlob: Blob;
         if (config.fromFormat === "PDF") {
-          pptBlob = await generatePPTFromPDF(file);
+          updateFileState(id, { progress: 30 });
+          const formData = new FormData();
+          formData.append('file', file);
+          // Stirling uses 'ppt' or 'presentation' format target
+          formData.append('format', 'ppt');
+
+          const response = await fetch('/api/convert', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Conversion failed');
+          }
+
+          pptBlob = await response.blob();
         } else if (config.fromFormat === "Word") {
           pptBlob = await generatePPTFromWord(file);
         } else if (config.fromFormat === "Excel") {
@@ -414,7 +530,25 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
         updateFileState(id, { progress: 50 });
 
         let text = "";
-        if (config.fromFormat === "Word") {
+
+        if (config.fromFormat === "PDF") {
+          // Use Backend API for PDF to Text
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const response = await fetch('/api/tools/pdf-to-text', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Conversion failed');
+          }
+
+          text = await response.text();
+
+        } else if (config.fromFormat === "Word") {
           text = await extractTextFromWord(file);
         } else if (config.fromFormat === "Excel") {
           text = await extractTextFromExcel(file);
@@ -429,6 +563,45 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
           progress: 100,
           result: { text },
         });
+      } else if (config.type === "client-convert" && config.fromFormat === "Text" && config.toFormat === "Image") {
+        // Text to Image conversion
+        updateFileState(id, { progress: 50 });
+
+        const text = await file.text();
+        const imageBlob = await generateImageFromText(text);
+
+        // Create preview URL
+        const previewUrl = URL.createObjectURL(imageBlob);
+
+        updateFileState(id, {
+          status: "success",
+          progress: 100,
+          result: { images: [imageBlob] }, // Standardize result format for images
+          previewUrl
+        });
+      } else if (config.type === "client-convert" && config.fromFormat === "Text" && config.toFormat === "Excel") {
+        // Text to Excel conversion
+        updateFileState(id, { progress: 50 });
+
+        const excelBlob = await generateExcelFromText(file);
+
+        updateFileState(id, {
+          status: "success",
+          progress: 100,
+          result: { excelBlob }
+        });
+      } else if (config.type === "client-convert" && config.fromFormat === "Text" && config.toFormat === "PPT") {
+        // Text to PPT conversion
+        updateFileState(id, { progress: 50 });
+
+        const text = await file.text();
+        const pptBlob = await generatePPT(text);
+
+        updateFileState(id, {
+          status: "success",
+          progress: 100,
+          result: { pptBlob }
+        });
       } else {
         updateFileState(id, {
           status: "error",
@@ -442,6 +615,76 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
       toast.error(`Failed to process ${file.name}`);
     }
   };
+
+
+
+  const onDrop = useCallback(
+    async (droppedFiles: File[]) => {
+      if (droppedFiles.length === 0) return;
+
+      const batchId = `${Date.now()}-${batchCounterRef.current++}`;
+
+      // Initialize states for new files
+      const newStates: FileState[] = droppedFiles.map((f) => ({
+        file: f,
+        id: Math.random().toString(36).substring(7),
+        batchId,
+        status: "idle",
+        progress: 0,
+        result: null,
+        error: null,
+        previewUrl: f.type.startsWith("image/") ? URL.createObjectURL(f) : null,
+      }));
+
+      setFiles((prev) => [...prev, ...droppedFiles]);
+      setFileStates((prev) => [...prev, ...newStates]);
+
+      // Process each new file
+      newStates.forEach((state) => processFileItem(state));
+    },
+    [config, processFileItem, optionValues] // Added dependencies
+  );
+
+  // Sync preview URLs clean up
+  useEffect(() => {
+    return () => {
+      fileStates.forEach((fs) => {
+        if (fs.previewUrl) URL.revokeObjectURL(fs.previewUrl);
+      });
+    };
+  }, []); // Cleanup on unmount, or we could track diffs if needed but unmount is safer for now
+
+
+
+  const loading = fileStates.some((fs) => fs.status === "processing");
+
+
+
+  useEffect(() => {
+    const batches = new Map<string, FileState[]>();
+    for (const fs of fileStates) {
+      batches.set(fs.batchId, [...(batches.get(fs.batchId) ?? []), fs]);
+    }
+
+    for (const [batchId, batchFiles] of batches.entries()) {
+      if (notifiedBatchesRef.current.has(batchId)) continue;
+
+      const allSuccess = batchFiles.length > 0 && batchFiles.every((f) => f.status === "success");
+      if (!allSuccess) continue;
+
+      notifiedBatchesRef.current.add(batchId);
+
+      const isBatch = batchFiles.length > 1;
+      const subject = isBatch ? "files" : batchFiles[0]?.file.name ?? "file";
+      const verb = isBatch ? "have" : "has";
+      toast.success(`The ${subject} ${verb} been converted successfully, scroll down to download`, {
+        duration: 8000,
+        icon: <CheckCircle className="h-5 w-5 text-red-600" />,
+        className:
+          "border border-red-200 bg-red-50 text-red-700 rounded-xl px-5 py-4 text-base font-semibold shadow-lg",
+      });
+    }
+  }, [fileStates]);
 
   const handleDownload = async (fileState: FileState) => {
     if (!fileState.result) return;
@@ -480,8 +723,8 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
         return;
       }
 
-      // Handle office-to-excel conversion result
-      if (result.officeFile && result.excelBlob) {
+      // Handle office-to-excel conversion result (and client-convert Text-to-Excel)
+      if (result.excelBlob) {
         downloadBlob(result.excelBlob, `${filenameBase}_converted.xlsx`);
         return;
       }
@@ -492,8 +735,8 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
         return;
       }
 
-      // Handle office-to-ppt conversion result
-      if (result.officeFile && result.pptBlob) {
+      // Handle office-to-ppt conversion result (and client-convert Text-to-PPT)
+      if (result.pptBlob) {
         downloadBlob(result.pptBlob, `${filenameBase}_converted.pptx`);
         return;
       }
@@ -667,12 +910,106 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
           }
         });
 
+        const validFiles = Object.keys(zip.files).length > 0;
+        if (!validFiles) {
+          toast.error("No valid files to zip.");
+          return;
+        }
+
         const content = await zip.generateAsync({ type: "blob" });
         downloadBlob(
           content,
           `${config.title.toLowerCase().replace(/\s+/g, "_")}_images.zip`,
         );
         toast.success("All Images Downloaded!");
+        return;
+      }
+
+      // Client-convert Text-to-Image merged mode (ZIP)
+      if (config.type === "client-convert" && config.fromFormat === "Text" && config.toFormat === "Image") {
+        const zip = new JSZip();
+
+        successfulFiles.forEach((fs) => {
+          const filenameBase = fs.file.name.split(".")[0];
+          if (Array.isArray(fs.result.images)) {
+            fs.result.images.forEach((blob: Blob, index: number) => {
+              // If there's only 1 image (common for text), no need for page number suffix if user prefers, but keeping it for consistency
+              if (fs.result.images.length === 1) {
+                zip.file(`${filenameBase}.png`, blob);
+              } else {
+                zip.file(`${filenameBase}_page_${index + 1}.png`, blob);
+              }
+            });
+          }
+        });
+
+        const validFiles = Object.keys(zip.files).length > 0;
+        if (!validFiles) {
+          toast.error("No valid files to zip.");
+          return;
+        }
+
+        const content = await zip.generateAsync({ type: "blob" });
+        downloadBlob(
+          content,
+          `${config.title.toLowerCase().replace(/\s+/g, "_")}_images.zip`,
+        );
+        toast.success("All Images Downloaded!");
+        return;
+
+      }
+
+      // Client-convert Text-to-Excel merged mode (ZIP)
+      if (config.type === "client-convert" && config.fromFormat === "Text" && config.toFormat === "Excel") {
+        const zip = new JSZip();
+
+        successfulFiles.forEach((fs) => {
+          const filenameBase = fs.file.name.split(".")[0];
+          if (fs.result.excelBlob) {
+            zip.file(`${filenameBase}.xlsx`, fs.result.excelBlob);
+          }
+        });
+
+        const validFiles = Object.keys(zip.files).length > 0;
+        if (!validFiles) {
+          toast.error("No valid files to zip.");
+          return;
+        }
+
+        const content = await zip.generateAsync({ type: "blob" });
+        downloadBlob(
+          content,
+          `${config.title.toLowerCase().replace(/\s+/g, "_")}_converted.zip`,
+        );
+        toast.success("All Excel Files Downloaded!");
+        return;
+      }
+
+
+
+      // Client-convert Text-to-PPT merged mode (ZIP)
+      if (config.type === "client-convert" && config.fromFormat === "Text" && config.toFormat === "PPT") {
+        const zip = new JSZip();
+
+        successfulFiles.forEach((fs) => {
+          const filenameBase = fs.file.name.split(".")[0];
+          if (fs.result.pptBlob) {
+            zip.file(`${filenameBase}.pptx`, fs.result.pptBlob);
+          }
+        });
+
+        const validFiles = Object.keys(zip.files).length > 0;
+        if (!validFiles) {
+          toast.error("No valid files to zip.");
+          return;
+        }
+
+        const content = await zip.generateAsync({ type: "blob" });
+        downloadBlob(
+          content,
+          `${config.title.toLowerCase().replace(/\s+/g, "_")}_converted.zip`,
+        );
+        toast.success("All PPT Files Downloaded!");
         return;
       }
 
@@ -793,7 +1130,7 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
 
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-10">
         <UploadZone
-          onDrop={handleDrop}
+          onDrop={onDrop}
           uploading={false}
           progress={0}
           accept={config.accept}
@@ -806,37 +1143,35 @@ export default function GenericTool({ config }: { config: ToolConfig }) {
               <h3 className="font-bold text-gray-900">
                 Your Files ({fileStates.length})
               </h3>
-              <div className="flex gap-2">
+              <div className="flex gap-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setFileStates([])}
+                  disabled={loading}
+                >
+                  Clear All
+                </Button>
+
+                {/* Download All / Merged Button */}
                 {fileStates.some((fs) => fs.status === "success") && (
-                  <button
+                  <Button
+                    variant="default"
+                    className="bg-green-600 hover:bg-green-700"
                     onClick={handleDownloadAll}
-                    className="text-sm bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 font-bold flex items-center gap-2 transition-all hover:scale-[1.05] shadow-md shadow-red-500/20"
                   >
                     {config.toFormat === "PDF" ? (
                       <>
-                        <FileStack className="w-4 h-4" /> Download Merged PDF
-                      </>
-                    ) : config.toFormat === "Image" ? (
-                      <>
-                        <Archive className="w-4 h-4" /> Download All (ZIP)
+                        <FileStack className="mr-2 h-4 w-4" /> Download Merged
                       </>
                     ) : (
                       <>
-                        <FileStack className="w-4 h-4" /> Download Merged{" "}
-                        {config.toFormat}
+                        <Archive className="mr-2 h-4 w-4" /> Download All
                       </>
                     )}
-                  </button>
+                  </Button>
                 )}
-                <button
-                  onClick={() => {
-                    setFiles([]);
-                    setFileStates([]);
-                  }}
-                  className="text-sm text-gray-500 hover:text-red-600 font-medium transition-colors"
-                >
-                  Clear All
-                </button>
+
+
               </div>
             </div>
 

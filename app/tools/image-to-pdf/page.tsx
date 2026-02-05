@@ -20,7 +20,7 @@ const config: ToolConfig = {
     description: 'Convert your images into a single PDF document.',
     fromFormat: 'Image',
     toFormat: 'PDF',
-    type: 'client-convert', // Can simply wrap image in PDF client side
+    type: 'office-to-pdf', // Server-side conversion via Stirling
     accept: {
         'image/*': ['.png', '.jpg', '.jpeg', '.webp']
     }

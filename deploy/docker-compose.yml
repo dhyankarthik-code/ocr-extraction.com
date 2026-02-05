@@ -1,0 +1,32 @@
+version: '3.3'
+services:
+  stirling-pdf:
+    image: frooodle/s-pdf:latest
+    container_name: stirling-pdf
+    ports:
+      # Bind to localhost only - Cloudflare Tunnel will proxy
+      - '127.0.0.1:8080:8080'
+    volumes:
+      - ./trainingData:/usr/share/tessdata
+      - ./extraConfigs:/configs
+      - ./customFiles:/customFiles/
+    environment:
+      - DOCKER_ENABLE_SECURITY=false
+      - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
+      - SYSTEM_DEFAULT_LOCALE=en-US
+      - METRICS_ENABLED=true
+      # Performance (e2-medium: 2 vCPU / 4GB RAM)
+      - SYSTEM_OPENOFFICE_PROCESS_COUNT=2
+      - SYSTEM_JOBS_EXECUTOR_POOL_SIZE=10
+      - SYSTEM_TIMEOUT_MINUTES=5
+      # Cleanup (mentor suggestion)
+      - SYSTEM_TEMP_FILE_RETENTION_DAYS=1
+      # Branding
+      - UI_APP_NAME=InfyGalaxy PDF
+      - UI_HOME_DESCRIPTION=High Performance PDF Tools
+      - UI_APP_NAVBAR_NAME=InfyGalaxy
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+    restart: unless-stopped
