@@ -38,15 +38,36 @@ ${text}
 
 TRANSLATED TEXT (${targetLanguage}):`;
 
-        const chatResponse = await mistral.chat.complete({
-            model: "mistral-large-latest", // Best quality for accurate translation
-            messages: [{ role: "user", content: prompt }],
-            temperature: 0.1, // Very low for deterministic, consistent output
+        // Create a ReadableStream for the response
+        const stream = new ReadableStream({
+            async start(controller) {
+                try {
+                    const chatStream = await mistral.chat.stream({
+                        model: "mistral-large-latest", // Reverted to Large for best quality, keeping streaming for speed
+                        messages: [{ role: "user", content: prompt }],
+                        temperature: 0.1,
+                    });
+
+                    for await (const chunk of chatStream) {
+                        const content = chunk.data.choices[0].delta.content;
+                        if (typeof content === 'string') {
+                            controller.enqueue(new TextEncoder().encode(content));
+                        }
+                    }
+                    controller.close();
+                } catch (error) {
+                    controller.error(error);
+                }
+            },
         });
 
-        const translatedText = chatResponse.choices?.[0]?.message?.content || "";
+        return new NextResponse(stream, {
+            headers: {
+                "Content-Type": "text/plain; charset=utf-8",
+                "Transfer-Encoding": "chunked",
+            },
+        });
 
-        return NextResponse.json({ translatedText });
     } catch (error: any) {
         console.error("Translation error:", error);
         return NextResponse.json(

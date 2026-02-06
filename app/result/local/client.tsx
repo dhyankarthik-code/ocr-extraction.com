@@ -503,6 +503,7 @@ export default function LocalResultPage() {
         setTranslateLanguage(lang);
         setIsTranslating(true);
         setShowTranslation(true);
+        setTranslatedText(""); // Clear previous translation
         document.getElementById('translate-dropdown')?.classList.add('hidden');
 
         // Use scope to determine what to translate
@@ -514,13 +515,34 @@ export default function LocalResultPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text: textToTranslate, targetLanguage: lang }),
             });
-            const data = await response.json();
-            if (response.ok) {
-                setTranslatedText(data.translatedText);
-            } else {
+
+            if (!response.ok) {
+                const data = await response.json();
                 alert(`Translation failed: ${data.error}`);
                 setShowTranslation(false);
+                setIsTranslating(false);
+                return;
             }
+
+            if (!response.body) return;
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let result = '';
+
+            // We can stop the loading spinner immediately or keep it until done.
+            // Let's keep isTranslating=true until stream ends for the UI state, 
+            // but the text will update live.
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                result += chunk;
+                setTranslatedText(result);
+            }
+
         } catch (error) {
             console.error("Translation error:", error);
             alert("Failed to translate text.");
@@ -1098,12 +1120,35 @@ export default function LocalResultPage() {
                                 </div>
                                 {/* Action Buttons */}
                                 <div className="flex gap-3">
-                                    <button
-                                        onClick={() => setReportFormatModal(true)}
-                                        className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2"
-                                    >
-                                        <Download className="w-5 h-5" /> Download Report
-                                    </button>
+                                    <div className="relative flex-1">
+                                        <button
+                                            onClick={() => setReportFormatModal(!reportFormatModal)}
+                                            className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <Download className="w-5 h-5" /> Download Report
+                                        </button>
+                                        {reportFormatModal && (
+                                            <div className="absolute top-full left-0 mt-2 w-full bg-white border border-purple-100 rounded-xl shadow-xl z-50 p-2 animate-in fade-in zoom-in-95 duration-200">
+                                                <div className="grid grid-cols-1 gap-1">
+                                                    <button onClick={() => handleDownloadReport('txt')} className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded-lg flex items-center gap-2 text-gray-700 font-medium transition-colors">
+                                                        <FileText className="w-4 h-4 text-gray-500" /> Text File (.txt)
+                                                    </button>
+                                                    <button onClick={() => handleDownloadReport('docx')} className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 rounded-lg flex items-center gap-2 text-gray-700 font-medium transition-colors">
+                                                        <FileText className="w-4 h-4 text-blue-600" /> Word Doc (.docx)
+                                                    </button>
+                                                    <button onClick={() => handleDownloadReport('pdf')} className="w-full text-left px-3 py-2 text-sm hover:bg-red-50 rounded-lg flex items-center gap-2 text-gray-700 font-medium transition-colors">
+                                                        <FileText className="w-4 h-4 text-red-600" /> PDF File (.pdf)
+                                                    </button>
+                                                    <button onClick={() => handleDownloadReport('xlsx')} className="w-full text-left px-3 py-2 text-sm hover:bg-emerald-50 rounded-lg flex items-center gap-2 text-gray-700 font-medium transition-colors">
+                                                        <FileText className="w-4 h-4 text-emerald-600" /> Excel (.xlsx)
+                                                    </button>
+                                                    <button onClick={() => handleDownloadReport('pptx')} className="w-full text-left px-3 py-2 text-sm hover:bg-orange-50 rounded-lg flex items-center gap-2 text-gray-700 font-medium transition-colors">
+                                                        <FileText className="w-4 h-4 text-orange-600" /> PPT (.pptx)
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                     <button
                                         onClick={() => {
                                             setSummary("");
@@ -1145,52 +1190,7 @@ export default function LocalResultPage() {
                                         return <div key={index} className="h-1"></div>;
                                     })}
                                 </div>
-                                {/* Format Selection Modal */}
-                                <div className="mt-6">
-                                    {reportFormatModal && (
-                                        <div className="bg-purple-50 p-4 rounded-xl border border-purple-100 animate-in fade-in zoom-in-95 duration-200">
-                                            <p className="text-sm font-bold text-purple-900 mb-3 text-center">Select Download Format</p>
-                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                                <button
-                                                    onClick={() => handleDownloadReport('txt')}
-                                                    className="bg-white hover:bg-purple-100 text-purple-700 border border-purple-200 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1"
-                                                >
-                                                    <FileText className="w-3 h-3" /> Text File (.txt)
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDownloadReport('docx')}
-                                                    className="bg-white hover:bg-purple-100 text-blue-700 border border-blue-200 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1"
-                                                >
-                                                    <FileText className="w-3 h-3" /> Word Doc (.docx)
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDownloadReport('pdf')}
-                                                    className="bg-white hover:bg-purple-100 text-red-700 border border-red-200 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1"
-                                                >
-                                                    <FileText className="w-3 h-3" /> PDF File (.pdf)
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDownloadReport('xlsx')}
-                                                    className="bg-white hover:bg-red-100 text-red-700 border border-red-200 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1"
-                                                >
-                                                    <FileText className="w-3 h-3" /> Excel (.xlsx)
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDownloadReport('pptx')}
-                                                    className="bg-white hover:bg-red-100 text-red-700 border border-red-200 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1"
-                                                >
-                                                    <FileText className="w-3 h-3" /> PPT (.pptx)
-                                                </button>
-                                            </div>
-                                            <button
-                                                onClick={() => setReportFormatModal(false)}
-                                                className="w-full mt-3 text-xs text-gray-500 hover:text-gray-700 transition-colors"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
+                                {/* Format Selection Modal - MOVED TO DROPDOWN */}
                             </div>
                         </div>
                     </div>

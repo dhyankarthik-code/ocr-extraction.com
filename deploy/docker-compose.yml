@@ -4,7 +4,6 @@ services:
     image: frooodle/s-pdf:latest
     container_name: stirling-pdf
     ports:
-      # Bind to localhost only - Cloudflare Tunnel will proxy
       - '127.0.0.1:8080:8080'
     volumes:
       - ./trainingData:/usr/share/tessdata
