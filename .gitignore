@@ -58,3 +58,7 @@ pnpm-lock.yaml
 actions-runner/
 test-results/
 playwright-report/
+
+# Tooling related
+.agent/
+.windsurf/
