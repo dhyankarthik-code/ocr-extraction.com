@@ -4,14 +4,6 @@ import { pdfToImages } from '@/lib/stirling-client';
 // Force Node.js runtime for large file handling
 export const runtime = "nodejs";
 
-export const config = {
-    api: {
-        bodyParser: {
-            sizeLimit: '50mb',
-        },
-    },
-};
-
 export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();

@@ -5,13 +5,6 @@ import { markdownToDocx } from '@/lib/markdown-to-docx';
 export const runtime = "nodejs";
 export const maxDuration = 120; // 2 minutes for large PDFs
 
-export const config = {
-    api: {
-        bodyParser: {
-            sizeLimit: '50mb',
-        },
-    },
-};
 
 const PDF2DOCX_URL = process.env.PDF2DOCX_API_URL || 'http://localhost:5000';
 
