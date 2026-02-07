@@ -49,8 +49,13 @@ def convert_pdf_to_docx():
         file.save(pdf_path)
         
         # Convert with pdf2docx (preserves layout, images, colors)
+        # Performance optimization: enable multi-processing for 2-3x speed boost
         cv = Converter(pdf_path)
-        cv.convert(docx_path)
+        cv.convert(
+            docx_path,
+            multi_processing=True,  # Use multiple CPU cores
+            cpu_count=2             # Match e2-medium vCPU count
+        )
         cv.close()
         
         # Send the converted file
