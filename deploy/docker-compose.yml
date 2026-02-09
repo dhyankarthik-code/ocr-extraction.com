@@ -37,7 +37,7 @@ services:
       dockerfile: Dockerfile
     container_name: pdf2docx
     ports:
-      - '127.0.0.1:5000:5000'
+      - '5000:5000'  # Expose to external network for Vercel access
     environment:
       - PYTHONUNBUFFERED=1
     deploy:
