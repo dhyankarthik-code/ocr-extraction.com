@@ -4,7 +4,7 @@ services:
     image: frooodle/s-pdf:latest
     container_name: stirling-pdf
     ports:
-      - '127.0.0.1:8080:8080'
+      - '8080:8080' # Expose to external network for Vercel access
     volumes:
       - ./trainingData:/usr/share/tessdata
       - ./extraConfigs:/configs
@@ -37,7 +37,7 @@ services:
       dockerfile: Dockerfile
     container_name: pdf2docx
     ports:
-      - '5000:5000'  # Expose to external network for Vercel access
+      - '5000:5000' # Expose to external network for Vercel access
     environment:
       - PYTHONUNBUFFERED=1
     deploy:
