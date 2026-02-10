@@ -16,7 +16,7 @@ import {
     Radio,
     Briefcase
 } from "lucide-react";
-import { ToolsCTA } from "@/components/tools/tools-cta";
+import { ServicesContactForm } from "@/components/services-contact-form";
 
 export const metadata = {
     title: "Enterprise AI Orchestration | Scalable Agentic Solutions",
@@ -388,92 +388,87 @@ export default function ServicesPage() {
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 {/* Enterprise Header Section */}
-                <div className="max-w-6xl mx-auto mb-20 text-center group">
-                    <div className="bg-white/80 backdrop-blur-xl p-10 md:p-16 rounded-[3rem] border border-white/20 shadow-2xl shadow-gray-200/50 relative overflow-hidden transition-all duration-500 hover:shadow-red-500/10 hover:-translate-y-2">
-                        {/* Animated Premium Border */}
-                        <div className="absolute top-0 left-0 w-full h-2 bg-gray-50/50"></div>
-                        <div className="absolute top-0 left-0 w-0 group-hover:w-full h-2 bg-gradient-to-r from-red-600 via-orange-500 to-yellow-400 transition-all duration-1000 ease-in-out"></div>
+                <div className="max-w-6xl mx-auto mb-12 text-center">
+                    <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight mb-6 leading-tight">
+                        Enterprise & <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600">SME AI Orchestration</span>
+                    </h1>
 
-                        <div className="relative z-10">
-                            <h1 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tight mb-6">
-                                Enterprise & <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600">SME AI Orchestration</span>
-                            </h1>
+                    <p className="max-w-4xl mx-auto text-lg md:text-xl text-gray-600 leading-relaxed font-medium mb-4">
+                        Accelerate your Business Goals and Growth with scalable Agentic AI solutions. We architect intelligent workflows that harmonize Super Agents with your core infrastructure, driving exponential efficiency and measurable business impact.
+                    </p>
+                </div>
 
-                            <p className="max-w-4xl mx-auto text-lg md:text-xl text-gray-600 leading-relaxed font-medium mb-8">
-                                Accelerate your Business Goals and Growth with scalable Agentic AI solutions. We architect intelligent workflows that harmonize Super Agents with your core infrastructure, driving exponential efficiency and measurable business impact.
-                            </p>
+                {/* Contact Form - First Section */}
+                <div className="max-w-6xl mx-auto mb-20">
+                    <ServicesContactForm />
+                </div>
 
-                            <div className="grid lg:grid-cols-2 gap-6 text-left mb-8">
-                                {/* Card 1: Operations */}
-                                <div className="relative p-1 bg-gradient-to-br from-red-500/20 to-orange-500/10 rounded-[2.5rem] group/card overflow-hidden">
-                                    <div className="absolute inset-0 bg-white group-hover/card:bg-red-50/50 transition-colors duration-500"></div>
-                                    <div className="relative p-8 flex flex-col h-full">
-                                        <div className="flex items-center gap-4 mb-6">
-                                            <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-200 group-hover/card:scale-110 transition-transform duration-500">
-                                                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                                </svg>
-                                            </div>
-                                            <h3 className="text-2xl font-black text-gray-900 tracking-tight">Autonomous Operations</h3>
+                {/* Value Proposition Cards */}
+                <div className="max-w-6xl mx-auto mb-20">
+                    <div className="grid lg:grid-cols-2 gap-6 text-left">
+                        {/* Card 1: Operations */}
+                        <div className="relative p-1 bg-gradient-to-br from-red-500/20 to-orange-500/10 rounded-[2.5rem] group/card overflow-hidden">
+                            <div className="absolute inset-0 bg-white group-hover/card:bg-red-50/50 transition-colors duration-500"></div>
+                            <div className="relative p-8 flex flex-col h-full">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-200 group-hover/card:scale-110 transition-transform duration-500">
+                                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-2xl font-black text-gray-900 tracking-tight">Autonomous Operations</h3>
+                                </div>
+                                <div className="space-y-4 flex-grow">
+                                    <div className="flex items-start gap-4 p-4 bg-white/50 rounded-2xl border border-red-100 transition-all hover:border-red-300">
+                                        <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                            <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
                                         </div>
-                                        <div className="space-y-4 flex-grow">
-                                            <div className="flex items-start gap-4 p-4 bg-white/50 rounded-2xl border border-red-100 transition-all hover:border-red-300">
-                                                <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                                                    <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-gray-900">24/7 Persistent Processing</p>
-                                                    <p className="text-sm text-gray-600 mt-1">Eliminate downtime with autonomous agents that maintain peak productivity around the clock.</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-start gap-4 p-4 bg-white/50 rounded-2xl border border-red-100 transition-all hover:border-red-300">
-                                                <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                                                    <svg className="w-3.5 h-3.5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                                    </svg>
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-gray-900">Real-Time Data Intelligence</p>
-                                                    <p className="text-sm text-gray-600 mt-1">Instant visibility into operational performance via sophisticated AI-driven analytics dashboards.</p>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <p className="font-bold text-gray-900">24/7 Persistent Processing</p>
+                                            <p className="text-sm text-gray-600 mt-1">Eliminate downtime with autonomous agents that maintain peak productivity around the clock.</p>
                                         </div>
                                     </div>
-                                </div>
-
-                                {/* Card 2: Strategy */}
-                                <div className="relative p-1 bg-gradient-to-br from-blue-500/20 to-indigo-500/10 rounded-[2.5rem] group/card overflow-hidden">
-                                    <div className="absolute inset-0 bg-white group-hover/card:bg-blue-50/50 transition-colors duration-500"></div>
-                                    <div className="relative p-8 flex flex-col h-full">
-                                        <div className="flex items-center gap-4 mb-6">
-                                            <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200 group-hover/card:scale-110 transition-transform duration-500">
-                                                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                                </svg>
-                                            </div>
-                                            <h3 className="text-2xl font-black text-gray-900 tracking-tight">Strategic Growth</h3>
+                                    <div className="flex items-start gap-4 p-4 bg-white/50 rounded-2xl border border-red-100 transition-all hover:border-red-300">
+                                        <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                            <svg className="w-3.5 h-3.5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
                                         </div>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            {[
-                                                { label: "Optimal Production", icon: "⚙️" },
-                                                { label: "Revenue Acceleration", icon: "📈" },
-                                                { label: "Profit Maximization", icon: "💰" },
-                                                { label: "Determined Potential", icon: "🚀" }
-                                            ].map((item, idx) => (
-                                                <div key={idx} className="flex items-center gap-3 p-3 bg-white/80 rounded-xl border border-blue-50 transition-all hover:shadow-sm hover:border-blue-200 hover:scale-[1.02]">
-                                                    <span className="text-xl">{item.icon}</span>
-                                                    <span className="text-sm font-bold text-gray-800">{item.label}</span>
-                                                </div>
-                                            ))}
+                                        <div>
+                                            <p className="font-bold text-gray-900">Real-Time Data Intelligence</p>
+                                            <p className="text-sm text-gray-600 mt-1">Instant visibility into operational performance via sophisticated AI-driven analytics dashboards.</p>
                                         </div>
-                                        <p className="mt-6 text-sm text-gray-500 font-medium italic">Empowering your human workforce to focus on high-value strategy and creative output.</p>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* Contact CTA */}
-                            <div className="pt-4">
-                                <ToolsCTA />
+                        {/* Card 2: Strategy */}
+                        <div className="relative p-1 bg-gradient-to-br from-blue-500/20 to-indigo-500/10 rounded-[2.5rem] group/card overflow-hidden">
+                            <div className="absolute inset-0 bg-white group-hover/card:bg-blue-50/50 transition-colors duration-500"></div>
+                            <div className="relative p-8 flex flex-col h-full">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200 group-hover/card:scale-110 transition-transform duration-500">
+                                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-2xl font-black text-gray-900 tracking-tight">Strategic Growth</h3>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {[
+                                        { label: "Optimal Production", icon: "⚙️" },
+                                        { label: "Revenue Acceleration", icon: "📈" },
+                                        { label: "Profit Maximization", icon: "💰" },
+                                        { label: "Determined Potential", icon: "🚀" }
+                                    ].map((item, idx) => (
+                                        <div key={idx} className="flex items-center gap-3 p-3 bg-white/80 rounded-xl border border-blue-50 transition-all hover:shadow-sm hover:border-blue-200 hover:scale-[1.02]">
+                                            <span className="text-xl">{item.icon}</span>
+                                            <span className="text-sm font-bold text-gray-800">{item.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <p className="mt-6 text-sm text-gray-500 font-medium italic">Empowering your human workforce to focus on high-value strategy and creative output.</p>
                             </div>
                         </div>
                     </div>
