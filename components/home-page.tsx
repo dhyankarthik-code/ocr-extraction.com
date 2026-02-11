@@ -330,6 +330,342 @@ export default function HomePage() {
                 </div>
             </section>
 
+            {/* How to Convert Image to Text - Step by Step */}
+            <section className="w-full max-w-6xl mt-16 px-4">
+                <div className="glass-card p-8 md:p-12 rounded-[2.5rem] border border-white/20 shadow-xl shadow-gray-200/30 relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100/50"></div>
+                    <div className="absolute top-0 left-0 w-0 group-hover:w-full h-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 transition-all duration-700 ease-in-out"></div>
+
+                    <h3 className="text-2xl md:text-4xl font-black text-gray-900 mb-4 text-center">
+                        How to Convert <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600">Image to Text?</span>
+                    </h3>
+                    <p className="text-gray-600 text-center mb-12 max-w-3xl mx-auto text-base md:text-lg">
+                        Transform any image into editable text in three simple steps. No technical expertise required.
+                    </p>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {/* Step 1 */}
+                        <div className="relative bg-white p-8 rounded-3xl border-2 border-red-100 hover:border-red-300 transition-all duration-300 hover:shadow-lg group/card">
+                            <div className="absolute -top-5 left-8 bg-gradient-to-r from-red-600 to-orange-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg">
+                                1
+                            </div>
+                            <div className="mt-4">
+                                <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mb-5 group-hover/card:scale-110 transition-transform">
+                                    <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                </div>
+                                <h4 className="text-xl font-bold text-gray-900 mb-3">Upload Your Image</h4>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    Upload JPG, PNG, PDF, TIFF, BMP, or any image format. Supports multi-page PDFs and batch uploads. Maximum file size: 10 MB per document.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Step 2 */}
+                        <div className="relative bg-white p-8 rounded-3xl border-2 border-orange-100 hover:border-orange-300 transition-all duration-300 hover:shadow-lg group/card">
+                            <div className="absolute -top-5 left-8 bg-gradient-to-r from-orange-600 to-yellow-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg">
+                                2
+                            </div>
+                            <div className="mt-4">
+                                <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-5 group-hover/card:scale-110 transition-transform">
+                                    <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                    </svg>
+                                </div>
+                                <h4 className="text-xl font-bold text-gray-900 mb-3">Select Language & Format</h4>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    Choose your document's language from 117+ supported languages. Select output format: Plain Text, MS Word (.docx), Excel (.xlsx), or PDF.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Step 3 */}
+                        <div className="relative bg-white p-8 rounded-3xl border-2 border-green-100 hover:border-green-300 transition-all duration-300 hover:shadow-lg group/card">
+                            <div className="absolute -top-5 left-8 bg-gradient-to-r from-green-600 to-teal-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg">
+                                3
+                            </div>
+                            <div className="mt-4">
+                                <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mb-5 group-hover/card:scale-110 transition-transform">
+                                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </div>
+                                <h4 className="text-xl font-bold text-gray-900 mb-3">Download Results</h4>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    Get your converted file instantly. Download as editable document, copy text to clipboard, or generate AI-powered summary and insights.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Real-World Use Cases */}
+            <section className="w-full max-w-6xl mt-16 px-4">
+                <div className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/30 relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100/50"></div>
+                    <div className="absolute top-0 left-0 w-0 group-hover:w-full h-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 transition-all duration-700 ease-in-out"></div>
+
+                    <div className="text-center mb-12">
+                        <h3 className="text-2xl md:text-4xl font-black text-gray-900 mb-4">
+                            Real-World <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600">Use Cases</span>
+                        </h3>
+                        <p className="text-gray-600 max-w-3xl mx-auto text-base md:text-lg">
+                            Discover how OCR-Extraction.com transforms workflows across industries and professions
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        {/* Use Case 1: Manufacturing */}
+                        <div className="bg-gradient-to-br from-slate-50 to-gray-50 p-6 rounded-2xl border border-slate-100 hover:shadow-lg transition-all duration-300">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-slate-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold text-gray-900 mb-2">Manufacturing & Production</h4>
+                                    <p className="text-gray-700 text-sm leading-relaxed">
+                                        Digitize production logs, quality control reports, equipment manuals, and safety documentation. Extract data from inspection forms and maintenance records for analysis.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Use Case 2: Invoicing & Billing */}
+                        <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-6 rounded-2xl border border-violet-100 hover:shadow-lg transition-all duration-300">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-violet-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold text-gray-900 mb-2">Invoicing & Billing</h4>
+                                    <p className="text-gray-700 text-sm leading-relaxed">
+                                        Automate invoice processing by extracting vendor details, line items, amounts, and payment terms. Convert paper invoices to digital records for accounting systems.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Use Case 3: Finance & Banking */}
+                        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 rounded-2xl border border-emerald-100 hover:shadow-lg transition-all duration-300">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold text-gray-900 mb-2">Finance & Banking</h4>
+                                    <p className="text-gray-700 text-sm leading-relaxed">
+                                        Process loan applications, bank statements, financial reports, and compliance documents. Extract transaction data and convert scanned checks into digital records.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Use Case 4: Healthcare */}
+                        <div className="bg-gradient-to-br from-red-50 to-pink-50 p-6 rounded-2xl border border-red-100 hover:shadow-lg transition-all duration-300">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold text-gray-900 mb-2">Healthcare & Medical</h4>
+                                    <p className="text-gray-700 text-sm leading-relaxed">
+                                        Digitize patient records, prescriptions, lab reports, and insurance claims. Extract medical data from handwritten notes and convert them into searchable electronic health records.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Use Case 5: Retail & E-commerce */}
+                        <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-6 rounded-2xl border border-orange-100 hover:shadow-lg transition-all duration-300">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold text-gray-900 mb-2">Retail & E-commerce</h4>
+                                    <p className="text-gray-700 text-sm leading-relaxed">
+                                        Process receipts, purchase orders, inventory lists, and shipping labels. Extract product information from catalogs and convert physical documents to digital inventory systems.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Use Case 6: Automotive */}
+                        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-2xl border border-blue-100 hover:shadow-lg transition-all duration-300">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold text-gray-900 mb-2">Automotive Industry</h4>
+                                    <p className="text-gray-700 text-sm leading-relaxed">
+                                        Digitize vehicle inspection reports, service records, warranty documents, and parts catalogs. Extract VIN numbers and specifications from registration documents.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Use Case 7: Oil & Gas */}
+                        <div className="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-2xl border border-yellow-100 hover:shadow-lg transition-all duration-300">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-yellow-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold text-gray-900 mb-2">Oil & Gas Industry</h4>
+                                    <p className="text-gray-700 text-sm leading-relaxed">
+                                        Process drilling reports, safety compliance documents, equipment logs, and geological surveys. Extract data from field reports and convert technical specifications to digital formats.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Use Case 8: Education & Research */}
+                        <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-2xl border border-purple-100 hover:shadow-lg transition-all duration-300">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold text-gray-900 mb-2">Education & Research</h4>
+                                    <p className="text-gray-700 text-sm leading-relaxed">
+                                        Students and teachers convert scanned textbooks, lecture notes, and study materials into editable text. Reduces file size and enables better exam preparation with searchable content.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Use Case 9: Legal & Compliance */}
+                        <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-2xl border border-indigo-100 hover:shadow-lg transition-all duration-300">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold text-gray-900 mb-2">Legal & Compliance</h4>
+                                    <p className="text-gray-700 text-sm leading-relaxed">
+                                        Extract critical information from legal documents, contracts, court filings, and government forms. Convert scanned documents into digital versions for compliance and record-keeping.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Use Case 10: Logistics & Supply Chain */}
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-100 hover:shadow-lg transition-all duration-300">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold text-gray-900 mb-2">Logistics & Supply Chain</h4>
+                                    <p className="text-gray-700 text-sm leading-relaxed">
+                                        Extract data from shipping manifests, bills of lading, customs documents, and delivery receipts. Automate data entry for warehouse management and tracking systems.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Key Features Highlight */}
+            <section className="w-full max-w-6xl mt-16 px-4">
+                <div className="glass-card p-8 md:p-12 rounded-[2.5rem] border border-white/20 shadow-xl shadow-gray-200/30 relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100/50"></div>
+                    <div className="absolute top-0 left-0 w-0 group-hover:w-full h-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 transition-all duration-700 ease-in-out"></div>
+
+                    <div className="text-center mb-10">
+                        <h3 className="text-2xl md:text-4xl font-black text-gray-900 mb-4">
+                            Powerful <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600">Features</span>
+                        </h3>
+                        <p className="text-gray-600 max-w-3xl mx-auto text-base md:text-lg">
+                            Industry-leading capabilities designed for accuracy, speed, and versatility
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                        {/* Feature: Multilingual */}
+                        <div className="bg-white p-8 rounded-3xl border-2 border-gray-100 hover:border-red-200 transition-all duration-300 hover:shadow-xl">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-14 h-14 bg-gradient-to-br from-red-600 to-orange-600 rounded-2xl flex items-center justify-center">
+                                    <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                    </svg>
+                                </div>
+                                <h4 className="text-2xl font-black text-gray-900">117+ Languages Supported</h4>
+                            </div>
+                            <p className="text-gray-700 mb-6 leading-relaxed">
+                                Our advanced OCR engine recognizes text in <strong>117+ languages</strong>, including all major European and Asian languages. Perfect for international businesses and multilingual documents.
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                                {['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 'Arabic', 'Hindi', 'Russian', 'Portuguese', 'Italian', 'Korean'].map((lang) => (
+                                    <span key={lang} className="px-3 py-1.5 bg-red-50 text-red-700 rounded-full text-xs font-semibold border border-red-100">
+                                        {lang}
+                                    </span>
+                                ))}
+                                <span className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold">
+                                    +105 more
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Feature: AI-Powered Accuracy */}
+                        <div className="bg-white p-8 rounded-3xl border-2 border-gray-100 hover:border-orange-200 transition-all duration-300 hover:shadow-xl">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-14 h-14 bg-gradient-to-br from-orange-600 to-yellow-600 rounded-2xl flex items-center justify-center">
+                                    <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h4 className="text-2xl font-black text-gray-900">AI-Powered Accuracy</h4>
+                            </div>
+                            <p className="text-gray-700 mb-6 leading-relaxed">
+                                Our advanced AI engine delivers industry-leading accuracy with intelligent text recognition, layout preservation, and automatic error correction for superior results.
+                            </p>
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                    <span className="text-gray-800 font-semibold text-sm">Recognition Rate:</span>
+                                    <span className="text-gray-600 text-sm">99%+ accuracy on printed text, 95%+ on handwritten</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                    <span className="text-gray-800 font-semibold text-sm">Smart Processing:</span>
+                                    <span className="text-gray-600 text-sm">Auto-rotation, deskewing, noise reduction, contrast enhancement</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                    <span className="text-gray-800 font-semibold text-sm">Layout Intelligence:</span>
+                                    <span className="text-gray-600 text-sm">Preserves tables, columns, formatting, and document structure</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* What You Can Do */}
             <section className="w-full max-w-5xl mt-12 px-4 text-center">
                 <div className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/30 relative overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
