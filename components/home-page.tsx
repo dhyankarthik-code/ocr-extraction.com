@@ -21,19 +21,42 @@ export default function HomePage() {
         setMounted(true)
         // Dynamic import GSAP for reduced initial bundle
         if (heroRef.current) {
-            import('gsap').then(({ gsap }) => {
+            Promise.all([
+                import('gsap'),
+                import('gsap/ScrollTrigger')
+            ]).then(([{ gsap }, { ScrollTrigger }]) => {
+                gsap.registerPlugin(ScrollTrigger)
+
+                // Hero Entry
                 gsap.fromTo(heroRef.current,
                     { opacity: 0, y: 30 },
-                    { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", delay: 0.5 }
+                    { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", delay: 0.2 }
                 )
+
+                // Section Reveals
+                gsap.utils.toArray('section').forEach((section: any) => {
+                    gsap.fromTo(section,
+                        { opacity: 0, y: 40 },
+                        {
+                            opacity: 1,
+                            y: 0,
+                            duration: 1,
+                            scrollTrigger: {
+                                trigger: section,
+                                start: "top 85%",
+                                toggleActions: "play none none none"
+                            }
+                        }
+                    )
+                })
             })
         }
     }, [])
 
     return (
-        <div ref={heroRef} className="flex flex-col items-center justify-center p-6 md:p-8 w-full" data-hydrated={mounted} data-deploy-id="811ca08-v2">
-            <div className="w-full max-w-2xl">
-                <div className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 text-center text-balance">
+        <div ref={heroRef} className="flex flex-col items-center justify-center p-6 md:p-8 w-full premium-gradient" data-hydrated={mounted} data-deploy-id="811ca08-v3">
+            <div className="glass-card p-8 md:p-12 mb-10 rounded-[3rem] text-center">
+                <div className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 text-balance text-premium-gradient">
                     {/* SEO H1 (Visually Hidden but accessible to crawlers) */}
                     <h1 className="text-gray-900 text-center relative w-full min-h-[8rem] md:min-h-[7rem] flex items-center justify-center">
                         <span className="sr-only">Free OCR Extraction Tool - Convert Images to Text, Excel & PDF</span>
@@ -49,7 +72,7 @@ export default function HomePage() {
                                 sequence={[
                                     'Free OCR Extraction tool',
                                     2500,
-                                    'Free AI OCR and Report Generation Tool',
+                                    'Free AI OCR & Report Tool',
                                     2500,
                                 ]}
                                 wrapper="span"
@@ -61,43 +84,37 @@ export default function HomePage() {
                     </h1>
                 </div>
 
+                <h2 className="text-xl md:text-2xl font-bold text-red-600 tracking-tight uppercase mb-4">
+                    IMAGE TO TEXT CONVERTER
+                </h2>
+                <p className="text-gray-600 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+                    Extract text from images, convert JPG to Word/Excel, and generate AI insights using state-of-the-art Optical Character Recognition.
+                </p>
+            </div>
 
-                <div className="text-center mb-10">
-                    <h2 className="text-xl md:text-2xl font-bold text-red-600 tracking-tight uppercase">
-                        IMAGE TO TEXT CONVERTER
-                    </h2>
-                    <p className="text-gray-600 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mt-2">
-                        Image to Word converter allows you to extract text from image and convert JPG to Word, PDF to Word or other Text formats using Optical Character Recognition software
-                    </p>
-                    <p className="text-gray-500 text-xs md:text-sm font-medium mt-2 max-w-2xl mx-auto">
-                        The Necessary Tool For OCR Data Extraction – Go Beyond Extraction and Generate Reports, AI Summary, and Download in Various Formats
-                    </p>
-                </div>
+            <SmartUploadZone />
 
-                <SmartUploadZone />
+            <div className="mt-12 mb-8 flex justify-center">
+                <div className="bg-white border border-gray-100 p-8 md:p-10 rounded-[2.5rem] shadow-xl shadow-gray-200/30 max-w-4xl w-full text-center relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100/50"></div>
+                    <div className="absolute top-0 left-0 w-0 group-hover:w-full h-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 transition-all duration-700 ease-in-out"></div>
 
-                <div className="mt-12 mb-8 flex justify-center">
-                    <div className="bg-white border border-gray-100 p-8 md:p-10 rounded-[2.5rem] shadow-xl shadow-gray-200/30 max-w-4xl w-full text-center relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100/50"></div>
-                        <div className="absolute top-0 left-0 w-0 group-hover:w-full h-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 transition-all duration-700 ease-in-out"></div>
-
-                        <div className="relative z-10 space-y-4">
-                            <div className="flex justify-center mb-4">
-                                <div className="p-3 bg-red-100 rounded-2xl">
-                                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
+                    <div className="relative z-10 space-y-4">
+                        <div className="flex justify-center mb-4">
+                            <div className="p-3 bg-red-100 rounded-2xl">
+                                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
                             </div>
-
-                            <h2 className="text-xl md:text-2xl font-semibold text-gray-800 leading-tight">
-                                Just Take A Photo From Your Mobile And Convert It To Text or Word - As Simple As That !!!
-                            </h2>
-
-                            <p className="text-lg md:text-xl font-bold text-red-600 tracking-wide uppercase">
-                                On The Move and On The Go !!!
-                            </p>
                         </div>
+
+                        <h2 className="text-xl md:text-2xl font-semibold text-gray-800 leading-tight">
+                            Just Take A Photo From Your Mobile And Convert It To Text or Word - As Simple As That !!!
+                        </h2>
+
+                        <p className="text-lg md:text-xl font-bold text-red-600 tracking-wide uppercase">
+                            On The Move and On The Go !!!
+                        </p>
                     </div>
                 </div>
             </div>
@@ -132,7 +149,7 @@ export default function HomePage() {
                     <div className="absolute top-0 left-0 w-0 group-hover:w-full h-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 transition-all duration-700 ease-in-out"></div>
 
                     <div className="grid md:grid-cols-2 gap-8 mb-10">
-                        <div className="bg-gray-50 p-8 rounded-3xl border border-gray-100 shadow-sm">
+                        <div className="glass-card p-8 rounded-3xl border border-white/20 shadow-sm">
                             <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
                                 <div className="p-2 bg-red-100 rounded-lg">
                                     <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +162,7 @@ export default function HomePage() {
                                 Create actionable reports such as Key Insights Reports, Medical Report, Cost Analysis Reports, Performance Reports, Trend & Forecast Reports, and Operational Efficiency Reports—all generated instantly from your documents.
                             </p>
                         </div>
-                        <div className="bg-gray-50 p-8 rounded-3xl border border-gray-100 shadow-sm">
+                        <div className="glass-card p-8 rounded-3xl border border-white/20 shadow-sm">
                             <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
                                 <div className="p-2 bg-blue-100 rounded-lg">
                                     <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +194,7 @@ export default function HomePage() {
 
             {/* Why Users Trust Us */}
             <section className="w-full max-w-6xl mt-12 px-4 text-center">
-                <div className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/30 relative overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
+                <div className="glass-card p-8 md:p-12 rounded-[2.5rem] border border-white/20 shadow-xl shadow-gray-200/30 relative overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
                     <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100/50"></div>
                     <div className="absolute top-0 left-0 w-0 group-hover:w-full h-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 transition-all duration-700 ease-in-out"></div>
                     <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-12">
@@ -347,7 +364,7 @@ export default function HomePage() {
 
             {/* We Are Available in Other Languages */}
             <section className="w-full max-w-6xl mt-12 px-4 text-center">
-                <div className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/30 relative overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
+                <div className="glass-card p-8 md:p-12 rounded-[2.5rem] border border-white/20 shadow-xl shadow-gray-200/30 relative overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
                     <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100/50"></div>
                     <div className="absolute top-0 left-0 w-0 group-hover:w-full h-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 transition-all duration-700 ease-in-out"></div>
                     <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">

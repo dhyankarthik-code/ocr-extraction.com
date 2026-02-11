@@ -148,6 +148,18 @@
   .btn-red-outline {
     @apply border border-red-500 text-red-500 hover:bg-red-50 transition-colors;
   }
+
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
+  }
+
+  .premium-gradient {
+    @apply bg-gradient-to-br from-[#ffffff] via-[#f8fafc] to-[#f1f5f9];
+  }
+
+  .text-premium-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900;
+  }
 }
 
 /* WordPress-like Blog Post Prose Styling */

@@ -15,7 +15,7 @@ import MainLayout from "@/components/main-layout"
 const geist = Geist({ subsets: ["latin"] })
 
 // Imports moved to top
- 
+
 
 export const metadata: Metadata = {
   title: {
@@ -90,6 +90,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

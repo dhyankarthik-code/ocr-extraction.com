@@ -40,6 +40,20 @@ async function checkDistributedRateLimit(
 // Middleware Function
 // ============================================
 export async function middleware(request: NextRequest) {
+    const cspHeader = [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://tagmanager.google.com",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' blob: data: https://www.ocr-extraction.com https://blog.ocr-extraction.com https://*.google-analytics.com https://*.googletagmanager.com",
+        "font-src 'self' data:",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+        "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.inngest.com",
+        "upgrade-insecure-requests",
+    ].join('; ')
+
     const hostname = request.headers.get('host') || ''
     const pathname = request.nextUrl.pathname
 
@@ -115,10 +129,18 @@ export async function middleware(request: NextRequest) {
     }
 
     // ============================================
-    // 3. Pass Through
+    // 3. Security Headers
     // ============================================
-    // Domain redirects now handled by vercel.json
-    return NextResponse.next()
+    const response = NextResponse.next()
+
+    response.headers.set('content-security-policy', cspHeader)
+    response.headers.set('X-Frame-Options', 'DENY')
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
+    response.headers.set('Permissions-Policy', 'camera=self, microphone=(), geolocation=(self)')
+
+    return response
 }
 
 export const config = {
