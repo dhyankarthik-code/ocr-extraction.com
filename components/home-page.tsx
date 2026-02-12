@@ -54,11 +54,11 @@ export default function HomePage() {
     }, [])
 
     return (
-        <div ref={heroRef} className="flex flex-col items-center justify-center p-6 md:p-8 w-full premium-gradient" data-hydrated={mounted} data-deploy-id="811ca08-v3">
-            <div className="glass-card p-8 md:p-12 mb-10 rounded-[3rem] text-center">
-                <div className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 text-balance text-premium-gradient">
+        <div ref={heroRef} className="flex flex-col items-center justify-center p-4 md:p-6 w-full premium-gradient" data-hydrated={mounted} data-deploy-id="811ca08-v3">
+            <div className="glass-card p-5 md:p-8 mb-6 rounded-[2.5rem] text-center">
+                <div className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 text-balance text-premium-gradient">
                     {/* SEO H1 (Visually Hidden but accessible to crawlers) */}
-                    <h1 className="text-gray-900 text-center relative w-full min-h-[8rem] md:min-h-[7rem] flex items-center justify-center">
+                    <h1 className="text-gray-900 text-center relative w-full min-h-[4rem] md:min-h-[3.5rem] flex items-center justify-center">
                         <span className="sr-only">Free OCR Extraction Tool - Convert Images to Text, Excel & PDF</span>
 
                         {!mounted && (
@@ -84,10 +84,10 @@ export default function HomePage() {
                     </h1>
                 </div>
 
-                <h2 className="text-xl md:text-2xl font-bold text-red-600 tracking-tight uppercase mb-4">
+                <h2 className="text-base md:text-lg font-bold text-red-600 tracking-tight uppercase mb-2">
                     IMAGE TO TEXT CONVERTER
                 </h2>
-                <p className="text-gray-600 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+                <p className="text-gray-600 text-xs md:text-sm leading-relaxed max-w-2xl mx-auto">
                     Extract text from images, convert JPG to Word/Excel, and generate AI insights using state-of-the-art Optical Character Recognition.
                 </p>
             </div>
