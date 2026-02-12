@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Resend } from "resend"
+import prisma from "@/lib/db"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const { name, email, company, phoneWithCode, message } = body
+        const { name, email, company, phoneWithCode, message, country } = body
 
         // Validation
         if (!name || !email || !message) {
@@ -22,6 +23,38 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(
                 { error: "Invalid email address" },
                 { status: 400 }
+            )
+        }
+
+        // Get user's IP address
+        const forwarded = request.headers.get("x-forwarded-for")
+        const realIp = request.headers.get("x-real-ip")
+        const ipAddress = forwarded ? forwarded.split(",")[0] : realIp || "Unknown"
+
+        // Prepare message with company info if provided
+        const fullMessage = company
+            ? `Company: ${company}\n\n${message}`
+            : message
+
+        // Save to database FIRST
+        try {
+            await prisma.leadSubmission.create({
+                data: {
+                    lookingFor: "Services Contact Form",
+                    name,
+                    email,
+                    country: country || "Not specified",
+                    mobile: phoneWithCode || "Not provided",
+                    message: fullMessage,
+                    ipAddress
+                }
+            })
+            console.log("✅ Services contact submission saved to database")
+        } catch (dbError) {
+            console.error("❌ Failed to save services contact submission:", dbError)
+            return NextResponse.json(
+                { error: "Failed to save submission" },
+                { status: 500 }
             )
         }
 
