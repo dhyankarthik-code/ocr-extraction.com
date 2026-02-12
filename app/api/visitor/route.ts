@@ -3,8 +3,31 @@ import prisma from '@/lib/db';
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json();
+        // Parse JSON with error handling for malformed/oversized requests
+        let body;
+        try {
+            body = await request.json();
+        } catch (parseError) {
+            console.error('Failed to parse visitor tracking request:', parseError);
+            return NextResponse.json(
+                {
+                    error: 'Invalid request body',
+                    success: false,
+                    message: parseError instanceof Error ? parseError.message : 'Malformed JSON'
+                },
+                { status: 400 }
+            );
+        }
+
         const { email, tool } = body;
+
+        // Validate request body has required structure
+        if (!body || typeof body !== 'object') {
+            return NextResponse.json({
+                error: 'Request body must be a valid object',
+                success: false
+            }, { status: 400 });
+        }
 
         if (email && typeof email !== 'string') {
             return NextResponse.json({ error: 'Email must be a string' }, { status: 400 });
