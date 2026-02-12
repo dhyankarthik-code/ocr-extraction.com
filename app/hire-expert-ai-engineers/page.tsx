@@ -16,8 +16,53 @@ import {
 } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Hire Expert AI Engineers & Consultants | InfyGalaxy',
-    description: 'Hire top-tier AI/ML Engineers, Data Scientists, MLOps experts, and dedicated AI teams. Enterprise-grade AI consultancy and staffing solutions.',
+    title: 'Hire Expert AI Engineers & Consultants | Top 1% Global Talent',
+    description: 'Accelerate your digital transformation. Hire vetted AI/ML Engineers, Data Scientists, and Generative AI experts. Build dedicated AI teams with InfyGalaxy today.',
+    keywords: [
+        'hire ai engineers',
+        'hire machine learning experts',
+        'generative ai consultants',
+        'hire data scientists',
+        'dedicated ai teams',
+        'mlops engineers',
+        'ai development services',
+        'computer vision experts',
+        'hire prompt engineers'
+    ],
+    alternates: {
+        canonical: 'https://www.ocr-extraction.com/hire-expert-ai-engineers',
+    },
+    openGraph: {
+        title: 'Hire Expert AI Engineers | Build Your AI Team Today',
+        description: 'Access the top 1% of global AI talent. From Generative AI to MLOps, find the perfect experts for your enterprise projects.',
+        url: 'https://www.ocr-extraction.com/hire-expert-ai-engineers',
+        siteName: 'InfyGalaxy',
+        type: 'website',
+        images: [
+            {
+                url: 'https://www.ocr-extraction.com/og-hire-ai.jpg',
+                width: 1200,
+                height: 630,
+                alt: 'World-class AI Engineering Team',
+            },
+        ],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Hire Expert AI Engineers & Consultants',
+        description: 'Scale your AI capabilities with our vetted network of engineers and researchers.',
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
+    },
 }
 
 export default function HireExpertAiEngineersPage() {
@@ -78,8 +123,23 @@ export default function HireExpertAiEngineersPage() {
         }
     ]
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "ProfessionalService",
+        "name": "InfyGalaxy AI Staffing",
+        "url": "https://www.ocr-extraction.com/hire-expert-ai-engineers",
+        "description": "Premium AI consultancy and staffing services providing top-tier AI Engineers, Data Scientists, and MLOps experts.",
+        "areaServed": "Global",
+        "knowsAbout": ["Artificial Intelligence", "Machine Learning", "Generative AI", "Data Science", "Computer Vision"],
+        "image": "https://www.ocr-extraction.com/logo.png"
+    }
+
     return (
         <main className="min-h-screen bg-gray-50/50">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             {/* 
               SECTION 1: HERO - Minimal & Elegant 
               Style: High-end Professional, Compact, Text-Focused
