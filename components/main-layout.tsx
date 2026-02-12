@@ -19,7 +19,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     const [showAuthModal, setShowAuthModal] = useState(false)
 
     return (
-        <div className="min-h-screen bg-white flex flex-col pt-24">
+        <div className="min-h-screen bg-white flex flex-col pt-20">
             <Navbar
                 session={session}
                 onLogout={logout}

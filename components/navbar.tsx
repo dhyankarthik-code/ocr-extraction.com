@@ -22,18 +22,19 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
     { label: 'OCR', href: '/' },
     { label: 'Services', href: '/services' },
     { label: 'Tools', href: '/tools' },
+    { label: 'Hire AI Experts', href: '/hire-expert-ai-engineers' },
     { label: 'Blog', href: '/blog' },
     { label: 'Contact Us', href: '/contact' },
   ]
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-gray-200 shadow-md h-24">
+    <nav className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-gray-200 shadow-md h-20">
       <div className="container mx-auto px-6 h-full flex items-center justify-between relative">
 
         {/* Logo Section */}
-        <div className="flex-none lg:w-[280px] flex justify-start z-20">
+        <div className="flex-none lg:w-[230px] flex justify-start z-20">
           <Link href="/" className="flex items-center gap-3 group hover:opacity-90 transition-opacity">
-            <div className="relative h-12 w-12 md:h-14 md:w-14 transition-transform group-hover:scale-105 shrink-0">
+            <div className="relative h-10 w-10 md:h-12 md:w-12 transition-transform group-hover:scale-105 shrink-0">
               <Image
                 src="/logo.png"
                 alt="Infy Galaxy Logo"
@@ -55,7 +56,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
         </div>
 
         {/* Desktop Navigation - Centered */}
-        <div className="hidden lg:flex flex-1 items-center justify-center gap-6 xl:gap-8">
+        <div className="hidden lg:flex flex-1 items-center justify-center gap-4 xl:gap-6">
           {navLinks.filter(l => l.label !== 'Blog' && l.label !== 'Contact Us').map((link) => (
             <Link
               key={link.href}
@@ -82,7 +83,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
         </div>
 
         {/* Auth Section (Desktop) */}
-        <div className="hidden lg:flex items-center justify-end gap-3 lg:w-[280px] z-20">
+        <div className="hidden lg:flex items-center justify-end gap-3 lg:w-[230px] z-20">
           {session ? (
             <div className="flex items-center gap-3">
               {session.picture ? (
