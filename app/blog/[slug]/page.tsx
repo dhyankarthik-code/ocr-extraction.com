@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getPostBySlug } from '@/lib/wordpress';
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, User, Tag } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Tag, CheckCircle2 } from 'lucide-react';
 import type { Metadata } from 'next';
 import ShareButtons from '@/components/blog/ShareButtons';
 import LikeButton from '@/components/blog/LikeButton';
@@ -17,6 +17,37 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
+
+    // [SEO SHIM] Override metadata for specific manual post
+    if (slug === 'how-to-hire-ai-engineers-in-2026-the-complete-cto-guide-to-finding-top-ai-talent') {
+        const title = 'How to Hire Best AI Engineers in 2026: The Ultimate Guide for CTOs';
+        const description = 'Learn the proven 5-step process to hire best AI engineers and top AI talent in 2026. From vetting GenAI skills to salary benchmarks, this guide helps CTOs build world-class AI teams.';
+        const url = `https://www.ocr-extraction.com/blog/${slug}`;
+
+        return {
+            title,
+            description,
+            keywords: ['hire ai engineer', 'hire best ai engineers', 'hire top ai engineer', 'hire good ml engineer', 'hire expert ai engineers', 'hire dedicated ai team'],
+            alternates: {
+                canonical: url,
+            },
+            openGraph: {
+                title,
+                description,
+                url,
+                type: 'article',
+                publishedTime: '2026-02-18',
+                authors: ['InfyGalaxy Team'],
+                images: [{ url: 'https://www.ocr-extraction.com/images/blog/hiring-ai.jpg', width: 1200, height: 630 }], // Placeholder or use dynamic if available
+            },
+            twitter: {
+                card: 'summary_large_image',
+                title,
+                description,
+            }
+        };
+    }
+
     const post = await getPostBySlug(slug);
 
     if (!post) {
@@ -66,6 +97,23 @@ export default async function BlogPostPage({ params }: PageProps) {
         day: 'numeric'
     });
     const author = post._embedded?.author?.[0]?.name || 'Team';
+
+    // [SEO SHIM] JSON-LD and CTA for specific post
+    const isTargetPost = slug === 'how-to-hire-ai-engineers-in-2026-the-complete-cto-guide-to-finding-top-ai-talent';
+
+    const structuredData = isTargetPost ? {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "How to Hire Best AI Engineers in 2026: The Ultimate Guide for CTOs",
+        "datePublished": "2026-02-18",
+        "author": { "@type": "Organization", "name": "InfyGalaxy" },
+        "publisher": {
+            "@type": "Organization",
+            "name": "InfyGalaxy",
+            "logo": { "@type": "ImageObject", "url": "https://www.ocr-extraction.com/logo.png" }
+        },
+        "description": "Learn the proven 5-step process to hire best AI engineers and top AI talent in 2026."
+    } : null;
 
     // Fix mixed content issues by replacing http with https in content
     // Fix mixed content issues and strip unwanted SEO tags/H1s from content
@@ -128,6 +176,27 @@ export default async function BlogPostPage({ params }: PageProps) {
                     className="prose prose-lg md:prose-xl max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-red-600 hover:prose-a:text-red-700 prose-img:rounded-xl prose-img:shadow-md mb-12"
                     dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                 />
+
+                {isTargetPost && (
+                    <div className="bg-red-50 p-8 rounded-2xl border border-red-100 my-10 not-prose">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to accelerate your AI roadmap?</h3>
+                        <p className="text-gray-700 mb-6">
+                            Don't wait months to find talent. Get immediate access to the top 1% of global AI experts.
+                        </p>
+                        <Link href="/hire-expert-ai-engineers">
+                            <Button size="lg" className="bg-red-600 hover:bg-red-700 text-white rounded-full px-8">
+                                Hire Best AI Engineers Now
+                            </Button>
+                        </Link>
+                    </div>
+                )}
+
+                {structuredData && (
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+                    />
+                )}
 
                 {/* Engagement Section */}
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 py-8 border-t border-b border-gray-100 mb-12">
