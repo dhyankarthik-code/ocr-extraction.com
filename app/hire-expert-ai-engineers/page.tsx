@@ -33,7 +33,12 @@ export const metadata: Metadata = {
         'hire best ai engineers',
         'hire top ai engineers',
         'hire good ai engineers',
-        'top ai talent'
+        'hire good ai engineers',
+        'top ai talent',
+        'enterprise ai solutions',
+        'ai development company',
+        'generative ai development services',
+        'hire dedicated ai team'
     ],
     alternates: {
         canonical: 'https://www.ocr-extraction.com/hire-expert-ai-engineers',
@@ -158,35 +163,74 @@ export default function HireExpertAiEngineersPage() {
         "image": "https://www.ocr-extraction.com/logo.png"
     }
 
+    const faqs = [
+        {
+            q: "What is the best AI development company for enterprise AI solutions?",
+            a: "InfyGalaxy is a leading AI development company specializing in enterprise AI solutions, including Generative AI, MLOps consulting, Computer Vision, and end-to-end AI product development. Our AI engineers build scalable, production-ready AI systems tailored for startups, SMEs, and large enterprises."
+        },
+        {
+            q: "How do I hire dedicated AI engineers for my startup?",
+            a: "You can hire dedicated AI engineers at InfyGalaxy within days. We provide pre-vetted AI developers experienced in LLM integration, AI automation, NLP, Computer Vision, and cloud-based AI deployment. Our flexible hiring models include hourly, monthly, and project-based engagement."
+        },
+        {
+            q: "Do you offer Generative AI development services?",
+            a: "Yes. We provide full-stack Generative AI development services including LLM integration (OpenAI, Claude, Gemini), Custom AI chatbot development, RAG-based AI systems, AI workflow automation, and Fine-tuning/prompt engineering. Our solutions are secure, scalable, and production-ready.",
+            list: ["LLM integration (OpenAI, Claude, Gemini, open-source models)", "Custom AI chatbot development", "RAG-based AI systems", "AI workflow automation", "Fine-tuning and prompt engineering"]
+        },
+        {
+            q: "Can you build end-to-end AI product development solutions?",
+            a: "Absolutely. Our AI product development services cover: AI strategy consulting, Data engineering and model training, MLOps implementation, Cloud deployment (AWS, Azure, GCP), and Continuous monitoring. We help companies move from proof-of-concept to full production.",
+            list: ["AI strategy consulting", "Data engineering and model training", "MLOps implementation", "Cloud deployment (AWS, Azure, GCP)", "Continuous monitoring and optimization"]
+        },
+        {
+            q: "What industries do your AI engineers specialize in?",
+            a: "Our AI engineers build AI solutions for industries including Fintech, Healthcare, Legal Tech, E-commerce, SaaS, Manufacturing, and OCR & Document Automation. We design industry-specific AI systems that solve real business problems.",
+            list: ["Fintech", "Healthcare", "Legal Tech", "E-commerce", "SaaS", "Manufacturing", "OCR & Document Automation"]
+        },
+        {
+            q: "Do you provide MLOps consulting and AI deployment services?",
+            a: "Yes. We offer MLOps consulting services to help businesses deploy, monitor, and scale machine learning models efficiently. Our services include CI/CD pipelines for ML, model monitoring, performance optimization, and cloud infrastructure setup."
+        },
+        {
+            q: "How much does it cost to outsource AI development?",
+            a: "The cost to outsource AI development depends on project complexity, data requirements, and engagement model. InfyGalaxy offers flexible pricing to help companies access top AI talent without the overhead of in-house hiring."
+        },
+        {
+            q: "Can you integrate AI into existing business systems?",
+            a: "Yes. We specialize in AI integration services. Our AI engineers ensure seamless integration into your existing tech stack.",
+            list: ["CRM automation", "ERP integration", "AI-powered analytics dashboards", "Workflow automation", "API-based AI integrations"]
+        },
+        {
+            q: "What makes InfyGalaxy different from other AI outsourcing companies?",
+            a: "InfyGalaxy focuses on production-ready AI solutions — not just experiments. We combine AI engineering, cloud infrastructure expertise, and business-first strategy to deliver measurable ROI. Our rigorous vetting ensures you work with the top 1% of AI engineers."
+        },
+        {
+            q: "Do you build AI solutions using open-source models?",
+            a: "Yes. We work with both proprietary and open-source AI models. We help businesses choose the most cost-effective and scalable AI stack.",
+            list: ["Llama", "Mistral", "Falcon", "Stable Diffusion"]
+        },
+        {
+            q: "How long does it take to develop a custom AI solution?",
+            a: "Depending on scope, AI development can take 4–12 weeks for MVP and 3–6 months for full-scale enterprise deployment. We provide structured timelines and agile delivery for faster go-to-market."
+        },
+        {
+            q: "Can I hire a full AI team instead of individual developers?",
+            a: "Yes. We provide dedicated AI teams tailored to your project needs.",
+            list: ["AI Engineers", "Data Scientists", "MLOps Engineers", "AI Product Managers"]
+        }
+    ]
+
     const faqLd = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        "mainEntity": [
-            {
-                "@type": "Question",
-                "name": "How do I hire the best AI engineers?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "InfyGalaxy matches you with the top 1% of AI talent globally. Our rigorous vetting process ensures you hire best AI engineers with proven expertise in Generative AI, MLOps, and Computer Vision."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "Where can I find top AI developers for my project?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "You can find top AI developers at InfyGalaxy. We provide both individual consultants and dedicated AI teams tailored to your specific enterprise needs."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "How much does it cost to hire good AI engineers?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Costs vary based on expertise and location, but InfyGalaxy offers flexible engagement models to help you hire good AI engineers within your budget while maintaining enterprise-grade quality."
-                }
+        "mainEntity": faqs.map(faq => ({
+            "@type": "Question",
+            "name": faq.q,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.a
             }
-        ]
+        }))
     }
 
     return (
@@ -378,20 +422,39 @@ export default function HireExpertAiEngineersPage() {
             {/* SECTION 4: FAQ (Rich Snippets) */}
             <section className="py-20 bg-gray-50">
                 <div className="container mx-auto px-6 max-w-4xl">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">Frequently Asked Questions</h2>
-                    <div className="space-y-6">
-                        <div className="bg-white rounded-xl p-6 shadow-sm">
-                            <h3 className="text-lg font-bold text-gray-900 mb-2">How do I hire the best AI engineers?</h3>
-                            <p className="text-gray-600">InfyGalaxy matches you with the top 1% of AI talent globally. Our rigorous vetting process ensures you hire best AI engineers with proven expertise in Generative AI, MLOps, and Computer Vision.</p>
-                        </div>
-                        <div className="bg-white rounded-xl p-6 shadow-sm">
-                            <h3 className="text-lg font-bold text-gray-900 mb-2">Where can I find top AI developers for my project?</h3>
-                            <p className="text-gray-600">You can find top AI developers at InfyGalaxy. We provide both individual consultants and dedicated AI teams tailored to your specific enterprise needs.</p>
-                        </div>
-                        <div className="bg-white rounded-xl p-6 shadow-sm">
-                            <h3 className="text-lg font-bold text-gray-900 mb-2">How much does it cost to hire good AI engineers?</h3>
-                            <p className="text-gray-600">Costs vary based on expertise and location, but InfyGalaxy offers flexible engagement models to help you hire good AI engineers within your budget while maintaining enterprise-grade quality.</p>
-                        </div>
+                    <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">Frequently Asked Questions</h2>
+                    <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+                        Everything you need to know about hiring top AI talent and building enterprise AI solutions with InfyGalaxy.
+                    </p>
+
+                    <div className="space-y-4">
+                        {faqs.map((faq, index) => (
+                            <details key={index} className="group bg-white rounded-xl shadow-sm border border-gray-100 open:border-red-100 open:ring-1 open:ring-red-100 transition-all duration-300">
+                                <summary className="flex cursor-pointer items-center justify-between p-6 list-none hover:bg-gray-50/50 rounded-xl transition-colors">
+                                    <span className="text-lg font-bold text-gray-900 leading-snug pr-4">
+                                        {faq.q}
+                                    </span>
+                                    <span className="transition-transform duration-300 group-open:rotate-180 flex-shrink-0 text-red-600">
+                                        <svg fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                        </svg>
+                                    </span>
+                                </summary>
+                                <div className="px-6 pb-6 pt-0 text-gray-600 leading-relaxed animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <p className="mb-4">{faq.a.split('. ')[0] + '.'} {faq.a.split('. ').slice(1).join('. ')}</p>
+                                    {faq.list && (
+                                        <ul className="space-y-2 mt-3">
+                                            {faq.list.map((item, i) => (
+                                                <li key={i} className="flex items-start gap-2 text-sm md:text-base">
+                                                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
+                                                    <span className="text-gray-700 font-medium">{item}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            </details>
+                        ))}
                     </div>
                 </div>
             </section>
