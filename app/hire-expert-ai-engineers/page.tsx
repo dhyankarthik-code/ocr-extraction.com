@@ -16,8 +16,8 @@ import {
 } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Hire Expert AI Engineers & Consultants | Top 1% Global Talent',
-    description: 'Accelerate your digital transformation. Hire vetted AI/ML Engineers, Data Scientists, and Generative AI experts. Build dedicated AI teams with InfyGalaxy today.',
+    title: 'Hire Top AI Engineers & Best Consultants | InfyGalaxy',
+    description: 'Looking to hire best AI engineers? InfyGalaxy connects you with top AI talent and good AI developers for your projects. Vetted top 1% experts.',
     keywords: [
         'hire ai engineers',
         'hire machine learning experts',
@@ -27,7 +27,11 @@ export const metadata: Metadata = {
         'mlops engineers',
         'ai development services',
         'computer vision experts',
-        'hire prompt engineers'
+        'hire prompt engineers',
+        'hire best ai engineers',
+        'hire top ai engineers',
+        'hire good ai engineers',
+        'top ai talent'
     ],
     alternates: {
         canonical: 'https://www.ocr-extraction.com/hire-expert-ai-engineers',
@@ -134,11 +138,46 @@ export default function HireExpertAiEngineersPage() {
         "image": "https://www.ocr-extraction.com/logo.png"
     }
 
+    const faqLd = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How do I hire the best AI engineers?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "InfyGalaxy matches you with the top 1% of AI talent globally. Our rigorous vetting process ensures you hire best AI engineers with proven expertise in Generative AI, MLOps, and Computer Vision."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Where can I find top AI developers for my project?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "You can find top AI developers at InfyGalaxy. We provide both individual consultants and dedicated AI teams tailored to your specific enterprise needs."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How much does it cost to hire good AI engineers?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Costs vary based on expertise and location, but InfyGalaxy offers flexible engagement models to help you hire good AI engineers within your budget while maintaining enterprise-grade quality."
+                }
+            }
+        ]
+    }
+
     return (
         <main className="min-h-screen bg-gray-50/50">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
             />
             {/* 
               SECTION 1: HERO - Minimal & Elegant 
@@ -249,6 +288,28 @@ export default function HireExpertAiEngineersPage() {
                 </div>
             </section>
 
+            {/* SECTION 2.5: WHY US (Content Rich for SEO) */}
+            <section className="py-20 bg-white border-y border-gray-100">
+                <div className="container mx-auto px-6">
+                    <div className="max-w-4xl mx-auto">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+                            Why Hire the <span className="text-red-600">Best AI Engineers</span> from InfyGalaxy?
+                        </h2>
+                        <div className="prose prose-lg text-gray-600 mx-auto">
+                            <p className="mb-4">
+                                When you need to <strong>hire top AI engineers</strong>, technical expertise is non-negotiable. At InfyGalaxy, we go beyond basic coding skills. We connect you with <strong>good AI developers</strong> who understand business logic, scalable architecture, and the ethical implications of AI deployment.
+                            </p>
+                            <p className="mb-4">
+                                Finding the <strong>best AI engineers</strong> can be challenging in a competitive market. Our curated network gives you immediate access to world-class talent in Generative AI, LLMs, and Computer Vision, saving you months of recruitment time.
+                            </p>
+                            <p>
+                                Whether you need to build a custom RAG pipeline or deploy edge AI solutions, our experts are ready to deliver. Don't settle for average; <strong>hire top AI talent</strong> that drives real innovation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* SECTION 3: DEDICATED TEAMS */}
             <section className="py-24 bg-white">
                 <div className="container mx-auto px-6">
@@ -289,6 +350,27 @@ export default function HireExpertAiEngineersPage() {
                             >
                                 Setup Your Team
                             </Link>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* SECTION 4: FAQ (Rich Snippets) */}
+            <section className="py-20 bg-gray-50">
+                <div className="container mx-auto px-6 max-w-4xl">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">Frequently Asked Questions</h2>
+                    <div className="space-y-6">
+                        <div className="bg-white rounded-xl p-6 shadow-sm">
+                            <h3 className="text-lg font-bold text-gray-900 mb-2">How do I hire the best AI engineers?</h3>
+                            <p className="text-gray-600">InfyGalaxy matches you with the top 1% of AI talent globally. Our rigorous vetting process ensures you hire best AI engineers with proven expertise in Generative AI, MLOps, and Computer Vision.</p>
+                        </div>
+                        <div className="bg-white rounded-xl p-6 shadow-sm">
+                            <h3 className="text-lg font-bold text-gray-900 mb-2">Where can I find top AI developers for my project?</h3>
+                            <p className="text-gray-600">You can find top AI developers at InfyGalaxy. We provide both individual consultants and dedicated AI teams tailored to your specific enterprise needs.</p>
+                        </div>
+                        <div className="bg-white rounded-xl p-6 shadow-sm">
+                            <h3 className="text-lg font-bold text-gray-900 mb-2">How much does it cost to hire good AI engineers?</h3>
+                            <p className="text-gray-600">Costs vary based on expertise and location, but InfyGalaxy offers flexible engagement models to help you hire good AI engineers within your budget while maintaining enterprise-grade quality.</p>
                         </div>
                     </div>
                 </div>
