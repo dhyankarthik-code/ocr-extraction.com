@@ -22,6 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/faqs',
         '/services',
         '/hire-expert-ai-engineers',
+        '/blog/in-house-vs-dedicated-ai-teams',
     ]
 
     // Dynamically get tool routes from app/tools directory
