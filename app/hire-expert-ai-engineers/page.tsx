@@ -20,14 +20,16 @@ export const metadata: Metadata = {
     description: 'Looking to hire best AI engineers? InfyGalaxy connects you with top AI talent and good AI developers for your projects. Vetted top 1% experts.',
     keywords: [
         'hire ai engineers',
-        'hire machine learning experts',
-        'generative ai consultants',
-        'hire data scientists',
-        'dedicated ai teams',
-        'mlops engineers',
-        'ai development services',
-        'computer vision experts',
-        'hire prompt engineers',
+        'hire best ml engineers',
+        'hire expert data scientists',
+        'hire gen ai engineers',
+        'hire mlops engineers',
+        'hire ai product managers',
+        'hire computer vision experts',
+        'hire ai researchers',
+        'hire ai ethics officers',
+        'hire prompt managers',
+        'hire ai compliance managers',
         'hire best ai engineers',
         'hire top ai engineers',
         'hire good ai engineers',
@@ -72,7 +74,7 @@ export const metadata: Metadata = {
 export default function HireExpertAiEngineersPage() {
     const roles = [
         {
-            title: "AI/ML Engineers",
+            title: "Best ML Engineers",
             description: "Architect and deploy scalable machine learning models. Expertise in PyTorch, TensorFlow, and cloud infrastructure.",
             icon: <Cpu className="w-8 h-8" />,
             tags: ["TensorFlow", "PyTorch", "AWS/GCP"]
@@ -108,7 +110,7 @@ export default function HireExpertAiEngineersPage() {
             tags: ["OpenCV", "YOLO", "Segmentation"]
         },
         {
-            title: "AI Researchers (Applied)",
+            title: "AI Researchers",
             description: "Push the boundaries of what's possible. Solve novel problems with cutting-edge algorithmic research.",
             icon: <Terminal className="w-8 h-8" />,
             tags: ["Algorithms", "Papers", "Innovation"]
@@ -117,13 +119,19 @@ export default function HireExpertAiEngineersPage() {
             title: "AI Ethics Officers",
             description: "Ensure your AI is compliant, fair, and transparent. Governance frameworks for responsible AI adoption.",
             icon: <ShieldCheck className="w-8 h-8" />,
-            tags: ["Compliance", "Bias", "GDPR"]
+            tags: ["Compliance", "Bias", "Fairness"]
         },
         {
             title: "Prompt Managers",
             description: "Optimize LLM performance through advanced prompt engineering and context management strategies.",
             icon: <MessageSquareText className="w-8 h-8" />,
             tags: ["Prompting", "Context", "Optimization"]
+        },
+        {
+            title: "AI Compliance Managers",
+            description: "Navigate complex regulatory landscapes (EU AI Act, GDPR). mitigate risks and ensure legal AI operations.",
+            icon: <ShieldCheck className="w-8 h-8 text-blue-600" />,
+            tags: ["EU AI Act", "Risk", "Governance"]
         }
     ]
 
@@ -134,7 +142,19 @@ export default function HireExpertAiEngineersPage() {
         "url": "https://www.ocr-extraction.com/hire-expert-ai-engineers",
         "description": "Premium AI consultancy and staffing services providing top-tier AI Engineers, Data Scientists, and MLOps experts.",
         "areaServed": "Global",
-        "knowsAbout": ["Artificial Intelligence", "Machine Learning", "Generative AI", "Data Science", "Computer Vision"],
+        "knowsAbout": [
+            "Artificial Intelligence",
+            "Best ML Engineers",
+            "Expert Data Scientists",
+            "Gen AI Engineers",
+            "MLOps Engineers",
+            "AI Product Managers",
+            "Computer Vision Experts",
+            "AI Researchers",
+            "AI Ethics Officers",
+            "Prompt Managers",
+            "AI Compliance Managers"
+        ],
         "image": "https://www.ocr-extraction.com/logo.png"
     }
 
