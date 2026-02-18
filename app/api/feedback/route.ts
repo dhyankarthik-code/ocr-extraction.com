@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
                 const starDisplay = "⭐".repeat(rating) + "☆".repeat(5 - rating)
 
                 await resend.emails.send({
-                    from: "OCR Feedback <onboarding@resend.dev>",
-                    to: "admin@ocr-extraction.com",
+                    from: "OCR Feedback <noreply@ocr-extraction.com>",
+                    to: ["admin@ocr-extraction.com", "prakashmalay@gmail.com"],
                     subject: `New Feedback: ${rating} Star${rating !== 1 ? 's' : ''} - OCR Extraction`,
                     html: `
                         <!DOCTYPE html>

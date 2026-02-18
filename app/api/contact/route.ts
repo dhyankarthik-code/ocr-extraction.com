@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
             try {
                 const replyToEmail = (email && typeof email === 'string' && email.includes('@')) ? email : undefined;
                 await resend.emails.send({
-                    from: "Contact Form <onboarding@resend.dev>",
-                    to: "admin@ocr-extraction.com",
+                    from: "OCR Contact <noreply@ocr-extraction.com>",
+                    to: ["admin@ocr-extraction.com", "prakashmalay@gmail.com"],
                     replyTo: replyToEmail,
                     subject: `📩 New Contact: ${name} - OCR-Extraction.com`,
                     html: `

@@ -61,8 +61,8 @@ export async function POST(request: NextRequest) {
                 console.log("📨 Leads Route: Attempting to send email to admin@ocr-extraction.com");
                 const replyToEmail = (email && typeof email === 'string' && email.includes('@')) ? email : undefined;
                 const { data, error } = await resend.emails.send({
-                    from: "Leads - OCR Extraction <onboarding@resend.dev>",
-                    to: "admin@ocr-extraction.com",
+                    from: "OCR Leads <noreply@ocr-extraction.com>",
+                    to: ["admin@ocr-extraction.com", "prakashmalay@gmail.com"],
                     replyTo: replyToEmail,
                     subject: `🎯 New Lead: ${lookingFor} - OCR-Extraction.com`,
                     html: `
