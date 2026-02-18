@@ -111,12 +111,13 @@ export default function RootLayout({
           }}
         />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <GoogleAnalytics gaId="G-230FBSCTMJ" />
-        <GoogleTagManager gtmId="GTM-K9SH3TBW" />
+
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://blog.ocr-extraction.com" />
       </head>
       <body className={`${geist.className} font-sans antialiased bg-white text-gray-900`} suppressHydrationWarning>
+        <GoogleTagManager gtmId="GTM-K9SH3TBW" />
+        <GoogleAnalytics gaId="G-230FBSCTMJ" />
         <ReCaptchaProvider reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}>
           <SessionProvider>
             <MainLayout>
