@@ -16,8 +16,8 @@ import {
 } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Hire Top AI Engineers & Best Consultants | InfyGalaxy',
-    description: 'Looking to hire best AI engineers? InfyGalaxy connects you with top AI talent and good AI developers for your projects. Vetted top 1% experts.',
+    title: 'Hire AI Engineers in USA, Europe, Middle East & APAC | InfyGalaxy',
+    description: 'Looking to hire AI engineers in USA, Dubai, London or Berlin? InfyGalaxy provides top 1% AI talent for onsite and remote projects. Global hiring made easy.',
     keywords: [
         'hire ai engineers',
         'hire best ml engineers',
@@ -38,7 +38,24 @@ export const metadata: Metadata = {
         'enterprise ai solutions',
         'ai development company',
         'generative ai development services',
-        'hire dedicated ai team'
+        'hire ai engineers usa',
+        'hire ai engineers uk',
+        'hire ai engineers dubai',
+        'hire ai engineers germany',
+        'hire ai engineers saudi arabia',
+        'hire ai engineers canada',
+        'hire ai engineers singapore',
+        'hire ai engineers australia',
+        'hire ai engineers switzerland',
+        'hire ai engineers sweden',
+        'hire ai engineers denmark',
+        'hire ai engineers france',
+        'hire ai engineers netherlands',
+        'hire ai engineers kuwait',
+        'hire ai engineers qatar',
+        'hire dedicated ai team',
+        'staff augmentation ai',
+        'onsite ai engineers'
     ],
     alternates: {
         canonical: 'https://www.ocr-extraction.com/hire-expert-ai-engineers',
@@ -247,52 +264,129 @@ export default function HireExpertAiEngineersPage() {
               SECTION 1: HERO - Minimal & Elegant 
               Style: High-end Professional, Compact, Text-Focused
             */}
-            <section className="relative pt-6 pb-12 bg-white border-b border-gray-100">
+            <section className="relative pt-12 pb-20 bg-white border-b border-gray-100 overflow-hidden">
+                {/* Background Decoration */}
+                <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[800px] h-[800px] bg-red-50/50 rounded-full blur-3xl -z-10"></div>
+                <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-50/50 rounded-full blur-3xl -z-10"></div>
+
                 <div className="container mx-auto px-6 relative z-10">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-700 text-[11px] font-bold uppercase tracking-wider mb-6">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
-                            Top 1% Global AI Talent
+                    <div className="max-w-5xl mx-auto text-center">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-50 text-red-700 text-xs font-bold uppercase tracking-widest mb-8 border border-red-100">
+                            <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
+                            Deploying in 15+ Countries
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight mb-4 leading-tight">
-                            Hire Expert <span className="text-red-600">AI Engineers</span> & Consultants
+                        <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight">
+                            Hire Top <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-900">AI Engineers</span> in <br className="hidden md:block" />
+                            <span className="text-gray-800">USA, Europe, Middle East & APAC</span>
                         </h1>
 
-                        <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto mb-8 text-balance">
-                            Accelerate your digital transformation with world-class AI experts.
-                            From <span className="font-semibold text-gray-900">Generative AI</span> to <span className="font-semibold text-gray-900">MLOps</span>,
-                            we provide the specialized talent you need.
+                        <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-10 text-balance">
+                            From <strong>Silicon Valley</strong> to <strong>Dubai</strong>, <strong>Berlin</strong> to <strong>Singapore</strong>.
+                            We deploy the top 1% of AI talent to build your Generative AI and MLOps infrastructure.
+                            <span className="block mt-2 text-gray-500 text-base font-normal">Available for <strong>Remote</strong>, <strong>Onsite</strong>, and <strong>Hybrid</strong> teams.</span>
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-10">
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
                             <Link
                                 href="/contact"
-                                className="inline-flex items-center justify-center px-8 py-3 text-sm font-bold text-white transition-all bg-red-600 rounded-full hover:bg-red-700 hover:shadow-md hover:-translate-y-0.5"
+                                className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all bg-red-600 rounded-full hover:bg-red-700 hover:shadow-lg hover:-translate-y-1"
                             >
-                                Hire Talent Now
+                                Hire Talent Globally
                             </Link>
                             <Link
                                 href="/contact?subject=Consultation"
-                                className="inline-flex items-center justify-center px-8 py-3 text-sm font-bold text-gray-700 transition-all bg-white border border-gray-200 rounded-full hover:border-gray-300 hover:bg-gray-50"
+                                className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-gray-700 transition-all bg-white border border-gray-200 rounded-full hover:border-gray-300 hover:bg-gray-50 shadow-sm"
                             >
                                 Book a Consultation
                             </Link>
                         </div>
 
-                        <div className="flex flex-wrap justify-center gap-8 text-xs font-semibold text-gray-800 uppercase tracking-wide opacity-80">
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4 text-red-600" />
-                                Vetted Experts
+                        {/* Global Trust Badges */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-center justify-center opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+                            {/*  Placeholder for client logos if we had them. Using text for now. */}
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-gray-900">100+</div>
+                                <div className="text-xs uppercase tracking-wide text-gray-500">Global Clients</div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4 text-red-600" />
-                                Immediate Availability
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-gray-900">48h</div>
+                                <div className="text-xs uppercase tracking-wide text-gray-500">Deployment Time</div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4 text-red-600" />
-                                Enterprise Compliant
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-gray-900">15+</div>
+                                <div className="text-xs uppercase tracking-wide text-gray-500">Countries Served</div>
                             </div>
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-gray-900 top-1%">Top 1%</div>
+                                <div className="text-xs uppercase tracking-wide text-gray-500">Vetted Talent</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* SECTION 1.5: GLOBAL REACH */}
+            <section className="py-16 bg-gray-900 text-white overflow-hidden">
+                <div className="container mx-auto px-6">
+                    <div className="text-center mb-12">
+                        <span className="text-red-500 font-bold tracking-widest uppercase text-xs">Global Presence</span>
+                        <h2 className="text-3xl md:text-4xl font-bold mt-2">Serving High-Growth Economies</h2>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+                        {/* Americas */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xl">🌎</div>
+                                <h3 className="font-bold text-lg">Americas</h3>
+                            </div>
+                            <ul className="space-y-2 text-gray-400 text-sm">
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> United States (USA)</li>
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Canada</li>
+                            </ul>
+                        </div>
+
+                        {/* Europe */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xl">🇪🇺</div>
+                                <h3 className="font-bold text-lg">Europe</h3>
+                            </div>
+                            <ul className="space-y-2 text-gray-400 text-sm">
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> United Kingdom</li>
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Germany & France</li>
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Switzerland</li>
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Sweden & Denmark</li>
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Netherlands</li>
+                            </ul>
+                        </div>
+
+                        {/* Middle East */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xl">🕌</div>
+                                <h3 className="font-bold text-lg">Middle East</h3>
+                            </div>
+                            <ul className="space-y-2 text-gray-400 text-sm">
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> UAE (Dubai, Abu Dhabi)</li>
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Saudi Arabia (KSA)</li>
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Kuwait</li>
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Qatar</li>
+                            </ul>
+                        </div>
+
+                        {/* APAC */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xl">🌏</div>
+                                <h3 className="font-bold text-lg">APAC</h3>
+                            </div>
+                            <ul className="space-y-2 text-gray-400 text-sm">
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Singapore</li>
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Australia</li>
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> India (Offshore Center)</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -352,67 +446,134 @@ export default function HireExpertAiEngineersPage() {
                 </div>
             </section>
 
-            {/* SECTION 2.5: WHY US (Content Rich for SEO) */}
+            {/* SECTION 2.5: VETTING PROCESS */}
             <section className="py-20 bg-white border-y border-gray-100">
                 <div className="container mx-auto px-6">
-                    <div className="max-w-4xl mx-auto">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
-                            Why Hire the <span className="text-red-600">Best AI Engineers</span> from InfyGalaxy?
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                            How We Vet the <span className="text-red-600">Top 1%</span> for You
                         </h2>
-                        <div className="prose prose-lg text-gray-600 mx-auto">
-                            <p className="mb-4">
-                                When you need to <strong>hire top AI engineers</strong>, technical expertise is non-negotiable. At InfyGalaxy, we go beyond basic coding skills. We connect you with <strong>good AI developers</strong> who understand business logic, scalable architecture, and the ethical implications of AI deployment.
-                            </p>
-                            <p className="mb-4">
-                                Finding the <strong>best AI engineers</strong> can be challenging in a competitive market. Our curated network gives you immediate access to world-class talent in Generative AI, LLMs, and Computer Vision, saving you months of recruitment time.
-                            </p>
-                            <p>
-                                Whether you need to build a custom RAG pipeline or deploy edge AI solutions, our experts are ready to deliver. Don't settle for average; <strong>hire top AI talent</strong> that drives real innovation.
-                            </p>
-                        </div>
+                        <p className="text-gray-600 max-w-2xl mx-auto">
+                            We don't just send resumes. We test for algorithm optimization, system design, and AI ethics compliance.
+                            Our acceptance rate is lower than Harvard's.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+                        {/* Connecting Line (Desktop) */}
+                        <div className="hidden md:block absolute top-8 left-[12.5%] right-[12.5%] h-0.5 bg-gray-200 -z-10"></div>
+
+                        {[
+                            { step: "01", title: "Global Sourcing", desc: "Scouting top talent from research labs, hackathons, and enterprise tech hubs." },
+                            { step: "02", title: "Technical Challenge", desc: "Rigorous coding tests on PyTorch, System Design, and Model Optimization." },
+                            { step: "03", title: "Project Simulation", desc: "Real-world scenario testing to verify problem-solving and communication." },
+                            { step: "04", title: "Final Fit", desc: "Cultural alignment ensure they integrate tailored to your company DNA." }
+                        ].map((item, i) => (
+                            <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center relative">
+                                <div className="w-16 h-16 mx-auto bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-xl mb-6 shadow-lg shadow-red-200">
+                                    {item.step}
+                                </div>
+                                <h3 className="font-bold text-lg text-gray-900 mb-2">{item.title}</h3>
+                                <p className="text-gray-600 text-sm">{item.desc}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* SECTION 3: DEDICATED TEAMS */}
-            <section className="py-24 bg-white">
+            {/* SECTION 3: ENGAGEMENT MODELS */}
+            <section className="py-24 bg-gray-50">
                 <div className="container mx-auto px-6">
-                    <div className="bg-gray-900 rounded-[2.5rem] p-10 md:p-20 text-center shadow-2xl relative overflow-hidden isolate">
-                        {/* Gradients */}
-                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 -z-10"></div>
-                        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 -z-10"></div>
+                    <div className="text-center mb-16">
+                        <span className="text-red-600 font-bold tracking-widest uppercase text-xs">Flexible Hiring</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mt-2">
+                            Choose Your Engagement Model
+                        </h2>
+                    </div>
 
-                        <div className="max-w-4xl mx-auto">
-                            <span className="text-red-400 font-bold tracking-widest uppercase text-sm mb-4 block">
-                                Enterprise Solution
-                            </span>
-                            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-                                Hire Dedicated AI Teams
-                            </h2>
-                            <p className="text-gray-300 text-lg md:text-xl leading-relaxed mb-12 max-w-2xl mx-auto">
-                                End-to-end agile pods to run your AI initiatives. From <span className="text-white font-medium">Product Design</span> to <span className="text-white font-medium">Planning</span>, <span className="text-white font-medium">QA</span>, and <span className="text-white font-medium">Launch</span>.
-                            </p>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-                                {[
-                                    { step: "01", title: "Product Design", desc: "User-centric AI flows" },
-                                    { step: "02", title: "Strategic Planning", desc: "Roadmap & Architecture" },
-                                    { step: "03", title: "Development", desc: "Agile Implementation" },
-                                    { step: "04", title: "Launch & Scale", desc: "Deployment & Monitoring" },
-                                ].map((item) => (
-                                    <div key={item.step} className="bg-white/5 border border-white/10 p-6 rounded-2xl text-left hover:bg-white/10 transition-colors">
-                                        <div className="text-red-400 font-mono text-xl mb-2">{item.step}</div>
-                                        <div className="text-white font-bold text-lg mb-1">{item.title}</div>
-                                        <div className="text-gray-400 text-sm">{item.desc}</div>
-                                    </div>
-                                ))}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                        {/* Model 1: Remote */}
+                        <div className="bg-white rounded-3xl p-8 border border-gray-200 hover:border-red-200 hover:shadow-xl transition-all duration-300 flex flex-col">
+                            <div className="mb-6">
+                                <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6">
+                                    <Network className="w-7 h-7 text-blue-600" />
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Dedicated Remote Team</h3>
+                                <p className="text-gray-500 text-sm">Best for US/EU startups seeking cost-efficiency.</p>
                             </div>
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-start gap-3 text-gray-600 text-sm">
+                                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                                    <span>Top 1% Indian/Global Talent</span>
+                                </li>
+                                <li className="flex items-start gap-3 text-gray-600 text-sm">
+                                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                                    <span>Timezone Aligned (EST/PST/CET)</span>
+                                </li>
+                                <li className="flex items-start gap-3 text-gray-600 text-sm">
+                                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                                    <span>Save 40-60% vs Local Hires</span>
+                                </li>
+                            </ul>
+                            <Link href="/contact?subject=Remote%20Team" className="w-full py-3 rounded-xl bg-gray-900 text-white font-bold text-center hover:bg-gray-800 transition-colors">
+                                Start Remote Team
+                            </Link>
+                        </div>
 
-                            <Link
-                                href="/contact?subject=Dedicated%20Team"
-                                className="inline-flex items-center px-10 py-4 bg-white text-gray-900 font-bold rounded-full hover:bg-gray-100 hover:scale-105 transition-all text-lg shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-                            >
-                                Setup Your Team
+                        {/* Model 2: Onsite */}
+                        <div className="bg-gray-900 rounded-3xl p-8 border border-gray-800 hover:shadow-2xl hover:scale-105 transition-all duration-300 flex flex-col relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-red-600/20 rounded-full blur-3xl"></div>
+                            <div className="mb-6 relative z-10">
+                                <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center mb-6">
+                                    <Users className="w-7 h-7 text-white" />
+                                </div>
+                                <h3 className="text-2xl font-bold text-white mb-2">Onsite Staffing</h3>
+                                <p className="text-gray-400 text-sm">Best for UAE, KSA & Enterprise Security.</p>
+                            </div>
+                            <ul className="space-y-4 mb-8 flex-1 relative z-10">
+                                <li className="flex items-start gap-3 text-gray-300 text-sm">
+                                    <CheckCircle2 className="w-5 h-5 text-red-500 shrink-0" />
+                                    <span>Engineers Deployed to Your Office</span>
+                                </li>
+                                <li className="flex items-start gap-3 text-gray-300 text-sm">
+                                    <CheckCircle2 className="w-5 h-5 text-red-500 shrink-0" />
+                                    <span>Visa & Relocation Handled</span>
+                                </li>
+                                <li className="flex items-start gap-3 text-gray-300 text-sm">
+                                    <CheckCircle2 className="w-5 h-5 text-red-500 shrink-0" />
+                                    <span>Short & Long Term Contracts</span>
+                                </li>
+                            </ul>
+                            <Link href="/contact?subject=Onsite%20Staffing" className="w-full py-3 rounded-xl bg-red-600 text-white font-bold text-center hover:bg-red-700 transition-colors relative z-10">
+                                Request Onsite Staff
+                            </Link>
+                        </div>
+
+                        {/* Model 3: Project */}
+                        <div className="bg-white rounded-3xl p-8 border border-gray-200 hover:border-red-200 hover:shadow-xl transition-all duration-300 flex flex-col">
+                            <div className="mb-6">
+                                <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center mb-6">
+                                    <Terminal className="w-7 h-7 text-purple-600" />
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Fixed Price Project</h3>
+                                <p className="text-gray-500 text-sm">Best for defined MVPs and PoCs.</p>
+                            </div>
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-start gap-3 text-gray-600 text-sm">
+                                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                                    <span>Clear Scope & Deliverables</span>
+                                </li>
+                                <li className="flex items-start gap-3 text-gray-600 text-sm">
+                                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                                    <span>Managed by Our Tech Leads</span>
+                                </li>
+                                <li className="flex items-start gap-3 text-gray-600 text-sm">
+                                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                                    <span>Milestone Based Payment</span>
+                                </li>
+                            </ul>
+                            <Link href="/contact?subject=Fixed%20Project" className="w-full py-3 rounded-xl bg-gray-100 text-gray-900 font-bold text-center hover:bg-gray-200 transition-colors">
+                                Discuss Project
                             </Link>
                         </div>
                     </div>

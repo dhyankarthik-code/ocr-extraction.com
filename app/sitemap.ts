@@ -47,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: `${baseUrl}${route}`, // Removed forced trailing slash
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
-        priority: route === '' ? 1 : 0.8,
+        priority: route === '' ? 1 : route === '/hire-expert-ai-engineers' ? 0.9 : 0.8,
     }))
 
     // Fetch all blog posts dynamically
