@@ -25,6 +25,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/blog/in-house-vs-dedicated-ai-teams',
         '/blog/how-to-hire-ai-engineers-in-2026-the-complete-cto-guide-to-finding-top-ai-talent',
         '/blog/cost-to-hire-ai-engineers-in-2026-usa-vs-india-vs-europe-vs-dubai',
+        // Geo cluster pages — Tier 1 markets
+        '/hire-expert-ai-engineers/hire-ai-engineer-in-saudi-arabia',
+        '/hire-expert-ai-engineers/hire-ai-engineer-in-uae',
+        '/hire-expert-ai-engineers/hire-ai-engineer-in-usa',
+        '/hire-expert-ai-engineers/hire-ai-engineer-in-united-kingdom',
+        '/hire-expert-ai-engineers/hire-ai-engineer-in-germany',
+        '/hire-expert-ai-engineers/hire-ai-engineer-in-singapore',
+        '/hire-expert-ai-engineers/hire-ai-engineer-in-india',
     ]
 
     // Dynamically get tool routes from app/tools directory

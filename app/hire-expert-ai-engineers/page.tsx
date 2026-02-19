@@ -331,6 +331,40 @@ export default function HireExpertAiEngineersPage() {
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-12">
                         <span className="text-red-500 font-bold tracking-widest uppercase text-xs">Global Presence</span>
+                        <h2 className="text-3xl md:text-4xl font-bold mt-2">Hire AI Engineers by Country</h2>
+                        <p className="text-gray-400 mt-3 max-w-2xl mx-auto">Select your region for market-specific rates, compliance notes, and talent availability.</p>
+                    </div>
+
+                    {/* Country cluster links — each is a dedicated SEO page */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-6xl mx-auto mb-12">
+                        {[
+                            { slug: 'saudi-arabia', flag: '🇸🇦', name: 'Saudi Arabia', rate: '$30–60/hr' },
+                            { slug: 'uae', flag: '🇦🇪', name: 'UAE (Dubai)', rate: '$30–60/hr' },
+                            { slug: 'usa', flag: '🇺🇸', name: 'United States', rate: '$40–80/hr' },
+                            { slug: 'united-kingdom', flag: '🇬🇧', name: 'United Kingdom', rate: '$40–70/hr' },
+                            { slug: 'germany', flag: '🇩🇪', name: 'Germany', rate: '$35–65/hr' },
+                            { slug: 'singapore', flag: '🇸🇬', name: 'Singapore', rate: '$35–70/hr' },
+                            { slug: 'india', flag: '🇮🇳', name: 'India (Offshore)', rate: '$25–55/hr' },
+                        ].map((c) => (
+                            <Link
+                                key={c.slug}
+                                href={`/hire-expert-ai-engineers/hire-ai-engineer-in-${c.slug}`}
+                                className="group flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-red-500/50 transition-all"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <span className="text-2xl">{c.flag}</span>
+                                    <div>
+                                        <div className="text-sm font-semibold text-white">{c.name}</div>
+                                        <div className="text-xs text-green-400 font-medium">{c.rate}</div>
+                                    </div>
+                                </div>
+                                <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-red-400 group-hover:translate-x-1 transition-all" />
+                            </Link>
+                        ))}
+                    </div>
+
+                    <div className="text-center mb-12">
+                        <span className="text-red-500 font-bold tracking-widest uppercase text-xs">All Markets</span>
                         <h2 className="text-3xl md:text-4xl font-bold mt-2">Serving High-Growth Economies</h2>
                     </div>
 
