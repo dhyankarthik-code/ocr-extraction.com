@@ -48,6 +48,36 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
+    // [SEO SHIM 2] Override metadata for Cost to Hire post
+    if (slug === 'cost-to-hire-ai-engineers-in-2026-usa-vs-india-vs-europe-vs-dubai') {
+        const title = 'Cost to Hire AI Engineers in 2026: The Global CTO Guide (USA vs India vs Dubai)';
+        const description = 'How much does it cost to hire an AI engineer in 2026? Complete guide comparing hourly rates in USA ($150/hr), India ($40/hr), & Dubai ($80/hr). Save 60% with remote teams.';
+        const url = `https://www.ocr-extraction.com/blog/${slug}`;
+
+        return {
+            title,
+            description,
+            keywords: ['cost to hire ai engineer', 'ai engineer salary 2026', 'hire ai developers india price', 'ai engineer hourly rates', 'software engineer salary usa vs india', 'outsourced ai development cost'],
+            alternates: {
+                canonical: url,
+            },
+            openGraph: {
+                title,
+                description,
+                url,
+                type: 'article',
+                publishedTime: '2026-02-19',
+                authors: ['InfyGalaxy Team'],
+                images: [{ url: 'https://www.ocr-extraction.com/images/blog/ai-cost-guide.jpg', width: 1200, height: 630 }],
+            },
+            twitter: {
+                card: 'summary_large_image',
+                title,
+                description,
+            }
+        };
+    }
+
     const post = await getPostBySlug(slug);
 
     if (!post) {
