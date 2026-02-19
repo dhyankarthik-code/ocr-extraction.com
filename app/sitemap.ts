@@ -23,6 +23,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/services',
         '/hire-expert-ai-engineers',
         '/blog/in-house-vs-dedicated-ai-teams',
+        '/blog/how-to-hire-ai-engineers-in-2026-the-complete-cto-guide-to-finding-top-ai-talent',
+        '/blog/cost-to-hire-ai-engineers-in-2026-usa-vs-india-vs-europe-vs-dubai',
     ]
 
     // Dynamically get tool routes from app/tools directory
@@ -47,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: `${baseUrl}${route}`, // Removed forced trailing slash
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
-        priority: route === '' ? 1 : route === '/hire-expert-ai-engineers' ? 0.9 : route.includes('cost-to-hire-ai-engineers') ? 0.8 : 0.8,
+        priority: route === '' ? 1 : route === '/hire-expert-ai-engineers' ? 0.9 : (route.includes('how-to-hire-ai-engineers') || route.includes('cost-to-hire-ai-engineers')) ? 0.9 : 0.8,
     }))
 
     // Fetch all blog posts dynamically
