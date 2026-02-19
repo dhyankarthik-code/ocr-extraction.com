@@ -5,16 +5,21 @@ import { CheckCircle2, ArrowRight, Clock, DollarSign, Globe, ShieldCheck } from 
 import { getCountryData, allCountrySlugs } from '@/lib/geo-pages-data'
 
 interface PageProps {
-    params: Promise<{ country: string }>
+    params: Promise<{ geoSlug: string }>
 }
 
+// Returns full slugs like 'hire-ai-engineer-in-saudi-arabia'
 export async function generateStaticParams() {
-    return allCountrySlugs.map((slug) => ({ country: slug }))
+    return allCountrySlugs.map((slug) => ({ geoSlug: `hire-ai-engineer-in-${slug}` }))
+}
+
+function extractCountrySlug(geoSlug: string): string {
+    return geoSlug.replace(/^hire-ai-engineer-in-/, '')
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-    const { country } = await params
-    const data = getCountryData(country)
+    const { geoSlug } = await params
+    const data = getCountryData(extractCountrySlug(geoSlug))
     if (!data) return { title: 'Not Found' }
 
     return {
@@ -40,8 +45,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function GeoAIEngineerPage({ params }: PageProps) {
-    const { country } = await params
-    const data = getCountryData(country)
+    const { geoSlug } = await params
+    const countrySlug = extractCountrySlug(geoSlug)
+    const data = getCountryData(countrySlug)
     if (!data) notFound()
 
     const breadcrumbLd = {
@@ -264,7 +270,7 @@ export default async function GeoAIEngineerPage({ params }: PageProps) {
                     </div>
                     <div className="flex flex-wrap justify-center gap-3">
                         {allCountrySlugs
-                            .filter((s) => s !== country)
+                            .filter((s) => s !== countrySlug)
                             .map((s) => {
                                 const sibling = getCountryData(s)
                                 if (!sibling) return null
