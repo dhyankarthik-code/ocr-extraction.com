@@ -18,8 +18,32 @@ const nextConfig = {
   trailingSlash: false,
   async headers() {
     return [
+      // ── Allow AI crawlers to access llms.txt, robots.txt, sitemap.xml freely ──
       {
-        source: '/:path*',
+        source: '/llms.txt',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Content-Type', value: 'text/plain; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400' },
+          { key: 'X-Robots-Tag', value: 'all' },
+        ]
+      },
+      {
+        source: '/robots.txt',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Content-Type', value: 'text/plain; charset=utf-8' },
+        ]
+      },
+      {
+        source: '/sitemap.xml',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+        ]
+      },
+      // ── Security headers for all other routes ──
+      {
+        source: '/((?!llms\\.txt|robots\\.txt|sitemap\\.xml).*)',
         headers: [
           {
             key: 'X-DNS-Prefetch-Control',
