@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { toolCategories } from "@/lib/tools-data"
 import {
     Heart01 as Heart,
     FileDocument as FileText,
@@ -17,42 +16,7 @@ export default function Footer() {
     return (
         <footer className="bg-gray-900 text-gray-300 border-t border-gray-800">
             <div className="container mx-auto px-4 py-12">
-                {/* Upper Section: Tools */}
-                <div className="mb-12">
-                    <h3 className="text-white font-bold mb-8 flex flex-col md:flex-row items-center md:items-center justify-center md:justify-start gap-3 md:gap-3 text-center md:text-left">
-                        <Wrench className="w-10 h-10 md:w-8 md:h-8 flex-shrink-0" />
-                        <span className="text-lg md:text-2xl leading-tight">File Format Conversion Tools for Documentation and Digital Record Keeping</span>
-                    </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-                        {toolCategories.map((category) => (
-                            <div key={category.name}>
-                                <h4 className="text-white font-bold uppercase tracking-wider mb-3">
-                                    {category.name}
-                                </h4>
-                                <ul className="space-y-2 text-sm">
-                                    {category.items.map((tool) => (
-                                        <li key={tool.label}>
-                                            <Link href={tool.href} className="hover:text-red-500 transition-colors">
-                                                {tool.label}
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-                    {/* All Tools Link */}
-                    <div className="mt-6 text-center md:text-left">
-                        <Link href="/tools" className="inline-flex items-center gap-2 text-red-500 hover:text-red-400 font-semibold transition-colors">
-                            View All Tools <div className="w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center text-xs">&rarr;</div>
-                        </Link>
-                    </div>
-                </div>
-
-                {/* Divider */}
-                <div className="border-t border-gray-800 my-8"></div>
-
-                {/* Lower Section: Brand & Nav Links */}
+                {/* Brand & Nav Links */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
                     {/* Brand */}
                     <div className="space-y-4">
@@ -74,7 +38,7 @@ export default function Footer() {
                                 </span>
                                 <div className="h-[1px] w-full bg-red-600 my-0.5" />
                                 <span className="text-[8px] font-light text-red-600 tracking-[0.3em] uppercase">
-                                    "Shaping AI Tools"
+                                    &quot;Shaping AI Tools&quot;
                                 </span>
                             </div>
                         </div>
@@ -146,7 +110,7 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    {/* Services - NEW SECTION */}
+                    {/* Services */}
                     <div>
                         <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                             <Wrench className="w-4 h-4" />
@@ -202,9 +166,8 @@ export default function Footer() {
                     <p className="text-sm text-gray-400">
                         © {new Date().getFullYear()} InfyGalaxy. All rights reserved.
                     </p>
-                    {/* Privacy Policy and Terms of Service removed */}
                 </div>
             </div>
-        </footer >
+        </footer>
     )
 }

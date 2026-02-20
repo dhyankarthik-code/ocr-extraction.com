@@ -1,12 +1,84 @@
-# OCR-Extraction.com
+# OCR-Extraction.com (InfyGalaxy)
 
 OCR-Extraction.com is a browser-based AI platform focused on Image to Text and PDF to Text conversion using Optical Character Recognition (OCR) and document intelligence. The platform converts images, scanned PDFs, and native documents into structured, editable formats such as text, Word, Excel, JSON, and searchable PDFs.
 
 In addition to document conversion, the platform provides AI-generated summaries, reports, and conversational interactions over extracted document content.
 
-OCR-Extraction.com also offers AI consulting and engineering services, supporting organizations and individuals with AI adoption, proof-of-concepts (POCs), minimum viable products (MVPs), and applied AI solutions.
+## Hire AI Engineers & Consultants
 
-## Core Capabilities
+InfyGalaxy provides pre-vetted, production-ready AI engineers for hire globally. We deploy top 1% AI talent within 48 hours across USA, Europe, Middle East, and APAC regions. Every engineer passes a rigorous 4-stage vetting process covering algorithm optimization, system design, AI ethics compliance, and cultural fit.
+
+### AI Roles Available for Hire
+- Machine Learning (ML) Engineers
+- Deep Learning Engineers
+- Natural Language Processing (NLP) Engineers
+- Generative AI Developers
+- Computer Vision Engineers
+- MLOps Engineers
+- Data Scientists
+- AI Solution Architects
+- LLM Fine-tuning Specialists
+- RAG Pipeline Engineers
+- AI Product Managers
+
+### AI & ML Technologies Our Engineers Master
+- PyTorch, TensorFlow, Keras, JAX
+- LangChain, LlamaIndex, Semantic Kernel
+- OpenAI API (GPT-4, GPT-4o, Whisper, DALL-E)
+- Hugging Face Transformers, Diffusers, Datasets
+- AWS SageMaker, Amazon Bedrock
+- Azure Machine Learning, Azure OpenAI Service
+- Google Cloud Vertex AI, Gemini API
+- Apache Spark, Databricks, Delta Lake
+- MLflow, Weights & Biases, DVC
+- Kubernetes, Docker, Helm
+- FastAPI, Flask, Django REST Framework
+- Pinecone, Weaviate, Qdrant, ChromaDB (Vector Databases)
+- Apache Kafka, Redis, RabbitMQ
+- PostgreSQL, MongoDB, Neo4j
+- Llama, Mistral, Falcon, Phi (Open-Source LLMs)
+- Stable Diffusion, Midjourney APIs
+- OpenCV, YOLO, Detectron2 (Computer Vision)
+- Scikit-learn, XGBoost, LightGBM, CatBoost (Classical ML)
+- Ray, Dask (Distributed Computing)
+- Airflow, Prefect, Dagster (Workflow Orchestration)
+
+### AI Workflows, Integrations & Orchestrations
+- End-to-end ML pipeline design and deployment
+- Multi-agent AI system orchestration
+- Retrieval-Augmented Generation (RAG) pipeline architecture
+- LLM fine-tuning and RLHF workflows
+- Real-time inference and batch prediction systems
+- CI/CD for ML (MLOps automation)
+- Model monitoring, drift detection, and retraining
+- Enterprise system integrations (ERP, CRM, ITSM)
+- HIPAA, SOC 2, GDPR compliant AI deployments
+- Edge AI and on-device model deployment
+
+### Industries Served
+- Financial Services & Fintech
+- Healthcare & Life Sciences
+- E-Commerce & Retail
+- Legal Tech & Compliance
+- Oil & Gas & Energy
+- Real Estate & PropTech
+- SaaS & Cloud Products
+- Manufacturing & Industry 4.0
+- Government & Public Sector
+
+### Engagement Models
+- Dedicated AI Engineers (monthly contract)
+- Project-Based AI Teams
+- Staff Augmentation
+- AI Consulting & Strategy
+
+### Countries & Regions
+- United States, United Kingdom, Germany
+- United Arab Emirates (Dubai, Abu Dhabi), Saudi Arabia (Riyadh, Jeddah)
+- Singapore, India
+- Remote teams available worldwide
+
+## Core OCR Capabilities
 - Image to Text and PDF to Text conversion
 - Optical Character Recognition (OCR) for images and documents
 - Document structure extraction (text, tables, layouts)
@@ -25,6 +97,9 @@ Output formats include TXT, DOCX, XLSX, JSON, and searchable PDF.
 - Applied machine learning and generative AI solutions
 - Computer vision and document AI systems
 - AI workflow automation and orchestration
+- LLM fine-tuning and prompt engineering
+- RAG pipeline development
+- MLOps infrastructure setup and management
 
 ## Primary Domains
 - Optical Character Recognition (OCR)
@@ -34,6 +109,7 @@ Output formats include TXT, DOCX, XLSX, JSON, and searchable PDF.
 - Generative AI
 - Retrieval-Augmented Generation (RAG)
 - Document AI and intelligent workflows
+- MLOps and AI infrastructure
 
 ## Typical Use Cases
 - Image to Text and PDF to Text extraction
@@ -41,5 +117,9 @@ Output formats include TXT, DOCX, XLSX, JSON, and searchable PDF.
 - Business document processing
 - Academic and research workflows
 - Privacy-sensitive document analysis
+- Hire AI engineers for enterprise projects
+- Build dedicated AI teams remotely
+- Scale AI capabilities with vetted global talent
 
 Website: https://www.ocr-extraction.com
+Hire AI Engineers: https://www.ocr-extraction.com/hire-expert-ai-engineers
