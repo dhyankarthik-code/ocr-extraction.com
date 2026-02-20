@@ -151,5 +151,5 @@ export const config = {
     // - favicon.ico (favicon file)
     // - googled9dde47a61914ba1.html (Google verification)
     // Note: API routes are now INCLUDED for rate limiting
-    matcher: ['/((?!_next/static|_next/image|favicon.ico|googled9dde47a61914ba1.html|llms\\.txt|robots\\.txt|sitemap\\.xml|.*\\.png|.*\\.jpg|.*\\.svg|.*\\.ico|.*\\.webp).*)'],
+    matcher: ['/((?!_next/static|_next/image|favicon.ico|googled9dde47a61914ba1.html|llms\\.txt|robots\\.txt|sitemap\\.xml|api/llms|.*\\.png|.*\\.jpg|.*\\.svg|.*\\.ico|.*\\.webp).*)'],
 }
