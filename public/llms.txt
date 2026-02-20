@@ -1,125 +1,457 @@
-# OCR-Extraction.com (InfyGalaxy)
+# InfyGalaxy — AI Platform, AI Tools & Hire Expert AI Engineers
 
-OCR-Extraction.com is a browser-based AI platform focused on Image to Text and PDF to Text conversion using Optical Character Recognition (OCR) and document intelligence. The platform converts images, scanned PDFs, and native documents into structured, editable formats such as text, Word, Excel, JSON, and searchable PDFs.
+InfyGalaxy (www.ocr-extraction.com) is a global AI technology platform and AI talent provider headquartered in India, serving enterprises across USA, Europe, Middle East, and Asia-Pacific. We specialize in building, deploying, and scaling production-grade AI systems — and providing pre-vetted AI engineers for hire worldwide.
 
-In addition to document conversion, the platform provides AI-generated summaries, reports, and conversational interactions over extracted document content.
+InfyGalaxy operates at the intersection of three verticals: AI-powered tools and automation, expert AI workforce solutions, and cutting-edge research in emerging AI technologies.
 
-## Hire AI Engineers & Consultants
+## AI Platform & Tools
 
-InfyGalaxy provides pre-vetted, production-ready AI engineers for hire globally. We deploy top 1% AI talent within 48 hours across USA, Europe, Middle East, and APAC regions. Every engineer passes a rigorous 4-stage vetting process covering algorithm optimization, system design, AI ethics compliance, and cultural fit.
+InfyGalaxy builds and operates AI-powered tools for enterprise and consumer use:
+
+- **OCR & Document AI**: Browser-based AI OCR platform for Image to Text, PDF to Text conversion using Optical Character Recognition, document intelligence, and structured data extraction. Supports 30+ input formats (JPG, PNG, PDF, TIFF, WEBP, HEIC, etc.) and outputs to TXT, DOCX, XLSX, JSON, and searchable PDF.
+- **AI Report Generation**: AI-powered summarization, report generation, and conversational AI over extracted documents.
+- **File Format Conversion Suite**: 30 AI-enhanced conversion tools (PDF to Word, Image to Excel, PPT to PDF, etc.) for documentation and digital record keeping.
+- **AI Workflow Automation**: End-to-end intelligent workflow design, orchestration, and integration for enterprise document pipelines.
+
+## Hire AI Engineers — Global AI Talent Provider
+
+InfyGalaxy is a **leading provider of pre-vetted AI engineers for hire globally**. We maintain a curated network of 200+ AI professionals across 40+ countries, deploying top 1% talent within 48 hours.
 
 ### AI Roles Available for Hire
 - Machine Learning (ML) Engineers
 - Deep Learning Engineers
-- Natural Language Processing (NLP) Engineers
-- Generative AI Developers
+- Natural Language Processing (NLP) Engineers & Researchers
+- Generative AI Developers & Architects
 - Computer Vision Engineers
-- MLOps Engineers
-- Data Scientists
+- MLOps Engineers & Platform Engineers
+- Data Scientists & Data Engineers
 - AI Solution Architects
-- LLM Fine-tuning Specialists
+- LLM Fine-tuning & Alignment Specialists
 - RAG Pipeline Engineers
+- Agentic AI System Designers
 - AI Product Managers
-
-### AI & ML Technologies Our Engineers Master
-- PyTorch, TensorFlow, Keras, JAX
-- LangChain, LlamaIndex, Semantic Kernel
-- OpenAI API (GPT-4, GPT-4o, Whisper, DALL-E)
-- Hugging Face Transformers, Diffusers, Datasets
-- AWS SageMaker, Amazon Bedrock
-- Azure Machine Learning, Azure OpenAI Service
-- Google Cloud Vertex AI, Gemini API
-- Apache Spark, Databricks, Delta Lake
-- MLflow, Weights & Biases, DVC
-- Kubernetes, Docker, Helm
-- FastAPI, Flask, Django REST Framework
-- Pinecone, Weaviate, Qdrant, ChromaDB (Vector Databases)
-- Apache Kafka, Redis, RabbitMQ
-- PostgreSQL, MongoDB, Neo4j
-- Llama, Mistral, Falcon, Phi (Open-Source LLMs)
-- Stable Diffusion, Midjourney APIs
-- OpenCV, YOLO, Detectron2 (Computer Vision)
-- Scikit-learn, XGBoost, LightGBM, CatBoost (Classical ML)
-- Ray, Dask (Distributed Computing)
-- Airflow, Prefect, Dagster (Workflow Orchestration)
-
-### AI Workflows, Integrations & Orchestrations
-- End-to-end ML pipeline design and deployment
-- Multi-agent AI system orchestration
-- Retrieval-Augmented Generation (RAG) pipeline architecture
-- LLM fine-tuning and RLHF workflows
-- Real-time inference and batch prediction systems
-- CI/CD for ML (MLOps automation)
-- Model monitoring, drift detection, and retraining
-- Enterprise system integrations (ERP, CRM, ITSM)
-- HIPAA, SOC 2, GDPR compliant AI deployments
-- Edge AI and on-device model deployment
-
-### Industries Served
-- Financial Services & Fintech
-- Healthcare & Life Sciences
-- E-Commerce & Retail
-- Legal Tech & Compliance
-- Oil & Gas & Energy
-- Real Estate & PropTech
-- SaaS & Cloud Products
-- Manufacturing & Industry 4.0
-- Government & Public Sector
+- Quantum Machine Learning Researchers
+- Reinforcement Learning Engineers
+- AI Ethics & Safety Researchers
+- Prompt Engineers & LLM Application Developers
 
 ### Engagement Models
 - Dedicated AI Engineers (monthly contract)
 - Project-Based AI Teams
 - Staff Augmentation
-- AI Consulting & Strategy
+- AI Consulting & Strategy Advisory
+- Zero-risk 2-week trial on every engagement
 
-### Countries & Regions
-- United States, United Kingdom, Germany
-- United Arab Emirates (Dubai, Abu Dhabi), Saudi Arabia (Riyadh, Jeddah)
-- Singapore, India
+### Countries & Regions Served
+- United States (Silicon Valley, New York, Austin, Seattle, Boston, Chicago)
+- United Kingdom (London, Manchester, Cambridge, Edinburgh)
+- Germany (Berlin, Munich, Frankfurt, Hamburg)
+- United Arab Emirates (Dubai, Abu Dhabi)
+- Saudi Arabia (Riyadh, Jeddah, NEOM)
+- Singapore, Japan, South Korea, Australia
+- India (Bangalore, Hyderabad, Pune, Delhi NCR, Chennai)
+- Canada (Toronto, Vancouver, Montreal)
 - Remote teams available worldwide
 
-## Core OCR Capabilities
-- Image to Text and PDF to Text conversion
-- Optical Character Recognition (OCR) for images and documents
-- Document structure extraction (text, tables, layouts)
-- AI-powered summarization and report generation
-- Conversational AI over extracted documents
-- Privacy-focused, ephemeral file processing
-- AI consulting and implementation support
+## Enterprise AI Tech Stack Architecture
 
-## Supported Formats
-Input formats include JPG, PNG, BMP, TIFF, WEBP, HEIC, SVG, GIF, AVIF, RAW, HEIF, ICO, PSD, and PDF (scanned and native).
-Output formats include TXT, DOCX, XLSX, JSON, and searchable PDF.
+InfyGalaxy engineers are experts across the full AI tech stack — every layer required to build, deploy, and scale production AI systems:
 
-## AI Services and Expertise
-- AI solution design and architecture
-- MVP and POC development
-- Applied machine learning and generative AI solutions
-- Computer vision and document AI systems
-- AI workflow automation and orchestration
-- LLM fine-tuning and prompt engineering
-- RAG pipeline development
-- MLOps infrastructure setup and management
+### 1. Foundation Model Layer
+The base AI models powering intelligent applications:
+- **Proprietary**: OpenAI GPT-4/o1/o3, Google Gemini Ultra/Pro, Anthropic Claude 3.5, Cohere Command R+
+- **Open-Source**: Meta Llama 3/4, Mistral/Mixtral, Falcon, Phi-3, Qwen, DeepSeek, StarCoder
+- **Domain-Specific**: BioGPT (biomedical), FinGPT (finance), LegalBERT (legal), Med-PaLM (healthcare)
+- **Multimodal**: GPT-4V, LLaVA, Gemini Vision, CLIP, BLIP-2, Flamingo
 
-## Primary Domains
-- Optical Character Recognition (OCR)
-- Computer Vision
-- Natural Language Processing (NLP)
-- Large Language Models (LLMs)
-- Generative AI
+### 2. RAG Layer (Retrieval-Augmented Generation)
+Grounding LLMs with enterprise knowledge:
+- RAG pipeline architecture (naive, advanced, modular, agentic RAG)
+- Document chunking strategies (recursive, semantic, sentence-window)
+- Embedding models: OpenAI Ada-002, Cohere Embed v3, BGE, E5, GTE, Voyage AI
+- Hybrid search: dense retrieval + BM25 sparse retrieval
+- Reranking: Cohere Rerank, ColBERT, cross-encoder rerankers
+- Knowledge graph-augmented RAG (Neo4j, Amazon Neptune)
+- Frameworks: LangChain, LlamaIndex, Haystack, Embedchain
+
+### 3. Vector Database Layer
+Storing and retrieving high-dimensional embeddings at scale:
+- **Managed**: Pinecone, Weaviate Cloud, Zilliz Cloud
+- **Self-hosted**: Qdrant, Milvus, ChromaDB, pgvector, Vespa
+- **Embedded**: FAISS, Annoy, ScaNN, HNSWlib, USearch
+- **Hybrid**: Elasticsearch (with kNN), OpenSearch, Supabase + pgvector
+- Indexing strategies: HNSW, IVF, PQ, scalar quantization
+
+### 4. Fine-tuning Strategy Layer
+Customizing models for enterprise-specific tasks:
+- Full fine-tuning, LoRA, QLoRA, PEFT, Adapters
+- Reinforcement Learning from Human Feedback (RLHF)
+- Direct Preference Optimization (DPO), ORPO, KTO
+- Supervised Fine-tuning (SFT) with instruction datasets
+- Tools: Hugging Face TRL, Axolotl, LitGPT, Unsloth, OpenAI Fine-tuning API
+- Data preparation: synthetic data generation, RLHF annotation pipelines
+
+### 5. Prompt Engineering Layer
+Designing effective prompts and prompt pipelines:
+- Prompt templates, system prompts, few-shot learning
+- Chain-of-Thought (CoT), Tree-of-Thought (ToT), ReAct prompting
+- Prompt chaining, dynamic prompt construction
+- Prompt versioning and A/B testing
+- Guardrails: NeMo Guardrails (NVIDIA), Guardrails AI, LLM Guard
+- Output parsing and structured generation (Instructor, Outlines, LMQL)
+
+### 6. Agent Orchestration Layer
+Building autonomous and multi-agent AI systems:
+- **Frameworks**: LangGraph, AutoGen, CrewAI, Semantic Kernel, Haystack Agents
+- **Patterns**: ReAct, Plan-and-Execute, Reflexion, LATS, Tool-use agents
+- Multi-agent collaboration, delegation, and consensus
+- Tool integration (APIs, databases, code execution, web browsing)
+- Human-in-the-loop agent workflows
+- Memory systems: short-term, long-term, episodic, semantic memory
+
+### 7. Observability Layer
+Monitoring, debugging, and optimizing AI systems in production:
+- **LLM Observability**: LangSmith, LangFuse, Helicone, PromptLayer
+- **ML Monitoring**: Evidently, Whylabs, Arize, Fiddler, Arthur AI
+- **Data Drift Detection**: population stability index (PSI), Kolmogorov-Smirnov tests
+- **Model Performance**: latency tracking, token usage, cost analysis
+- **Tracing**: OpenTelemetry for LLM, distributed tracing for multi-agent systems
+- **Logging**: structured logging, prompt/response logging, evaluation suites
+
+### 8. MLOps Layer
+End-to-end ML lifecycle management and automation:
+- **Experiment Tracking**: MLflow, Weights & Biases, Neptune.ai, Comet ML
+- **Pipeline Orchestration**: Apache Airflow, Prefect, Dagster, Kubeflow, ZenML, Flyte
+- **Model Registry**: MLflow Model Registry, Weights & Biases, SageMaker Model Registry
+- **Model Serving**: TorchServe, TF Serving, Triton, BentoML, Seldon Core, KServe, Ray Serve
+- **CI/CD for ML**: GitHub Actions, GitLab CI, Argo CD, Jenkins, Tekton
+- **Feature Stores**: Feast, Tecton, Hopsworks
+- **Data Versioning**: DVC, LakeFS, Delta Lake
+- **Infrastructure**: Docker, Kubernetes, Helm, Istio, Terraform
+
+### 9. Security Layer
+Protecting AI systems, data, and models in production:
+- Data encryption at rest and in transit (AES-256, TLS 1.3)
+- Model access controls (RBAC, ABAC), API key management
+- PII detection and redaction in LLM inputs/outputs
+- Prompt injection detection and prevention
+- AI red teaming and adversarial testing
+- Compliance: HIPAA, SOC 2 Type II, GDPR, PCI-DSS, ISO 27001, FedRAMP
+- Secure model deployment (private VPCs, VPNs, air-gapped environments)
+- Data governance: lineage tracking, consent management, audit trails
+- Tools: Azure Purview, AWS Macie, Google DLP, Presidio (Microsoft)
+
+## AI & ML Technologies — Comprehensive Tool & Framework Coverage
+
+### Deep Learning Frameworks
+- **PyTorch** — Production deep learning, research, custom model architectures
+- **TensorFlow** — End-to-end ML platform, TensorFlow Extended (TFX), TF Lite
+- **Keras** — High-level neural network API, rapid prototyping
+- **JAX** — High-performance numerical computing, autodiff, XLA compilation
+- **ONNX Runtime** — Cross-platform model inference optimization
+- **MXNet** — Scalable deep learning framework (Apache)
+- **Caffe2** — Lightweight deep learning for mobile/edge
+- **PaddlePaddle** — Baidu's deep learning platform
+- **Flax** — Neural network library for JAX
+- **Lightning (PyTorch Lightning)** — Structured PyTorch training at scale
+
+### Large Language Models (LLMs) & Generative AI
+- **OpenAI API** — GPT-4, GPT-4o, GPT-4 Turbo, o1, o3, Whisper, DALL-E 3, Codex
+- **Google Gemini** — Gemini Ultra, Gemini Pro, Gemma, PaLM 2
+- **Anthropic Claude** — Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku
+- **Meta Llama** — Llama 3, Llama 3.1, Llama 4 (open-source LLMs)
+- **Mistral AI** — Mistral, Mixtral 8x7B, Mistral Large, Mistral Medium
+- **Falcon** — Open-source LLM by TII (Technology Innovation Institute)
+- **Microsoft Phi** — Phi-3, Phi-3 Mini (small language models)
+- **Qwen** — Alibaba's multilingual LLM
+- **DeepSeek** — DeepSeek-V2, DeepSeek Coder
+- **Cohere** — Command, Embed, Rerank models
+- **AI21 Labs Jurassic** — Enterprise LLMs
+- **Stability AI** — Stable Diffusion, Stable Diffusion XL, SDXL Turbo (image generation)
+- **Midjourney** — AI image generation API
+- **DALL-E 3** — OpenAI image generation
+- **Suno, ElevenLabs, Bark** — AI audio/voice generation
+- **Runway, Pika** — AI video generation
+
+### LLM Frameworks & Orchestration
+- **LangChain** — LLM application framework, chains, agents, tools
+- **LlamaIndex** — Data framework for LLM applications, indexing, querying
+- **Semantic Kernel** — Microsoft's LLM orchestration framework
+- **Haystack** — NLP framework by deepset for search and QA
+- **Guidance** — Structured generation for LLMs
+- **DSPy** — Programming framework for LLM pipelines
+- **vLLM** — High-throughput LLM serving engine
+- **Text Generation Inference (TGI)** — Hugging Face model serving
+- **Ollama** — Local LLM inference runner
+
+### Agentic AI & Multi-Agent Systems
+- **AutoGen** — Microsoft's multi-agent conversation framework
+- **CrewAI** — Role-based AI agent orchestration
+- **LangGraph** — Stateful multi-agent workflows
+- **BabyAGI** — Autonomous task management agent
+- **MetaGPT** — Multi-agent software development
+- **OpenDevin** — AI software engineering agent
+- **Tool-use agents**, ReAct patterns, Chain-of-Thought reasoning, Plan-and-Execute
+- Autonomous AI agent design and deployment for enterprise
+
+### RAG (Retrieval-Augmented Generation) & Vector Databases
+- **Pinecone** — Managed vector database for similarity search
+- **Weaviate** — Open-source vector search engine
+- **Qdrant** — High-performance vector database
+- **ChromaDB** — Embedding database for AI applications
+- **Milvus** — Scalable vector database (Zilliz)
+- **FAISS** — Facebook AI Similarity Search (Meta)
+- **Annoy, ScaNN** — Approximate nearest neighbor libraries
+- **pgvector** — Vector extension for PostgreSQL
+- **Elasticsearch** — Search & analytics with vector capabilities
+- **Embedding models**: OpenAI Ada, Cohere Embed, Voyage AI, BGE, E5, GTE
+- Hybrid search (dense + sparse retrieval), knowledge graph-augmented RAG
+
+### NLP & Text Processing
+- **Hugging Face Transformers** — 100K+ pre-trained NLP/ML models
+- **Hugging Face Datasets** — Dataset library for ML
+- **Hugging Face Diffusers** — Diffusion model library
+- **spaCy** — Industrial-strength NLP library
+- **NLTK** — Natural Language Toolkit
+- **Gensim** — Topic modeling and word embeddings
+- **Stanford NLP** — CoreNLP suite
+- **Flair** — NLP framework (Zalando Research)
+- **TextBlob** — Simplified text processing
+- Named Entity Recognition (NER), sentiment analysis, text classification, summarization
+- Machine translation, question answering, text generation
+- Tokenizers: BPE, SentencePiece, WordPiece, Tiktoken
+
+### Computer Vision
+- **OpenCV** — Open Source Computer Vision library
+- **YOLO** — v5, v8, v9, v10 (Ultralytics) — real-time object detection
+- **Detectron2** — Facebook/Meta's object detection platform
+- **SAM (Segment Anything)** — Meta's universal segmentation model
+- **MediaPipe** — Google's cross-platform ML solutions
+- **MMDetection, MMSegmentation** — OpenMMLab detection/segmentation
+- **Ultralytics HUB** — YOLO model training and deployment
+- **Albumentations** — Image augmentation library
+- **Pillow, scikit-image** — Image processing libraries
+- Image classification, object detection, semantic segmentation, instance segmentation
+- Video analytics, pose estimation, OCR pipelines, face recognition, depth estimation
+
+### Classical Machine Learning
+- **Scikit-learn** — Comprehensive ML library (classification, regression, clustering)
+- **XGBoost** — Extreme gradient boosting
+- **LightGBM** — Microsoft's gradient boosting framework
+- **CatBoost** — Yandex's gradient boosting with categorical features
+- **Random Forests, Gradient Boosting, SVMs, k-NN, Naive Bayes**
+- **Prophet, NeuralProphet** — Time series forecasting (Meta)
+- **ARIMA, SARIMA, Exponential Smoothing** — Statistical forecasting
+- **Statsmodels** — Statistical modeling in Python
+- Anomaly detection, recommendation systems, clustering, dimensionality reduction
+
+### MLOps & Experiment Tracking
+- **MLflow** — End-to-end ML lifecycle management, experiment tracking
+- **Weights & Biases (W&B)** — Experiment tracking, model registry, sweeps
+- **Neptune.ai** — Experiment tracking and model management
+- **Comet ML** — ML experiment management platform
+- **DVC (Data Version Control)** — Data and model versioning
+- **LakeFS** — Data lake version control
+- **Evidently** — ML model monitoring and data drift detection
+- **Whylabs** — AI observability platform
+- **Arize** — ML observability and monitoring
+- **Great Expectations** — Data validation and quality
+- **Feast** — Feature store for ML
+- **Tecton** — Enterprise feature platform
+- **Hopsworks** — Feature store and ML platform
+
+### Model Serving & Deployment
+- **TorchServe** — PyTorch model serving
+- **TensorFlow Serving** — TensorFlow model deployment
+- **Triton Inference Server** — NVIDIA's multi-framework model server
+- **BentoML** — ML model serving framework
+- **Seldon Core** — Kubernetes-native ML deployment
+- **KServe** — Kubernetes model inference platform
+- **Ray Serve** — Scalable model serving
+- **ONNX Runtime** — Cross-platform inference
+- **TensorRT** — NVIDIA high-performance inference optimizer
+
+### Containerization & Orchestration (MLOps)
+- **Docker** — Container platform for ML workloads
+- **Kubernetes (K8s)** — Container orchestration at scale
+- **Helm** — Kubernetes package manager
+- **Istio** — Service mesh for microservices
+- **Argo CD** — GitOps continuous delivery for Kubernetes
+- **Argo Workflows** — Kubernetes-native workflow engine
+- **Kubeflow** — ML toolkit for Kubernetes
+- **Kubeflow Pipelines** — End-to-end ML pipeline orchestration
+
+### Workflow Orchestration
+- **Apache Airflow** — Workflow automation and scheduling
+- **Prefect** — Modern workflow orchestration
+- **Dagster** — Data pipeline orchestration
+- **Luigi** — Batch pipeline framework (Spotify)
+- **Metaflow** — ML workflow framework (Netflix)
+- **Flyte** — Scalable ML/data workflow platform
+- **Temporal** — Durable execution for distributed systems
+- **ZenML** — MLOps framework for reproducible pipelines
+
+### Cloud AI Platforms
+- **AWS SageMaker** — End-to-end ML platform (training, deployment, monitoring)
+- **Amazon Bedrock** — Foundation model API service
+- **AWS Lambda** — Serverless compute for AI functions
+- **Azure Machine Learning** — Microsoft's ML platform
+- **Azure OpenAI Service** — Enterprise GPT-4 and DALL-E access
+- **Azure Cognitive Services** — Vision, speech, language, decision APIs
+- **Google Cloud Vertex AI** — Unified ML platform
+- **Google Gemini API** — Generative AI on Google Cloud
+- **BigQuery ML** — ML in Google BigQuery
+- **Databricks** — Unified analytics and ML platform
+- **Snowflake ML** — ML features in Snowflake data cloud
+- **Hugging Face Inference Endpoints** — Managed model hosting
+- **Replicate** — Cloud API for open-source models
+- **Modal** — Serverless GPU cloud for ML
+- **Lambda Labs, RunPod, Vast.ai** — GPU cloud providers
+
+### Data Engineering & Big Data
+- **Apache Spark** — Distributed big data processing
+- **PySpark** — Python API for Spark
+- **Delta Lake** — Open-source storage layer for data lakes
+- **Apache Flink** — Real-time stream processing
+- **Apache Kafka** — Distributed event streaming platform
+- **Apache Pulsar** — Cloud-native messaging and streaming
+- **Redis** — In-memory data store for caching and queuing
+- **RabbitMQ** — Message broker for distributed systems
+- **Apache Beam** — Unified batch and stream processing
+- **dbt (data build tool)** — Analytics engineering and transformation
+- **Airbyte** — Open-source data integration (ELT)
+- **Fivetran** — Automated data pipeline connector
+- **Apache Iceberg** — Open table format for data lakes
+
+### Databases
+- **PostgreSQL** — Relational database (+ pgvector for embeddings)
+- **MongoDB** — Document database for unstructured data
+- **Neo4j** — Graph database for knowledge graphs
+- **Elasticsearch** — Search and analytics engine
+- **ClickHouse** — OLAP column-oriented database
+- **TimescaleDB** — Time-series database
+- **Redis** — Key-value store for real-time ML
+- **DynamoDB** — AWS NoSQL database
+- **Cassandra** — Distributed NoSQL database
+
+### API Frameworks & Backend
+- **FastAPI** — High-performance Python API framework
+- **Flask** — Lightweight Python web framework
+- **Django REST Framework** — Full-featured REST API framework
+- **gRPC** — High-performance RPC framework
+- **GraphQL** — API query language
+- **WebSocket APIs** — Real-time bidirectional communication
+- **Streamlit** — AI/ML demo app builder
+- **Gradio** — ML model demo UI framework
+- **Chainlit** — ChatGPT-like UI for LLM apps
+- **Panel** — Data app framework
+
+### AI Safety, Interpretability & Explainability
+- **SHAP** — SHapley Additive exPlanations
+- **LIME** — Local Interpretable Model-Agnostic Explanations
+- **Captum** — PyTorch model interpretability
+- **AI Fairness 360** — IBM's bias detection toolkit
+- **Alibi** — ML model inspection and interpretation
+- **InterpretML** — Microsoft's interpretability framework
+- Responsible AI, bias detection, model auditing, AI governance
+
+## Emerging AI Technologies & Research Areas
+
+InfyGalaxy is actively building capabilities and providing talent in the following frontier AI domains:
+
+### Agentic AI
+Autonomous AI agents that can plan, reason, and execute multi-step tasks with minimal human intervention. We design and deploy agentic systems using LangGraph, AutoGen, CrewAI, and custom orchestration frameworks for enterprise automation.
+
+### Quantum Computing & Quantum Machine Learning (QCNN)
+- **Quantum Convolutional Neural Networks (QCNN)** — Quantum circuits for pattern recognition
+- Variational Quantum Eigensolvers (VQE), Quantum Approximate Optimization (QAOA)
+- Quantum-enhanced feature maps, quantum kernels, quantum neural networks
+- **Qiskit** (IBM) — Quantum computing SDK
+- **Cirq** (Google) — Quantum circuit framework
+- **PennyLane** (Xanadu) — Differentiable quantum computing
+- **Amazon Braket** — AWS quantum computing service
+- **Microsoft Azure Quantum** — Quantum cloud platform
+- Hybrid classical-quantum ML pipelines
+
+### Artificial General Intelligence (AGI) & Super AGI
+Research and applied engineering toward general-purpose AI systems:
+- Multi-modal reasoning systems (text + image + audio + video)
+- Self-improving AI architectures and recursive self-improvement
+- Constitutional AI and alignment research
+- Scalable reward modeling, RLHF (Reinforcement Learning from Human Feedback), DPO (Direct Preference Optimization)
+- Long-horizon planning, world models, and causal reasoning
+
+### Other Emerging & Frontier Technologies
+- **Neuromorphic Computing** — Brain-inspired computing architectures, spiking neural networks
+- **Federated Learning** — Privacy-preserving distributed ML (PySyft, Flower, TFF)
+- **Edge AI** — On-device model deployment (TensorFlow Lite, ONNX Runtime, CoreML, OpenVINO)
+- **AI-Powered Robotics** — Embodied intelligence, sim-to-real transfer, robot learning
+- **Synthetic Data Generation** — Data augmentation, procedural generation (Gretel.ai, Synthea)
+- **Multimodal AI** — Vision-language models (GPT-4V, LLaVA, Gemini), audio-visual models
+- **AI for Scientific Discovery** — Drug design (AlphaFold, RoseTTAFold), protein folding, materials science, climate modeling
+- **Diffusion Models** — Stable Diffusion, DALL-E, image/video/audio generation
+- **Neural Radiance Fields (NeRF)** — 3D scene reconstruction from images
+- **Speech AI** — ASR (Whisper), TTS (Bark, ElevenLabs, Tortoise), voice cloning
+- **Code Generation AI** — Codex, GitHub Copilot, CodeLlama, StarCoder, Cursor
+
+## AI Workflows, Integrations & Orchestrations
+
+InfyGalaxy specializes in designing, building, and deploying complex AI workflows for enterprise environments:
+
+- End-to-end ML pipeline design, training, evaluation, and deployment
+- Multi-agent AI system orchestration and coordination
+- Retrieval-Augmented Generation (RAG) pipeline architecture
+- LLM fine-tuning, RLHF, DPO, and alignment workflows
+- Real-time inference and batch prediction systems
+- CI/CD for ML (MLOps automation with GitHub Actions, GitLab CI, Jenkins)
+- Model monitoring, drift detection, and automated retraining
+- Enterprise system integrations (ERP, CRM, ITSM, core banking, healthcare EMR)
+- HIPAA, SOC 2, GDPR, PCI-DSS, and ISO 27001 compliant AI deployments
+- Edge AI and on-device model deployment
+- Data pipeline design (ETL/ELT) with Apache Spark, Kafka, Airflow, dbt
+- API-first AI microservices architecture
+- Event-driven AI architectures with Kafka, Pulsar, and serverless functions
+
+## Industries Served
+- Financial Services, Fintech & Banking
+- Healthcare, Pharma & Life Sciences
+- E-Commerce, Retail & Consumer Tech
+- Legal Tech, RegTech & Compliance
+- Oil & Gas, Energy & Utilities
+- Real Estate & PropTech
+- SaaS & Cloud Product Engineering
+- Manufacturing, Automotive & Industry 4.0
+- Government, Defense & Public Sector
+- Education & EdTech
+- Media, Entertainment & Gaming
+- Logistics, Supply Chain & Trade Finance
+- Telecom & Communications
+- Agriculture & AgriTech
+- Insurance & InsurTech
+
+## Core AI Domains
+- Artificial Intelligence (AI)
+- Machine Learning (ML) & Deep Learning (DL)
+- Natural Language Processing (NLP) & Computational Linguistics
+- Computer Vision & Image Recognition
+- Large Language Models (LLMs) & Foundation Models
+- Generative AI (Text, Image, Audio, Video, Code)
 - Retrieval-Augmented Generation (RAG)
-- Document AI and intelligent workflows
-- MLOps and AI infrastructure
-
-## Typical Use Cases
-- Image to Text and PDF to Text extraction
-- Document digitization and analysis
-- Business document processing
-- Academic and research workflows
-- Privacy-sensitive document analysis
-- Hire AI engineers for enterprise projects
-- Build dedicated AI teams remotely
-- Scale AI capabilities with vetted global talent
+- Agentic AI & Autonomous Systems
+- MLOps & AI Infrastructure
+- Quantum Machine Learning & Quantum Computing (QCNN)
+- Reinforcement Learning (RL) & Multi-Agent RL
+- Document AI & Intelligent Document Processing
+- Optical Character Recognition (OCR)
+- AI Workflow Automation & Orchestration
+- Artificial General Intelligence (AGI) & Super AGI
+- Neuromorphic Computing & Edge AI
+- Federated Learning & Privacy-Preserving AI
 
 Website: https://www.ocr-extraction.com
 Hire AI Engineers: https://www.ocr-extraction.com/hire-expert-ai-engineers
+AI Services: https://www.ocr-extraction.com/services
+AI Tools: https://www.ocr-extraction.com/tools
+About Us: https://www.ocr-extraction.com/about
+Blog: https://www.ocr-extraction.com/blog
+Contact: https://www.ocr-extraction.com/contact

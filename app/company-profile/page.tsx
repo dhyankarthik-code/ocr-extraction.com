@@ -1,8 +1,8 @@
 import CompanyProfilePageClient from "./client"
 
 export const metadata = {
-    title: 'Company Profile - Infy Galaxy | AI & Automation Experts',
-    description: 'Infy Galaxy is a global technology company specializing in AI, OCR, and intelligent automation. Read our company profile and vision.',
+    title: 'Company Profile - InfyGalaxy | AI Engineering, AI Talent & Emerging Tech Leaders',
+    description: 'InfyGalaxy is a global AI company providing AI-powered tools, hire expert AI engineers, and lead innovation in MLOps, LLMs, Generative AI, Agentic AI, QCNN, AGI, and Quantum Computing.',
     alternates: {
         canonical: '/company-profile',
     },

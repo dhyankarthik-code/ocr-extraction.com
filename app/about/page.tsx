@@ -1,8 +1,8 @@
 import AboutPageClient from "./client"
 
 export const metadata = {
-    title: 'About Infy Galaxy | Leading AI OCR Solutions',
-    description: 'Learn about Infy Galaxy, the team behind the world\'s most accurate free OCR tool. We specialize in AI, automation, and digital productivity solutions.',
+    title: 'About InfyGalaxy | AI Platform, AI Tools & Expert AI Talent Provider',
+    description: 'InfyGalaxy is a global AI technology company specializing in AI-powered tools, AI workflow orchestration, and providing pre-vetted AI engineers for hire. Leaders in MLOps, LLMs, Generative AI, Agentic AI, QCNN, and Quantum Computing.',
     alternates: {
         canonical: '/about',
     },

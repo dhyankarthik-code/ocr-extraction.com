@@ -1,8 +1,8 @@
 import MissionPageClient from "./client"
 
 export const metadata = {
-    title: 'Our Mission | Making AI OCR Accessible to Everyone',
-    description: 'Our mission is to provide free, high-accuracy OCR tools to students, professionals, and businesses worldwide without hidden costs.',
+    title: 'Our Mission | Democratizing AI Technology & Talent Globally',
+    description: 'Our mission is to make world-class AI technology and AI talent accessible to every business — from free AI-powered tools to hiring expert AI engineers for enterprise-scale workflows.',
     alternates: {
         canonical: '/mission',
     },
