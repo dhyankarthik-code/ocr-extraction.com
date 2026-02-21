@@ -142,18 +142,28 @@ export default function RootLayout({
 
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://blog.ocr-extraction.com" />
-        <link rel="preconnect" href="https://embed.tawk.to" />
-        {/* Tawk.to Live Chat Widget */}
+        <link rel="preconnect" href="https://embed.tawk.to" crossOrigin="anonymous" />
+        {/* Tawk.to Live Chat Widget - Production Grade Integration */}
         <script
           id="tawk-to"
           dangerouslySetInnerHTML={{
             __html: `
               var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+              // Inject Security Key
+              Tawk_API.jsKey = 'a8d1a22a8138b0504f37f4f049003bc6d9ddc7c1';
+              
               Tawk_API.onLoad = function(){
-                if(!sessionStorage.getItem('tawk_prompted')){
-                  setTimeout(function(){ try{Tawk_API.maximize();}catch(e){} sessionStorage.setItem('tawk_prompted','1'); },3000);
-                }
+                // Prominent Prompting: Auto-maximize for immediate engagement
+                setTimeout(function(){ 
+                  try {
+                    Tawk_API.showWidget();
+                    Tawk_API.maximize();
+                  } catch(e) {
+                    console.error('Tawk_API error:', e);
+                  } 
+                }, 3000);
               };
+
               (function(){
                 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
                 s1.async=true;
