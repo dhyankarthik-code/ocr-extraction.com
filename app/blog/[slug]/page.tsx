@@ -78,6 +78,36 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
+    // [SEO SHIM 3] Override metadata for ML Engineer Skills Checklist
+    if (slug === 'hire-machine-learning-engineer-skills-checklist') {
+        const title = 'Hire a Machine Learning Engineer: The Essential Skills Checklist for 2026';
+        const description = 'Complete skills checklist to hire the right machine learning engineer. Covers Python, PyTorch, TensorFlow, MLOps, cloud deployment, model monitoring, and production ML expertise.';
+        const url = `https://www.ocr-extraction.com/blog/${slug}`;
+
+        return {
+            title,
+            description,
+            keywords: ['hire machine learning engineer', 'ml engineer skills checklist', 'machine learning engineer skills', 'hire ml developer', 'ml engineer hiring guide', 'pytorch engineer', 'tensorflow developer', 'mlops engineer hire'],
+            alternates: {
+                canonical: url,
+            },
+            openGraph: {
+                title,
+                description,
+                url,
+                type: 'article',
+                publishedTime: '2026-02-21',
+                authors: ['InfyGalaxy Team'],
+                images: [{ url: 'https://www.ocr-extraction.com/images/blog/ml-engineer-checklist.jpg', width: 1200, height: 630 }],
+            },
+            twitter: {
+                card: 'summary_large_image',
+                title,
+                description,
+            }
+        };
+    }
+
     const post = await getPostBySlug(slug);
 
     if (!post) {
@@ -129,7 +159,7 @@ export default async function BlogPostPage({ params }: PageProps) {
     const author = post._embedded?.author?.[0]?.name || 'Team';
 
     // [SEO SHIM] JSON-LD and CTA for specific post
-    const isTargetPost = slug === 'how-to-hire-ai-engineers-in-2026-the-complete-cto-guide-to-finding-top-ai-talent';
+    const isTargetPost = slug === 'how-to-hire-ai-engineers-in-2026-the-complete-cto-guide-to-finding-top-ai-talent' || slug === 'hire-machine-learning-engineer-skills-checklist';
 
     const structuredData = isTargetPost ? {
         "@context": "https://schema.org",
@@ -281,6 +311,98 @@ export default async function BlogPostPage({ params }: PageProps) {
                                         "url": "https://www.ocr-extraction.com"
                                     }]
                                 })
+                            }}
+                        />
+                    </div>
+                )}
+
+                {/* [SEO SHIM 3] CTA + FAQ/Author Schema for ML Engineer Skills Checklist */}
+                {slug === 'hire-machine-learning-engineer-skills-checklist' && (
+                    <div className="my-12 p-8 bg-gradient-to-br from-indigo-900 via-gray-900 to-gray-800 rounded-2xl border border-indigo-700/30 text-center shadow-xl">
+                        <div className="inline-flex items-center gap-2 bg-indigo-500/20 text-indigo-300 text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
+                            <CheckCircle2 className="w-4 h-4" />
+                            Verified AI Talent Network
+                        </div>
+                        <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                            Found the Skills You Need? Let Us Find the Engineer.
+                        </h3>
+                        <p className="text-gray-300 mb-6 max-w-2xl mx-auto text-lg">
+                            Skip months of interviewing. Our pre-vetted ML engineers are tested for PyTorch, TensorFlow, MLOps, and production deployment — ready to start in 48 hours.
+                        </p>
+                        <a
+                            href="/hire-expert-ai-engineers"
+                            className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-10 rounded-full transition-all transform hover:scale-105 shadow-lg shadow-red-600/25 text-lg"
+                        >
+                            Hire a Machine Learning Engineer
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+
+                        {/* FAQ + Author JSON-LD Schema */}
+                        <script
+                            type="application/ld+json"
+                            dangerouslySetInnerHTML={{
+                                __html: JSON.stringify([
+                                    {
+                                        "@context": "https://schema.org",
+                                        "@type": "FAQPage",
+                                        "mainEntity": [
+                                            {
+                                                "@type": "Question",
+                                                "name": "What skills should you look for when hiring a machine learning engineer?",
+                                                "acceptedAnswer": {
+                                                    "@type": "Answer",
+                                                    "text": "Look for expertise in Python, ML frameworks like TensorFlow or PyTorch, MLOps practices, cloud deployment (AWS SageMaker, GCP Vertex AI, Azure ML), model monitoring, data pipeline design, and production deployment experience."
+                                                }
+                                            },
+                                            {
+                                                "@type": "Question",
+                                                "name": "How much does it cost to hire a machine learning engineer?",
+                                                "acceptedAnswer": {
+                                                    "@type": "Answer",
+                                                    "text": "Costs vary by region. In the United States, experienced ML engineers may earn $140k–$190k annually. In India, rates start at $40/hr. InfyGalaxy offers pre-vetted ML engineers with a zero-risk 2-week trial."
+                                                }
+                                            },
+                                            {
+                                                "@type": "Question",
+                                                "name": "What is the difference between a machine learning engineer and a data scientist?",
+                                                "acceptedAnswer": {
+                                                    "@type": "Answer",
+                                                    "text": "A machine learning engineer focuses on building, deploying, and scaling ML models in production systems. A data scientist focuses on analysis, statistical modeling, and extracting insights from data. ML engineers typically have stronger software engineering and MLOps skills."
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "@context": "https://schema.org",
+                                        "@type": "Article",
+                                        "headline": "Hire a Machine Learning Engineer: The Essential Skills Checklist for 2026",
+                                        "description": "Complete skills checklist to hire the right machine learning engineer. Covers Python, PyTorch, TensorFlow, MLOps, cloud deployment, and production ML.",
+                                        "image": ["https://www.ocr-extraction.com/images/blog/ml-engineer-checklist.jpg"],
+                                        "datePublished": "2026-02-21T08:00:00+00:00",
+                                        "dateModified": "2026-02-21T09:00:00+00:00",
+                                        "author": {
+                                            "@type": "Organization",
+                                            "name": "InfyGalaxy",
+                                            "url": "https://www.ocr-extraction.com",
+                                            "logo": {
+                                                "@type": "ImageObject",
+                                                "url": "https://www.ocr-extraction.com/logo.png"
+                                            },
+                                            "sameAs": [
+                                                "https://www.linkedin.com/company/infygalaxy",
+                                                "https://twitter.com/infygalaxy"
+                                            ]
+                                        },
+                                        "publisher": {
+                                            "@type": "Organization",
+                                            "name": "InfyGalaxy",
+                                            "logo": {
+                                                "@type": "ImageObject",
+                                                "url": "https://www.ocr-extraction.com/logo.png"
+                                            }
+                                        }
+                                    }
+                                ])
                             }}
                         />
                     </div>
