@@ -10,6 +10,7 @@ import { AnalyticsTracker } from "@/components/analytics-tracker"
 import { Toaster } from "sonner"
 import { SessionProvider } from "@/components/providers/session-provider"
 import { ReCaptchaProvider } from "@/components/providers/recaptcha-provider"
+import ThirdPartyScripts from "@/components/third-party-scripts"
 import MainLayout from "@/components/main-layout"
 
 const geist = Geist({ subsets: ["latin"] })
@@ -122,56 +123,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
-          id="gtm-consent-mode"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('consent', 'default', {
-                'ad_storage': 'granted',
-                'analytics_storage': 'granted',
-                'ad_user_data': 'granted',
-                'ad_personalization': 'granted',
-                'wait_for_update': 500
-              });
-            `,
-          }}
-        />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-
-        <link rel="preconnect" href="https://www.google-analytics.com" />
-        <link rel="preconnect" href="https://blog.ocr-extraction.com" />
-        <link rel="preconnect" href="https://embed.tawk.to" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://embed.tawk.to" crossOrigin="anonymous" />
-        {/* Tawk.to Live Chat Widget - Production Grade Integration */}
-        <script
-          id="tawk-to"
-          dangerouslySetInnerHTML={{
-            __html: `
-              var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-              (function(){
-                var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-                s1.async=true;
-                s1.src='https://embed.tawk.to/6999e1f447cf7f1c3ae16c25/1ji0hl9od';
-                s1.charset='UTF-8';
-                s1.setAttribute('crossorigin','*');
-                s0.parentNode.insertBefore(s1,s0);
-              })();
-
-              // Prominent Prompting: Auto-maximize for immediate engagement
-              Tawk_API.onLoad = function(){
-                setTimeout(function(){ 
-                  try {
-                    Tawk_API.maximize();
-                  } catch(e) {
-                    console.warn('Tawk_API maximize failed:', e);
-                  } 
-                }, 3000);
-              };
-            `,
-          }}
-        />
       </head>
       <body className={`${geist.className} font-sans antialiased bg-white text-gray-900`} suppressHydrationWarning>
         <GoogleTagManager gtmId="GTM-K9SH3TBW" />
@@ -224,7 +175,7 @@ export default function RootLayout({
             })
           }}
         />
-
+        <ThirdPartyScripts />
       </body>
     </html>
   )

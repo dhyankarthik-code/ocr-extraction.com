@@ -8,9 +8,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 
   images: {
     // Image optimization enabled for performance (Vercel handles this)
@@ -33,6 +30,7 @@ const nextConfig = {
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
           { key: 'Content-Type', value: 'text/plain; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400' },
         ]
       },
       {
@@ -65,23 +63,23 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin'
           },
-          // CSP - Relaxed for Google Analytics/GTM/Vercel/DoubleClick
+          // CSP - Relaxed for Google Analytics/GTM/Vercel/DoubleClick/Tawk.to
           {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              // Scripts: GTM, GA, reCAPTCHA, Vercel
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://va.vercel-scripts.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://cdn-in.pagesense.io https://googleads.g.doubleclick.net https://*.doubleclick.net",
+              // Scripts: GTM, GA, reCAPTCHA, Vercel, Tawk.to
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://va.vercel-scripts.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://cdn-in.pagesense.io https://googleads.g.doubleclick.net https://*.doubleclick.net https://embed.tawk.to https://*.tawk.to",
               // Styles
-              "style-src 'self' 'unsafe-inline'",
-              // Images: All Google domains including DoubleClick for GA4 (Confirmed googleadservices included)
-              "img-src 'self' blob: data: https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://*.google.com https://*.google.co.in https://*.doubleclick.net https://*.googleadservices.com https://lh3.googleusercontent.com https://ui-avatars.com https://api.dicebear.com https://flagcdn.com https://pagead2.googlesyndication.com",
+              "style-src 'self' 'unsafe-inline' https://embed.tawk.to https://*.tawk.to",
+              // Images: All Google domains including DoubleClick for GA4, Tawk.to agents
+              "img-src 'self' blob: data: https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://*.google.com https://*.google.co.in https://*.doubleclick.net https://*.googleadservices.com https://lh3.googleusercontent.com https://ui-avatars.com https://api.dicebear.com https://flagcdn.com https://pagead2.googlesyndication.com https://*.tawk.to",
               // Fonts
               "font-src 'self' data:",
-              // Connect: Critical - includes stats.g.doubleclick.net, analytics endpoints, Upstash Redis, Inngest
-              "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://*.doubleclick.net https://*.google.com https://*.google.co.in https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.upstash.io https://api.inngest.com https://*.inngest.com https://pagead2.googlesyndication.com",
-              // Frames: reCAPTCHA
-              "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://www.googletagmanager.com"
+              // Connect: Critical - includes stats.g.doubleclick.net, analytics endpoints, Upstash Redis, Inngest, Tawk.to (including WebSockets)
+              "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://*.doubleclick.net https://*.google.com https://*.google.co.in https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.upstash.io https://api.inngest.com https://*.inngest.com https://pagead2.googlesyndication.com https://*.tawk.to wss://*.tawk.to",
+              // Frames: reCAPTCHA, Tawk.to
+              "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://www.googletagmanager.com https://*.tawk.to https://tawk.to"
             ].join('; ')
           },
           // Anti-Indexing for Vercel Preview/Dev environments

@@ -42,16 +42,16 @@ async function checkDistributedRateLimit(
 export async function middleware(request: NextRequest) {
     const cspHeader = [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://va.vercel-scripts.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://cdn-in.pagesense.io https://googleads.g.doubleclick.net https://*.doubleclick.net",
-        "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' blob: data: https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://*.google.com https://*.google.co.in https://*.doubleclick.net https://*.googleadservices.com https://lh3.googleusercontent.com https://ui-avatars.com https://api.dicebear.com https://flagcdn.com https://pagead2.googlesyndication.com",
+        "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://va.vercel-scripts.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://cdn-in.pagesense.io https://googleads.g.doubleclick.net https://*.doubleclick.net https://embed.tawk.to https://*.tawk.to",
+        "style-src 'self' 'unsafe-inline' https://embed.tawk.to https://*.tawk.to",
+        "img-src 'self' blob: data: https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://*.google.com https://*.google.co.in https://*.doubleclick.net https://*.googleadservices.com https://lh3.googleusercontent.com https://ui-avatars.com https://api.dicebear.com https://flagcdn.com https://pagead2.googlesyndication.com https://*.tawk.to",
         "font-src 'self' data:",
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'self'",
         "frame-ancestors 'none'",
-        "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://*.doubleclick.net https://*.google.com https://*.google.co.in https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.upstash.io https://api.inngest.com https://*.inngest.com https://pagead2.googlesyndication.com",
-        "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://www.googletagmanager.com",
+        "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://*.doubleclick.net https://*.google.com https://*.google.co.in https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.upstash.io https://api.inngest.com https://*.inngest.com https://pagead2.googlesyndication.com https://*.tawk.to wss://*.tawk.to",
+        "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://www.googletagmanager.com https://*.tawk.to https://tawk.to",
         "upgrade-insecure-requests",
     ].join('; ')
 
