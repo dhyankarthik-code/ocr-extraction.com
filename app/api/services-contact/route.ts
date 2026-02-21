@@ -2,7 +2,23 @@ import { NextRequest, NextResponse } from "next/server"
 import { Resend } from "resend"
 import prisma from "@/lib/db"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const getResendClient = () => {
+    const key = process.env.RESEND_API_KEY
+    if (key && key.length > 10 && !key.includes("placeholder") && !key.includes("your_resend_api_key")) {
+        return new Resend(key)
+    }
+    return null
+}
+
+const escapeHtml = (value: unknown) => {
+    const str = value == null ? "" : String(value)
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+}
 
 export async function POST(request: NextRequest) {
     try {
@@ -105,14 +121,14 @@ export async function POST(request: NextRequest) {
                                                         <tr>
                                                             <td style="padding: 8px 0;">
                                                                 <strong style="color: #374151; font-size: 14px;">👤 Name:</strong>
-                                                                <p style="margin: 4px 0 0 0; color: #111827; font-size: 16px; font-weight: 600;">${name}</p>
+                                                                <p style="margin: 4px 0 0 0; color: #111827; font-size: 16px; font-weight: 600;">${escapeHtml(name)}</p>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td style="padding: 8px 0;">
                                                                 <strong style="color: #374151; font-size: 14px;">📧 Email:</strong>
                                                                 <p style="margin: 4px 0 0 0; color: #111827; font-size: 16px;">
-                                                                    <a href="mailto:${email}" style="color: #dc2626; text-decoration: none;">${email}</a>
+                                                                    <a href="mailto:${escapeHtml(email)}" style="color: #dc2626; text-decoration: none;">${escapeHtml(email)}</a>
                                                                 </p>
                                                             </td>
                                                         </tr>
@@ -120,7 +136,7 @@ export async function POST(request: NextRequest) {
                                                             <td style="padding: 8px 0;">
                                                                 <strong style="color: #374151; font-size: 14px;">📞 Phone:</strong>
                                                                 <p style="margin: 4px 0 0 0; color: #111827; font-size: 16px; font-weight: 600;">
-                                                                    <a href="tel:${phoneWithCode?.replace(/\s/g, '')}" style="color: #dc2626; text-decoration: none;">${phoneWithCode || 'Not provided'}</a>
+                                                                    <a href="tel:${escapeHtml(phoneWithCode?.replace(/\s/g, ''))}" style="color: #dc2626; text-decoration: none;">${escapeHtml(phoneWithCode) || 'Not provided'}</a>
                                                                 </p>
                                                             </td>
                                                         </tr>
@@ -128,7 +144,7 @@ export async function POST(request: NextRequest) {
                                                         <tr>
                                                             <td style="padding: 8px 0;">
                                                                 <strong style="color: #374151; font-size: 14px;">🏢 Company:</strong>
-                                                                <p style="margin: 4px 0 0 0; color: #111827; font-size: 16px; font-weight: 600;">${company}</p>
+                                                                <p style="margin: 4px 0 0 0; color: #111827; font-size: 16px; font-weight: 600;">${escapeHtml(company)}</p>
                                                             </td>
                                                         </tr>
                                                         ` : ''}
@@ -141,7 +157,7 @@ export async function POST(request: NextRequest) {
                                                 <td style="padding-top: 16px;">
                                                     <strong style="color: #374151; font-size: 14px; display: block; margin-bottom: 8px;">💬 Message:</strong>
                                                     <div style="background-color: #ffffff; border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px;">
-                                                        <p style="margin: 0; color: #111827; font-size: 15px; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+                                                        <p style="margin: 0; color: #111827; font-size: 15px; line-height: 1.6; white-space: pre-wrap;">${escapeHtml(message)}</p>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -172,19 +188,31 @@ export async function POST(request: NextRequest) {
             </html>
         `
 
-        // Send emails to both addresses
-        const recipients = ["prakashmalay@gmail.com", "admin@ocr-extraction.com"]
+        // Send email notification
+        const resend = getResendClient()
 
-        await resend.emails.send({
-            from: "OCR Services <noreply@ocr-extraction.com>",
-            to: recipients,
-            subject: `🎯 New Services Inquiry from ${name}${company ? ` (${company})` : ''}`,
-            html: emailHtml,
-            replyTo: email,
-        })
+        if (resend) {
+            try {
+                const recipients = ["prakashmalay@gmail.com", "admin@ocr-extraction.com"]
+                const replyToEmail = (email && typeof email === 'string' && email.includes('@')) ? email : undefined;
+
+                await resend.emails.send({
+                    from: "OCR Services <noreply@ocr-extraction.com>",
+                    to: recipients,
+                    subject: `🎯 New Services Inquiry from ${escapeHtml(name)}${company ? ` (${escapeHtml(company)})` : ''}`,
+                    html: emailHtml,
+                    replyTo: replyToEmail,
+                })
+                console.log("✅ Services contact email sent")
+            } catch (emailError) {
+                console.error("❌ Failed to send services contact email:", emailError)
+            }
+        } else {
+            console.warn("⚠️ RESEND_API_KEY not configured. Skipping services contact email.")
+        }
 
         return NextResponse.json(
-            { success: true, message: "Email sent successfully" },
+            { success: true, message: "Form submitted successfully" },
             { status: 200 }
         )
     } catch (error) {
