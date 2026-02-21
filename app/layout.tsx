@@ -11,7 +11,6 @@ import { Toaster } from "sonner"
 import { SessionProvider } from "@/components/providers/session-provider"
 import { ReCaptchaProvider } from "@/components/providers/recaptcha-provider"
 import MainLayout from "@/components/main-layout"
-import TawkToChat from "@/components/tawk-to-chat"
 
 const geist = Geist({ subsets: ["latin"] })
 
@@ -143,6 +142,29 @@ export default function RootLayout({
 
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://blog.ocr-extraction.com" />
+        <link rel="preconnect" href="https://embed.tawk.to" />
+        {/* Tawk.to Live Chat Widget */}
+        <script
+          id="tawk-to"
+          dangerouslySetInnerHTML={{
+            __html: `
+              var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+              Tawk_API.onLoad = function(){
+                if(!sessionStorage.getItem('tawk_prompted')){
+                  setTimeout(function(){ try{Tawk_API.maximize();}catch(e){} sessionStorage.setItem('tawk_prompted','1'); },3000);
+                }
+              };
+              (function(){
+                var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+                s1.async=true;
+                s1.src='https://embed.tawk.to/6999e1f447cf7f1c3ae16c25/1ji0hl9od';
+                s1.charset='UTF-8';
+                s1.setAttribute('crossorigin','*');
+                s0.parentNode.insertBefore(s1,s0);
+              })();
+            `,
+          }}
+        />
       </head>
       <body className={`${geist.className} font-sans antialiased bg-white text-gray-900`} suppressHydrationWarning>
         <GoogleTagManager gtmId="GTM-K9SH3TBW" />
@@ -155,7 +177,6 @@ export default function RootLayout({
             <ClientConsentWrapper />
             <AnalyticsTracker />
             <Toaster position="top-center" />
-            <TawkToChat />
           </SessionProvider>
         </ReCaptchaProvider>
         <Analytics />
