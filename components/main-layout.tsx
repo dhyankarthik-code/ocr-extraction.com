@@ -7,7 +7,6 @@ import { useState } from "react"
 
 // Lazy load non-critical components for improved INP/FCP
 const Footer = dynamic(() => import("@/components/footer"), { ssr: true })
-const ChatWidget = dynamic(() => import("@/components/chat-widget"), { ssr: false })
 const AuthModal = dynamic(() => import("@/components/auth-modal"), { ssr: false })
 
 interface MainLayoutProps {
@@ -31,7 +30,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
             </main>
 
             <Footer />
-            <ChatWidget />
 
             {showAuthModal && (
                 <AuthModal

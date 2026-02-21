@@ -11,6 +11,7 @@ import { Toaster } from "sonner"
 import { SessionProvider } from "@/components/providers/session-provider"
 import { ReCaptchaProvider } from "@/components/providers/recaptcha-provider"
 import MainLayout from "@/components/main-layout"
+import TawkToChat from "@/components/tawk-to-chat"
 
 const geist = Geist({ subsets: ["latin"] })
 
@@ -154,6 +155,7 @@ export default function RootLayout({
             <ClientConsentWrapper />
             <AnalyticsTracker />
             <Toaster position="top-center" />
+            <TawkToChat />
           </SessionProvider>
         </ReCaptchaProvider>
         <Analytics />
