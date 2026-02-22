@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import dynamic from 'next/dynamic'
 import SmartUploadZone from "@/components/smart-upload-zone"
 import CtaSection from "@/components/cta-section"
+import ToolsMegaFooter from "@/components/tools-mega-footer"
 
 // Dynamic imports for performance (reduces initial JS bundle ~100KB)
 const TypeAnimation = dynamic(() => import('react-type-animation').then(mod => mod.TypeAnimation), {
@@ -882,6 +883,9 @@ export default function HomePage() {
                     </div>
                 </div>
             </section>
+
+            {/* Mega Footer Tools Grid */}
+            <ToolsMegaFooter />
 
             {/* Try It Now CTA */}
             <CtaSection />

@@ -21,6 +21,7 @@ export default function Navbar({ session, onLogout, onLoginClick }: NavbarProps)
     { label: 'About Us', href: '/about' },
     { label: 'OCR', href: '/' },
     { label: 'Services', href: '/services' },
+    { label: 'AI Solutions', href: '/ai-solutions' },
     { label: 'Tools', href: '/tools' },
     { label: 'Hire AI Experts', href: '/hire-expert-ai-engineers' },
     { label: 'Blog', href: '/blog' },

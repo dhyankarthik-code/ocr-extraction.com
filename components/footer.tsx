@@ -123,6 +123,11 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
+                                <Link href="/ai-solutions" className="hover:text-red-500 transition-colors">
+                                    AI Solutions
+                                </Link>
+                            </li>
+                            <li>
                                 <Link href="/hire-expert-ai-engineers" className="text-red-400 font-semibold hover:text-red-300 transition-colors flex items-center gap-1">
                                     Hire AI Engineers <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
                                 </Link>
