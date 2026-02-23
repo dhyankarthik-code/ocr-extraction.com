@@ -15,12 +15,12 @@ export const metadata: Metadata = {
         'Predictive Analytics'
     ],
     alternates: {
-        canonical: 'https://ocr-extraction.com/ai-solutions',
+        canonical: 'https://ocr-extraction.com/enterprise-custom-ai-solutions',
     },
     openGraph: {
         title: 'Enterprise AI Solutions & Custom AI Development | InfyGalaxy',
         description: 'Scalable, secure, and intelligent AI systems designed for modern enterprise workflows.',
-        url: 'https://ocr-extraction.com/ai-solutions',
+        url: 'https://ocr-extraction.com/enterprise-custom-ai-solutions',
         siteName: 'InfyGalaxy',
         type: 'website',
     },

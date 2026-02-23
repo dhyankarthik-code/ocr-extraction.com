@@ -21,6 +21,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/company-profile',
         '/faqs',
         '/services',
+        '/enterprise-custom-ai-solutions',
+        '/white-papers',
         '/hire-expert-ai-engineers',
         '/blog/in-house-vs-dedicated-ai-teams',
         '/blog/how-to-hire-ai-engineers-in-2026-the-complete-cto-guide-to-finding-top-ai-talent',

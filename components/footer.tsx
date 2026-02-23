@@ -123,7 +123,7 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/ai-solutions" className="hover:text-red-500 transition-colors">
+                                <Link href="/enterprise-custom-ai-solutions" className="hover:text-red-500 transition-colors">
                                     AI Solutions
                                 </Link>
                             </li>

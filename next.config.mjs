@@ -92,6 +92,15 @@ const nextConfig = {
     ]
   },
 
+  async redirects() {
+    return [
+      {
+        source: '/ai-solutions',
+        destination: '/enterprise-custom-ai-solutions',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default nextConfig
